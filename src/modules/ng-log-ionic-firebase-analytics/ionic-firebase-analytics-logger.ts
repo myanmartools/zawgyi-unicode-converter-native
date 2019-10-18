@@ -6,7 +6,7 @@
  * found under the LICENSE file in the root directory of this source tree.
  */
 
-import { EventInfo, EventTimingInfo, Logger, LogInfo, LogLevel, PageViewInfo, PageViewTimingInfo } from '@dagonmetric/ng-log';
+import { EventInfo, EventTimingInfo, Logger, LogLevel, PageViewInfo, PageViewTimingInfo } from '@dagonmetric/ng-log';
 
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
@@ -25,49 +25,51 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
         super();
     }
 
-    log(logLevel: LogLevel, message: string | Error, logInfo?: LogInfo): void {
+    log(logLevel: LogLevel, message: string | Error): void {
         if (logLevel === LogLevel.None || !this._analytics) {
             return;
         }
 
-        // tslint:disable-next-line: no-any
-        const properties: { [key: string]: any } = logInfo && logInfo.properties ? { ...logInfo.properties } : {};
+        const analytics = this._analytics;
 
-        if (this._userInfo.userId) {
-            properties.user_id = this._userInfo.userId;
-        }
-
-        if (this._userInfo.accountId) {
-            properties.account_id = this._userInfo.accountId;
-        }
+        const messageStr = typeof message === 'string' ? message : `${message.message || message}`;
 
         if (logLevel === LogLevel.Error || logLevel === LogLevel.Critical) {
-            properties.description = typeof message === 'string' ? message : `${message}`;
-            properties.fatal = logLevel === LogLevel.Critical;
-
-            this._analytics.logEvent('exception', properties)
-                .then(() => {
-                    // Do nothing;
-                })
-                .catch((error: Error) => {
-                    console.error(error);
-                });
+            if (logLevel === LogLevel.Critical && !message) {
+                // Simulates (causes) a fatal native crash
+                analytics.sendCrash()
+                    .then(() => {
+                        // Do nothing;
+                    })
+                    .catch((error: Error) => {
+                        console.error(error);
+                    });
+            } else {
+                Promise.resolve(this._userInfo.userId)
+                    .then(async (userId) => userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve())
+                    .then(() => analytics.logError(messageStr))
+                    .then(() => {
+                        // Do nothing;
+                    })
+                    .catch((error: Error) => {
+                        console.error(error);
+                    });
+            }
         } else {
             let level: string;
             if (logLevel === LogLevel.Trace) {
-                level = 'trace';
+                level = 'TRACE';
             } else if (logLevel === LogLevel.Debug) {
-                level = 'debug';
+                level = 'DEBUG';
             } else if (logLevel === LogLevel.Info) {
-                level = 'info';
+                level = 'INFO';
             } else {
-                level = 'warn';
+                level = 'WARN';
             }
 
-            properties.message = typeof message === 'string' ? message : `${message}`;
-            properties.level = level;
-
-            this._analytics.logEvent('trace', properties)
+            Promise.resolve(this._userInfo.userId)
+                .then(async (userId) => userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve())
+                .then(() => analytics.logMessage(`${level}: ${messageStr}`))
                 .then(() => {
                     // Do nothing;
                 })

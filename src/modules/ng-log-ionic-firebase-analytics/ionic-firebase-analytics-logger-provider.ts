@@ -13,7 +13,6 @@ import {
     EventTimingInfo,
     Logger,
     LoggerProvider,
-    LogInfo,
     LogLevel,
     PageViewInfo,
     PageViewTimingInfo
@@ -79,8 +78,8 @@ export class IonicFirebaseAnalyticsLoggerProvider extends Logger implements Logg
         this._userInfo.accountId = undefined;
     }
 
-    log(logLevel: LogLevel, message: string | Error, logInfo?: LogInfo): void {
-        this.currentLogger.log(logLevel, message, logInfo);
+    log(logLevel: LogLevel, message: string | Error): void {
+        this.currentLogger.log(logLevel, message);
     }
 
     startTrackPage(name?: string): void {
