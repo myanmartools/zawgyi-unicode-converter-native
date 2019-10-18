@@ -16,7 +16,9 @@ Zawgyi Unicode Converter Ionic Native App (Android / iOS) is a free and open sou
 
 ## Live Progressive Web Application
 
-[zawgyi-unicode-converter.myanmartools.org](https://zawgyi-unicode-converter.myanmartools.org)
+Live website at [zawgyi-unicode-converter.myanmartools.org](https://zawgyi-unicode-converter.myanmartools.org)
+
+The PWA project repo is at [github.com/myanmartools/zawgyi-unicode-converter-angular-pwa](https://github.com/myanmartools/zawgyi-unicode-converter-angular-pwa)
 
 ## Features
 
