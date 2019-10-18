@@ -359,7 +359,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         } catch (err) {
             // tslint:disable-next-line: no-unsafe-any
             const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.warn(`An error occurs when sharing via Web API.${errMsg}`, {
+            this._logService.error(`An error occurs when sharing via Web API.${errMsg}`, {
                 properties: {
                     app_version: this._appConfig.appVersion
                 }
