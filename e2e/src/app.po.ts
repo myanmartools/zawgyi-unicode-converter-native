@@ -1,11 +1,17 @@
+// tslint:disable-next-line: no-implicit-dependencies
 import { browser, by, element } from 'protractor';
 
+/**
+ * Shared.
+ */
 export class AppPage {
-  navigateTo() {
-    return browser.get('/');
-  }
+    // tslint:disable-next-line: no-any
+    async navigateTo(): Promise<any> {
+        // tslint:disable-next-line: no-any
+        return browser.get(browser.baseUrl) as Promise<any>;
+    }
 
-  getParagraphText() {
-    return element(by.deepCss('app-root ion-content')).getText();
-  }
+    async getTitleText(): Promise<string> {
+        return element(by.css('app-root app-about-modal app-name')).getText() as Promise<string>;
+    }
 }
