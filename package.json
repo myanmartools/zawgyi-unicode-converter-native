@@ -4,7 +4,14 @@
   "private": true,
   "author": "DagonMetric",
   "license": "MIT",
-  "homepage": "https://zawgyi-unicode-converter.dagonmetric.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/myanmartools/zawgyi-unicode-converter-native.git"
+  },
+  "bugs": {
+    "url": "https://github.com/myanmartools/zawgyi-unicode-converter-native/issues"
+  },
+  "homepage": "https://zawgyi-unicode-converter.myanmartools.org",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
