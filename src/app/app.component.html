@@ -1,0 +1,135 @@
+<ion-app>
+    <ion-menu side="end" contentId="main-content">
+        <ion-header>
+            <ion-toolbar color="primary">
+                <ion-title>
+                    {{appName}}
+                </ion-title>
+                <ion-buttons slot="end">
+                    <ion-icon slot="icon-only" name="logo-zawgyi-unicode-converter"></ion-icon>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content>
+            <ion-list lines="none">
+                <ion-menu-toggle *ngFor="let navLinkItem of navLinks">
+                    <ion-item [href]="[navLinkItem.url]">
+                        <ion-icon slot="start" [name]="navLinkItem.iconName"></ion-icon>
+                        <ion-label>
+                            {{navLinkItem.label}}
+                        </ion-label>
+                    </ion-item>
+                </ion-menu-toggle>
+                <ion-menu-toggle>
+                    <ion-item button (click)="showHelpModal()">
+                        <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+                        <ion-label>
+                            Help & Feedback
+                        </ion-label>
+                    </ion-item>
+                </ion-menu-toggle>
+                <ion-menu-toggle>
+                    <ion-item button (click)="showAboutModal()">
+                        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+                        <ion-label>
+                            About
+                        </ion-label>
+                    </ion-item>
+                </ion-menu-toggle>
+                <ion-menu-toggle>
+                    <ion-item button (click)="showShareSheet()">
+                        <ion-icon slot="start" name="share"></ion-icon>
+                        <ion-label>
+                            Share this app
+                        </ion-label>
+                    </ion-item>
+                </ion-menu-toggle>
+                <ion-menu-toggle>
+                    <ion-item button (click)="promptForRating()">
+                        <ion-icon slot="start" name="star"></ion-icon>
+                        <ion-label>
+                            Rate this app
+                        </ion-label>
+                    </ion-item>
+                </ion-menu-toggle>
+            </ion-list>
+        </ion-content>
+        <ion-footer>
+            <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-title color="medium">&copy; DagonMetric</ion-title>
+                    <ion-button color="medium" [href]="privacyUrl">
+                        Privacy
+                    </ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-footer>
+    </ion-menu>
+
+    <div class="ion-page" id="main-content">
+        <ion-header>
+            <ion-toolbar color="primary">
+                <ion-buttons slot="secondary">
+                    <ion-button (click)="showAboutModal()">
+                        <ion-icon slot="icon-only" name="logo-zawgyi-unicode-converter"></ion-icon>
+                    </ion-button>
+                </ion-buttons>
+                <ion-title>
+                    {{appName}}
+                </ion-title>
+                <ion-buttons slot="primary">
+                    <!-- <ion-menu-button></ion-menu-button> -->
+                    <ion-button (click)="toggleSideNav()">
+                            <ion-icon slot="icon-only" name="menu"></ion-icon>
+                        </ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content>
+            <ion-list>
+                <ion-item>
+                    <ion-label>Select input font</ion-label>
+                    <ion-select [(ngModel)]="sourceEnc" [selectedText]="fontEncSelectedText" interface="popover">
+                        <ion-select-option value="auto">AUTO DETECT</ion-select-option>
+                        <ion-select-option value="zg">ZAWGYI</ion-select-option>
+                        <ion-select-option value="uni">UNICODE</ion-select-option>
+                    </ion-select>
+                </ion-item>
+            </ion-list>
+            <ion-grid>
+                <ion-row>
+                    <ion-col size="12" size-sm>
+                        <ion-item>
+                            <ion-label position="floating" *ngIf="sourceEncLabel">{{sourceEncLabel}}</ion-label>
+                            <ion-textarea class="myanmar-text" [placeholder]="sourcePlaceholderText"
+                                [rows]="textAreaMinRows" spellcheck="false" [(ngModel)]="sourceText"
+                                [class.my-uni]="!detectedEnc || detectedEnc == 'uni'"
+                                [class.my-zg]="detectedEnc == 'zg'">
+                            </ion-textarea>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col size="12" size-sm>
+                        <ion-item>
+                            <ion-label position="floating" *ngIf="targeetEncLabel">{{targeetEncLabel}}</ion-label>
+                            <ion-textarea class="myanmar-text" [placeholder]="targetPlaceholderText"
+                                [rows]="textAreaMinRows" spellcheck="false" [ngModel]="outText"
+                                [class.my-uni]="targetEnc == 'uni'" [class.my-zg]="!targetEnc || targetEnc == 'zg'"
+                                [readonly]="!outText"></ion-textarea>
+                        </ion-item>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col class="footer-buttons">
+                        <ion-button shape="round" fill="clear" color="medium" (click)="promptForRating()">
+                            <ion-icon name="star"></ion-icon> Rate
+                        </ion-button>
+                        <ion-button shape="round" fill="clear" color="medium" (click)="showShareSheet()">
+                            <ion-icon name="share"></ion-icon> Share
+                        </ion-button>
+
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-content>
+    </div>
+</ion-app>

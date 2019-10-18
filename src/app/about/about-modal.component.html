@@ -1,0 +1,30 @@
+<ion-content color="primary" fullscreen>
+    <ion-grid class="ion-no-padding">
+        <ion-row class="ion-justify-content-center ion-align-items-center">
+            <ion-col>
+                <div class="ion-text-center">
+                    <img class="about-welcome" [src]="appAboutImageUrl" alt="{{appName}}">
+                </div>
+                <div class="ion-text-center">
+                    {{appName}}
+                </div>
+                <div class="ion-text-center">
+                    Version: {{appVersion}}
+                </div>
+                <ion-slides [options]="slidesOptions">
+                    <ion-slide *ngFor="let item of aboutSlides">
+                        <p class="ion-text-center myanmar-text my-uni">
+                            {{item.label}}
+                        </p>
+                    </ion-slide>
+                </ion-slides>
+                <div class="ion-text-center">
+                    <ion-button class="continue-btn" color="light" fill="outline" (click)="dismissModal()">Continue
+                        <ion-icon slot="end" name="arrow-forward">
+                        </ion-icon>
+                    </ion-button>
+                </div>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

@@ -1,0 +1,7 @@
+{
+  "name": "Zawgyi Unicode Converter",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
