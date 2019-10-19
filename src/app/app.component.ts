@@ -27,6 +27,8 @@ import { TranslitResult, TranslitService } from '@dagonmetric/ng-translit';
 
 import { DetectedEnc, ZawgyiDetector } from '@myanmartools/ng-zawgyi-detector';
 
+import { environment } from '../environments/environment';
+
 import { AppConfig, NavLinkItem } from './shared';
 
 import { AboutModalComponent } from './about/about-modal.component';
@@ -247,6 +249,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             })
         ).subscribe((result: TranslitResult) => {
             this._outText = result.outputText || '';
+
+            if (!environment.production && this._sourceText === '_CrashlyticsTest_') {
+                this._logService.fatal('', {});
+            }
 
             if (this._sourceText.length && this._curRuleName && result.replaced) {
                 this._logService.trackEvent({
