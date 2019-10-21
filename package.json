@@ -34,6 +34,7 @@
     "@ionic-native/app-rate": "^5.15.1",
     "@ionic-native/app-version": "^5.15.1",
     "@ionic-native/core": "^5.15.1",
+    "@ionic-native/firebase-dynamic-links": "^5.15.1",
     "@ionic-native/firebase-x": "^5.15.1",
     "@ionic-native/header-color": "^5.15.1",
     "@ionic-native/social-sharing": "^5.15.1",
@@ -51,6 +52,7 @@
     "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-apprate": "^1.4.0",
     "cordova-plugin-dialogs": "^2.0.2",
+    "cordova-plugin-firebase-dynamiclinks": "^3.0.0",
     "cordova-plugin-firebasex": "^6.1.0",
     "cordova-plugin-globalization": "^1.11.0",
     "cordova-plugin-headercolor": "^1.0.0",
@@ -132,6 +134,12 @@
         "ANDROID_CRASHLYTICS_VERSION": "2.10.1",
         "ANDROID_CRASHLYTICS_NDK_VERSION": "2.1.0",
         "ANDROID_SHORTCUTBADGER_VERSION": "1.1.22"
+      },
+      "cordova-plugin-firebase-dynamiclinks": {
+        "APP_DOMAIN": "myanmartools.org",
+        "PAGE_LINK_DOMAIN": "myanmartools.org/apps",
+        "FIREBASE_CORE_VERSION": "17.0.+",
+        "FIREBASE_DYNAMIC_LINKS_VERSION": "18.0.+"
       }
     },
     "platforms": [
