@@ -15,6 +15,7 @@ import { MenuController, ModalController, Platform, ToastController } from '@ion
 import { Storage as IonicStorage } from '@ionic/storage';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
+import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -187,6 +188,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         private readonly _storage: IonicStorage,
         private readonly _appRate: AppRate,
         private readonly _webIntent: WebIntent,
+        private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
         configService: ConfigService) {
         this._appConfig = configService.getValue<AppConfig>('app');
         this.initializeApp();
@@ -365,11 +367,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         } catch (err) {
             // tslint:disable-next-line: no-unsafe-any
             const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs when sharing via Web API.${errMsg}`, {
-                properties: {
-                    app_version: this._appConfig.appVersion
-                }
-            });
+            this._logService.error(`An error occurs when sharing via Web API.${errMsg}`);
         }
     }
 
@@ -443,7 +441,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private initializeApp(): void {
-        const storeAppUrlInfo = this._appConfig.storeAppUrlInfo;
         const appThemeColor = this._appConfig.appThemeColor;
 
         // tslint:disable-next-line: no-floating-promises
@@ -465,18 +462,11 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
             if (this._platform.is('android')) {
                 this.registerBroadcastReceiverAndroid();
+                this.handleWebIntentData();
+            }
 
-                // tslint:disable-next-line: no-floating-promises
-                this._webIntent.getIntent().then(intent => {
-                    if (intent.extras) {
-                        const textExtras = (intent.extras as { [key: string]: string })['android.intent.extra.TEXT'];
-                        if (textExtras) {
-                            this._sourceText = textExtras;
-                            this._isFromIntent = true;
-                            this.translitNext();
-                        }
-                    }
-                });
+            if (this._platform.is('android') || this._platform.is('ios')) {
+                this.handleDynamicLinks();
             }
 
             this._platform.pause
@@ -494,51 +484,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                     this.onPlatformResumed();
                 });
 
-            if (!this._sourceText) {
-                const welcomeCachekey = `is-shown-welcome-screen-v${this.appVersion}`;
-
-                // tslint:disable-next-line: no-backbone-get-set-outside-model no-floating-promises
-                this._storage.get(welcomeCachekey)
-                    .then((isWelcomeScreenShown: string) => {
-                        if (!isWelcomeScreenShown) {
-                            // tslint:disable-next-line: no-floating-promises
-                            this.showAboutModal();
-                            // tslint:disable-next-line: no-floating-promises
-                            this._storage.set(welcomeCachekey, true);
-                        } else {
-                            this._logService.trackEvent({
-                                name: 'screen_view',
-                                properties: {
-                                    screen_name: 'Home'
-                                }
-                            });
-                        }
-                    });
-            }
+            this.showFirstTimeWelcomeScreen();
 
             if (this._platform.is('android') || this._platform.is('ios')) {
-                this._appRate.preferences = {
-                    useLanguage: 'en',
-                    displayAppName: this.appName,
-                    usesUntilPrompt: 3,
-                    promptAgainForEachNewVersion: true,
-                    simpleMode: true,
-                    useCustomRateDialog: true,
-                    storeAppURL: {
-                        ...storeAppUrlInfo
-                    },
-                    customLocale: {
-                        title: 'Do you \u2764\uFE0F using this app?',
-                        message: "If you enjoy using Zawgyi Unicode Converter, you would mind taking a moment to rate it? It won't take more than a minute. Thank you for your support!",
-                        cancelButtonLabel: 'No, thanks',
-                        laterButtonLabel: 'Later',
-                        rateButtonLabel: 'Rate it now',
-                        yesButtonLabel: 'Yes',
-                        noButtonLabel: 'No'
-                    }
-                };
-
-                this._appRate.promptForRating(false);
+                this.handlePromptForRating();
             }
         });
     }
@@ -561,6 +510,91 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 'com.darryncampbell.cordova.plugin.broadcastIntent.ACTION'
             ]
         });
+    }
+
+    private handleWebIntentData(): void {
+        // tslint:disable-next-line: no-floating-promises
+        this._webIntent.getIntent().then(intent => {
+            if (intent.extras) {
+                const textExtras = (intent.extras as { [key: string]: string })['android.intent.extra.TEXT'];
+                if (textExtras) {
+                    this._sourceText = textExtras;
+                    this._isFromIntent = true;
+                    this.translitNext();
+                }
+            }
+        });
+    }
+
+    private handleDynamicLinks(): void {
+        this._firebaseDynamicLinks.onDynamicLink()
+            .subscribe(async (res) => {
+                this._logService.trackEvent({
+                    name: 'dynamic_link',
+                    properties: {
+                        deep_link: res.deepLink,
+                        match_type: res.matchType
+                    }
+                });
+            }, async (err) => {
+                // tslint:disable-next-line: no-unsafe-any
+                const errMsg = err && err.message ? ` ${err.message}` : '';
+                this._logService.error(`An error occurs on receiving dynamic link.${errMsg}`);
+            });
+    }
+
+    private showFirstTimeWelcomeScreen(): void {
+        if (this._sourceText) {
+            return;
+        }
+
+        const welcomeCachekey = `is-shown-welcome-screen-v${this.appVersion}`;
+
+        // tslint:disable-next-line: no-backbone-get-set-outside-model no-floating-promises
+        this._storage.get(welcomeCachekey)
+            .then((isWelcomeScreenShown: string) => {
+                if (!isWelcomeScreenShown) {
+                    // tslint:disable-next-line: no-floating-promises
+                    this.showAboutModal();
+                    // tslint:disable-next-line: no-floating-promises
+                    this._storage.set(welcomeCachekey, true);
+                } else {
+                    this._logService.trackEvent({
+                        name: 'screen_view',
+                        properties: {
+                            screen_name: 'Home'
+                        }
+                    });
+                }
+            });
+    }
+
+    private handlePromptForRating(): void {
+        const storeAppUrlInfo = this._appConfig.storeAppUrlInfo;
+
+        this._appRate.preferences = {
+            useLanguage: 'en',
+            displayAppName: this.appName,
+            usesUntilPrompt: 3,
+            promptAgainForEachNewVersion: true,
+            simpleMode: true,
+            useCustomRateDialog: true,
+            storeAppURL: {
+                ...storeAppUrlInfo
+            },
+            customLocale: {
+                title: 'Do you \u2764\uFE0F using this app?',
+                message: 'We hope yoou like using Zawgyi Unicode Converter.\nWe love to hear your feedback.',
+                cancelButtonLabel: 'No, thanks',
+                laterButtonLabel: 'Later',
+                rateButtonLabel: 'Rate it now',
+                yesButtonLabel: 'Yes',
+                noButtonLabel: 'No'
+            }
+        };
+
+        this._appRate.promptForRating(false);
+
     }
 
     private onSourceEncChanged(val?: SourceEnc): void {
