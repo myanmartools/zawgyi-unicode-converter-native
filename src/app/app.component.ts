@@ -69,10 +69,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private _targetEnc?: DetectedEnc;
     private _sourcePlaceholderText = '';
     private _targetPlaceholderText = '';
+    private _convertSource = 'direct';
 
     private _detectedEnc: DetectedEnc = null;
     private _curRuleName = '';
-    private _isFromIntent = false;
 
     private _lastTimeBackPress = 0;
 
@@ -263,11 +263,11 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                         method: this._curRuleName,
                         input_length: this._sourceText.length,
                         duration_msec: result.duration,
-                        from_intent: this._isFromIntent
+                        source: this._convertSource
                     }
                 });
 
-                this._isFromIntent = false;
+                this._convertSource = 'direct';
             }
         });
     }
@@ -462,11 +462,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
             if (this._platform.is('android')) {
                 this.registerBroadcastReceiverAndroid();
-                this.handleWebIntentData();
-            }
-
-            if (this._platform.is('android') || this._platform.is('ios')) {
-                this.handleDynamicLinks();
             }
 
             this._platform.pause
@@ -484,11 +479,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                     this.onPlatformResumed();
                 });
 
-            this.showFirstTimeWelcomeScreen();
-
-            if (this._platform.is('android') || this._platform.is('ios')) {
-                this.handlePromptForRating();
-            }
+            // tslint:disable-next-line: no-floating-promises
+            this.handlePlatformReady();
         });
     }
 
@@ -512,61 +504,28 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
     }
 
-    private handleWebIntentData(): void {
-        // tslint:disable-next-line: no-floating-promises
-        this._webIntent.getIntent().then(intent => {
-            if (intent.extras) {
-                const textExtras = (intent.extras as { [key: string]: string })['android.intent.extra.TEXT'];
-                if (textExtras) {
-                    this._sourceText = textExtras;
-                    this._isFromIntent = true;
-                    this.translitNext();
+    private async handlePlatformReady(): Promise<void> {
+        const welcomeCachekey = `is-shown-welcome-screen-v${this.appVersion}`;
+        const welcomeScreenShown = await this._storage.get(welcomeCachekey);
+
+        if (!welcomeScreenShown) {
+            await this.showAboutModal();
+            await this._storage.set(welcomeCachekey, true);
+        } else {
+            this._logService.trackEvent({
+                name: 'screen_view',
+                properties: {
+                    screen_name: 'Home'
                 }
-            }
-        });
-    }
-
-    private handleDynamicLinks(): void {
-        this._firebaseDynamicLinks.onDynamicLink()
-            .subscribe(async (res) => {
-                this._logService.trackEvent({
-                    name: 'dynamic_link',
-                    properties: {
-                        deep_link: res.deepLink,
-                        match_type: res.matchType
-                    }
-                });
-            }, async (err) => {
-                // tslint:disable-next-line: no-unsafe-any
-                const errMsg = err && err.message ? ` ${err.message}` : '';
-                this._logService.error(`An error occurs on receiving dynamic link.${errMsg}`);
             });
-    }
-
-    private showFirstTimeWelcomeScreen(): void {
-        if (this._sourceText) {
-            return;
         }
 
-        const welcomeCachekey = `is-shown-welcome-screen-v${this.appVersion}`;
-
-        // tslint:disable-next-line: no-backbone-get-set-outside-model no-floating-promises
-        this._storage.get(welcomeCachekey)
-            .then((isWelcomeScreenShown: string) => {
-                if (!isWelcomeScreenShown) {
-                    // tslint:disable-next-line: no-floating-promises
-                    this.showAboutModal();
-                    // tslint:disable-next-line: no-floating-promises
-                    this._storage.set(welcomeCachekey, true);
-                } else {
-                    this._logService.trackEvent({
-                        name: 'screen_view',
-                        properties: {
-                            screen_name: 'Home'
-                        }
-                    });
-                }
-            });
+        if (this._platform.is('android') || this._platform.is('ios')) {
+            // tslint:disable-next-line: no-floating-promises
+            this.handleWebIntent();
+            this.handleDynamicLinks();
+            this.handlePromptForRating();
+        }
     }
 
     private handlePromptForRating(): void {
@@ -595,6 +554,30 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
         this._appRate.promptForRating(false);
 
+    }
+
+    private handleDynamicLinks(): void {
+        this._firebaseDynamicLinks.onDynamicLink()
+            .subscribe(() => {
+                // Do nothing
+            }, (err) => {
+                // tslint:disable-next-line: no-unsafe-any
+                const errMsg = err && err.message ? ` ${err.message}` : '';
+                this._logService.error(`An error occurs on receiving dynamic link.${errMsg}`);
+            });
+    }
+
+    private async handleWebIntent(): Promise<void> {
+        const intent = await this._webIntent.getIntent();
+
+        if (intent.extras) {
+            const textExtras = (intent.extras as { [key: string]: string })['android.intent.extra.TEXT'];
+            if (textExtras) {
+                this._convertSource = 'web_intent';
+                this._sourceText = textExtras;
+                this.translitNext();
+            }
+        }
     }
 
     private onSourceEncChanged(val?: SourceEnc): void {
@@ -639,6 +622,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private translitNext(): void {
-        this._translitSubject.next(`${this._sourceEnc}|${this._sourceText}`);
+        this._translitSubject.next(`${this._sourceEnc}|${this._convertSource}|${this._sourceText}`);
     }
 }
