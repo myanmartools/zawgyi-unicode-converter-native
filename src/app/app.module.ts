@@ -15,6 +15,7 @@ import { IonicModule } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
+import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
@@ -74,8 +75,8 @@ export const settings: { app: AppConfig } = {
         ],
         socialSharing: {
             subject: 'Zawgyi Unicode Converter app you may also like',
-            message: 'သူငယ်ချင်းတို့တွေထဲမှာ ဇော်ဂျီ ယူနီကုဒ် အခက်အခဲရှိနေရင်\nZawgyi Unicode Converter app ကိုသုံးပြီး ဇော်ဂျီကနေ ယူနီကုဒ်၊ ယူနီကုဒ်ကနေ ဇော်ဂျီ အပြန်အလှန်ပြောင်းကြည့်လို့ရတယ်နော်။\nDownload link: ',
-            linkUrl: 'https://play.google.com/store/apps/details?id=com.dagonmetric.zawgyiunicodeconverter'
+            message: 'ဇော်ဂျီ ယူနီကုဒ် အခက်အခဲရှိနေသူများအတွက် ဇော်ဂျီကနေ ယူနီကုဒ်၊ ယူနီကုဒ်ကနေ ဇော်ဂျီ အပြန်အလှန် အလိုအလျောက် ပြောင်းပေးတဲ့ app တစ်ခု မျှဝေလိုက်ပါတယ်။',
+            linkUrl: 'https://myanmartools.org/apps/zawgyi-unicode-converter'
         },
         privacyUrl: 'https://privacy.dagonmetric.com/privacy-statement',
         appAboutImageUrl: 'assets/images/about-welcome.png',
@@ -174,6 +175,7 @@ export const settings: { app: AppConfig } = {
     providers: [
         AppRate,
         FirebaseX,
+        FirebaseDynamicLinks,
         HeaderColor,
         StatusBar,
         SplashScreen,
