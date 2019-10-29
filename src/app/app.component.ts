@@ -506,9 +506,21 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private async handlePlatformReady(): Promise<void> {
         const welcomeCachekey = `is-shown-welcome-screen-v${this.appVersion}`;
-        const welcomeScreenShown = await this._storage.get(welcomeCachekey);
 
-        if (!welcomeScreenShown) {
+        let welcomeScreenShown = false;
+        let hasStorageError = false;
+        try {
+            // tslint:disable-next-line: no-unsafe-any
+            welcomeScreenShown = await this._storage.get(welcomeCachekey);
+        } catch (err) {
+            // tslint:disable-next-line: no-unsafe-any
+            const errMsg = err && err.message ? ` ${err.message}` : '';
+            this._logService.error(`An error occurs while calling _storage.get() method.${errMsg}`);
+
+            hasStorageError = true;
+        }
+
+        if (!welcomeScreenShown && !hasStorageError) {
             await this.showAboutModal();
             await this._storage.set(welcomeCachekey, true);
         } else {
@@ -568,15 +580,21 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async handleWebIntent(): Promise<void> {
-        const intent = await this._webIntent.getIntent();
+        try {
+            const intent = await this._webIntent.getIntent();
 
-        if (intent.extras) {
-            const textExtras = (intent.extras as { [key: string]: string })['android.intent.extra.TEXT'];
-            if (textExtras) {
-                this._convertSource = 'web_intent';
-                this._sourceText = textExtras;
-                this.translitNext();
+            if (intent.extras) {
+                const textExtras = (intent.extras as { [key: string]: string })['android.intent.extra.TEXT'];
+                if (textExtras) {
+                    this._convertSource = 'web_intent';
+                    this._sourceText = textExtras;
+                    this.translitNext();
+                }
             }
+        } catch (err) {
+            // tslint:disable-next-line: no-unsafe-any
+            const errMsg = err && err.message ? ` ${err.message}` : '';
+            this._logService.error(`An error occurs while calling _webIntent.getIntent() method.${errMsg}`);
         }
     }
 
