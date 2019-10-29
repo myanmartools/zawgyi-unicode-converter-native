@@ -45,7 +45,7 @@ import { SupportModalComponent } from './support/support-modal.component';
 export const settings: { app: AppConfig } = {
     app: {
         appName: 'Zawgyi Unicode Converter',
-        appVersion: '2.0.0',
+        appVersion: '2.0.1',
         appThemeColor: '#8764B8',
         appDescription: 'Zawgyi Unicode Converter is a free and open source Zawgyi-One and standard Myanmar Unicode online/offline converter created by DagonMetric Myanmar Tools team.',
         storeAppUrlInfo: {
