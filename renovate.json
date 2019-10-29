@@ -1,5 +1,64 @@
 {
   "extends": [
     "config:base"
+  ],
+  "timezone": "Asia/Yangon",
+  "schedule": [
+    "after 1am and before 6am every weekday",
+    "after 1am and before 6am every weekend"
+  ],
+  "packageFiles": ["package.json"],
+  "automerge": true,
+  "major": {
+    "automerge": false
+  },
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "packagePatterns": [
+        "^@angular-devkit\/.*"
+      ],
+      "groupName": "angular-devkit"
+    },
+    {
+      "packagePatterns": [
+        "^@angular\/.*"
+      ],
+      "groupName": "angular"
+    },
+    {
+      "packagePatterns": [
+        "^@dagonmetric\/.*"
+      ],
+      "groupName": "dagonmetric"
+    },
+    {
+      "packagePatterns": [
+        "^@myanmartools\/.*"
+      ],
+      "groupName": "myanmartools"
+    },
+    {
+      "packagePatterns": [
+        "^@types\/.*"
+      ],
+      "groupName": "types"
+    },
+    {
+      "packagePatterns": ["^jasmine.*"],
+      "groupName": "jasmine"
+    },
+    {
+      "packagePatterns": ["^karma.*"],
+      "groupName": "karma"
+    },
+    {
+      "packagePatterns": ["^protractor.*"],
+      "groupName": "protractor"
+    },
+    {
+      "packageNames": ["typescript"],
+      "automerge": false
+    }
   ]
 }
