@@ -129,8 +129,7 @@ export const settings: { app: AppConfig } = {
                 label: 'ကွန်ပျူတာသုံးမြန်မာစာစနစ် တိုးတက်ဖို့ ယူနီကုဒ်ကိုစတင်ပြောင်းလဲကြစို့...',
                 language: 'my-MM'
             }
-        ],
-        facebookAppId: '461163654621837'
+        ]
     }
 };
 
