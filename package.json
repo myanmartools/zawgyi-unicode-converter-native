@@ -79,7 +79,7 @@
     "@ionic/angular-toolkit": "^2.1.1",
     "@types/jasmine": "^3.4.4",
     "@types/jasminewd2": "^2.0.8",
-    "@types/node": "^12.12.0",
+    "@types/node": "^12.12.3",
     "codelyzer": "^5.2.0",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
