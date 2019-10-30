@@ -120,6 +120,7 @@ body {
     font-family: 'Zawgyi-One';
     font-style: normal;
     font-weight: 400;
+    font-display: swap;
     src: local('Zawgyi-One'), url(assets/fonts/zawgyione/Zawgyi-One.eot);
     src: url(assets/fonts/zawgyione/Zawgyi-One.eot?#iefix) format('embedded-opentype'),
         url(assets/fonts/zawgyione/Zawgyi-One.woff2) format('woff2'),
@@ -131,6 +132,7 @@ body {
     font-family: 'Noto Sans Myanmar UI';
     font-style: normal;
     font-weight: 400;
+    font-display: swap;
     src: local('Noto Sans Myanmar UI'), local('NotoSansMyanmarUI'), url(assets/fonts/notosansmyanmarui/NotoSansMyanmarUI-Regular.eot);
     src: url(assets/fonts/notosansmyanmarui/NotoSansMyanmarUI-Regular.eot?#iefix) format('embedded-opentype'),
         url(assets/fonts/notosansmyanmarui/NotoSansMyanmarUI-Regular.woff2) format('woff2'),
