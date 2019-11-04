@@ -602,8 +602,19 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private handleDynamicLinks(): void {
         this._firebaseDynamicLinks.onDynamicLink()
-            .subscribe(() => {
-                // Do nothing
+            .subscribe((dynamicLinkData) => {
+                if (dynamicLinkData.deepLink.startsWith('https://zawgyi-unicode-converter.myanmartools.org/about')) {
+                    // tslint:disable-next-line: no-floating-promises
+                    this.showAboutModal().then(() => {
+                        const welcomeCachekey = `is-shown-welcome-screen-v${this.appVersion}`;
+                        // tslint:disable-next-line: no-floating-promises
+                        this._storage.set(welcomeCachekey, true);
+                    });
+                } else if (dynamicLinkData.deepLink.startsWith('https://zawgyi-unicode-converter.myanmartools.org/support')) {
+                    // tslint:disable-next-line: no-floating-promises
+                    this.showHelpModal();
+                }
+
             }, (err) => {
                 // tslint:disable-next-line: no-unsafe-any
                 const errMsg = err && err.message ? ` ${err.message}` : '';
