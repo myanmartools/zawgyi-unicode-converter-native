@@ -20,6 +20,7 @@ import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { ThemeDetection } from '@ionic-native/theme-detection/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 
 import { ConfigService } from '@dagonmetric/ng-config';
@@ -189,6 +190,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         private readonly _appRate: AppRate,
         private readonly _webIntent: WebIntent,
         private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
+        private readonly _themeDetection: ThemeDetection,
         configService: ConfigService) {
         this._appConfig = configService.getValue<AppConfig>('app');
         this.initializeApp();
@@ -445,6 +447,22 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
         // tslint:disable-next-line: no-floating-promises
         this._platform.ready().then(() => {
+            this._themeDetection.isAvailable()
+                .then(res => {
+                    if (res.value) {
+                        this._themeDetection.isDarkModeEnabled()
+                            .then(res2 => {
+                                this.toggleDarkTheme(res2.value);
+                            })
+                            .catch(() => {
+                                this.detectFallbackDarkTheme();
+                            });
+                    }
+                })
+                .catch(() => {
+                    this.detectFallbackDarkTheme();
+                });
+
             if (this._platform.is('android') || this._platform.is('ios')) {
                 this._statusBar.styleLightContent();
             }
@@ -481,6 +499,20 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
             // tslint:disable-next-line: no-floating-promises
             this.handlePlatformReady();
+        });
+    }
+
+    private toggleDarkTheme(isDark: boolean): void {
+        document.body.classList.toggle('dark', isDark);
+    }
+
+    private detectFallbackDarkTheme(): void {
+        const mql = window.matchMedia('(prefers-color-scheme: dark)');
+        this.toggleDarkTheme(mql.matches);
+
+        // prefersDark.addListener((mediaQuery) => this.toggleDarkTheme(mediaQuery.matches));
+        mql.addEventListener('change', (mediaQuery) => {
+            this.toggleDarkTheme(mediaQuery.matches);
         });
     }
 
