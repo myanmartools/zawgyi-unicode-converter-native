@@ -40,6 +40,7 @@
     "@ionic-native/social-sharing": "^5.16.0",
     "@ionic-native/splash-screen": "^5.16.0",
     "@ionic-native/status-bar": "^5.16.0",
+    "@ionic-native/theme-detection": "^5.16.0",
     "@ionic-native/web-intent": "^5.16.0",
     "@ionic/angular": "^4.11.3",
     "@ionic/storage": "^2.2.0",
@@ -58,6 +59,7 @@
     "cordova-plugin-headercolor": "^1.0.0",
     "cordova-plugin-inappbrowser": "^3.1.0",
     "cordova-plugin-nativestorage": "^2.3.2",
+    "cordova-plugin-theme-detection": "^1.2.0",
     "cordova-plugin-x-socialsharing": "^5.6.2",
     "cordova-sqlite-storage": "^3.4.0",
     "cordova-support-android-plugin": "^1.0.1",
@@ -140,7 +142,8 @@
         "PAGE_LINK_DOMAIN": "myanmartools.org/apps",
         "FIREBASE_CORE_VERSION": "17.2.1",
         "FIREBASE_DYNAMIC_LINKS_VERSION": "19.0.+"
-      }
+      },
+      "cordova-plugin-theme-detection": {}
     },
     "platforms": [
       "android"
