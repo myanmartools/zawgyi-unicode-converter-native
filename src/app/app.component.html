@@ -5,61 +5,86 @@
                 <ion-title>
                     {{appName}}
                 </ion-title>
-                <ion-buttons slot="end">
-                    <ion-icon slot="icon-only" name="logo-zawgyi-unicode-converter"></ion-icon>
-                </ion-buttons>
             </ion-toolbar>
         </ion-header>
         <ion-content>
-            <ion-list lines="none">
-                <ion-menu-toggle *ngFor="let navLinkItem of navLinks">
-                    <ion-item [href]="[navLinkItem.url]">
-                        <ion-icon slot="start" [name]="navLinkItem.iconName"></ion-icon>
-                        <ion-label>
-                            {{navLinkItem.label}}
-                        </ion-label>
+            <ion-item-group>
+                <ion-item-divider>
+                    <ion-label class="myanmar-text my-uni">
+                        အသုံးဝင်မည့် link များ
+                    </ion-label>
+                </ion-item-divider>
+                <ion-list lines="none">
+                    <ion-menu-toggle *ngFor="let navLinkItem of navLinks">
+                        <ion-item [href]="[navLinkItem.url]">
+                            <ion-icon slot="start" [name]="navLinkItem.iconName"></ion-icon>
+                            <ion-label class="myanmar-text my-uni">
+                                {{navLinkItem.label}}
+                            </ion-label>
+                        </ion-item>
+                    </ion-menu-toggle>
+                    <ion-menu-toggle>
+                        <ion-item button (click)="showHelpModal()">
+                            <ion-icon slot="start" name="help"></ion-icon>
+                            <ion-label class="myanmar-text my-uni">
+                                အကူအညီ နှင့် တုံ့ပြန်ချက်
+                            </ion-label>
+                        </ion-item>
+                    </ion-menu-toggle>
+                    <ion-menu-toggle>
+                        <ion-item button (click)="showAboutModal()">
+                            <ion-icon slot="start" name="info"></ion-icon>
+                            <ion-label class="myanmar-text my-uni">
+                                အကြောင်း
+                            </ion-label>
+                        </ion-item>
+                    </ion-menu-toggle>
+                </ion-list>
+            </ion-item-group>
+            <ion-item-group>
+                <ion-item-divider>
+                    <ion-label class="myanmar-text my-uni">
+                        မျှဝေခြင်း နှင့် သုံးသပ်ချ်က်
+                    </ion-label>
+                </ion-item-divider>
+                <ion-list lines="none">
+                    <ion-menu-toggle>
+                        <ion-item button (click)="showShareSheet()">
+                            <ion-icon slot="start" name="share"></ion-icon>
+                            <ion-label class="myanmar-text my-uni">
+                                မျှဝေရန်
+                            </ion-label>
+                        </ion-item>
+                    </ion-menu-toggle>
+                    <ion-menu-toggle>
+                        <ion-item button (click)="promptForRating()">
+                            <ion-icon slot="start" name="star"></ion-icon>
+                            <ion-label class="myanmar-text my-uni">
+                                သုံးသပ်ချက်ပေးရန်
+                            </ion-label>
+                        </ion-item>
+                    </ion-menu-toggle>
+                </ion-list>
+            </ion-item-group>
+            <ion-item-group>
+                <ion-item-divider>
+                    <ion-label class="myanmar-text my-uni">
+                        <h3 class="my-uni">Setting များ ချိန်ညှိရန်</h3>
+                    </ion-label>
+                </ion-item-divider>
+                <ion-list lines="none">
+                    <ion-item>
+                        <ion-label class="myanmar-text my-uni">{{colorModeText}}</ion-label>
+                        <ion-toggle [(ngModel)]="isDarkMode"></ion-toggle>
                     </ion-item>
-                </ion-menu-toggle>
-                <ion-menu-toggle>
-                    <ion-item button (click)="showHelpModal()">
-                        <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-                        <ion-label>
-                            Help & Feedback
-                        </ion-label>
-                    </ion-item>
-                </ion-menu-toggle>
-                <ion-menu-toggle>
-                    <ion-item button (click)="showAboutModal()">
-                        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-                        <ion-label>
-                            About
-                        </ion-label>
-                    </ion-item>
-                </ion-menu-toggle>
-                <ion-menu-toggle>
-                    <ion-item button (click)="showShareSheet()">
-                        <ion-icon slot="start" name="share"></ion-icon>
-                        <ion-label>
-                            Share this app
-                        </ion-label>
-                    </ion-item>
-                </ion-menu-toggle>
-                <ion-menu-toggle>
-                    <ion-item button (click)="promptForRating()">
-                        <ion-icon slot="start" name="star"></ion-icon>
-                        <ion-label>
-                            Rate this app
-                        </ion-label>
-                    </ion-item>
-                </ion-menu-toggle>
-            </ion-list>
+                </ion-list>
+            </ion-item-group>
         </ion-content>
         <ion-footer>
             <ion-toolbar>
                 <ion-buttons slot="start">
-                    <ion-title color="medium">&copy; DagonMetric</ion-title>
-                    <ion-button color="medium" [href]="privacyUrl">
-                        Privacy
+                    <ion-button color="medium" [href]="privacyUrl" class="my-uni">
+                        ပုဂ္ဂိုလ်ရေးအချက်အလက်ဆိုင်ရာမူဝါဒ
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
@@ -80,8 +105,8 @@
                 <ion-buttons slot="primary">
                     <!-- <ion-menu-button></ion-menu-button> -->
                     <ion-button (click)="toggleSideNav()">
-                            <ion-icon slot="icon-only" name="menu"></ion-icon>
-                        </ion-button>
+                        <ion-icon slot="icon-only" name="menu"></ion-icon>
+                    </ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
