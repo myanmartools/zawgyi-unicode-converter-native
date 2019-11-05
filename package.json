@@ -1,6 +1,6 @@
 {
   "name": "zawgyi-unicode-converter-native",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "private": true,
   "author": "DagonMetric",
   "license": "MIT",
@@ -141,7 +141,8 @@
         "APP_DOMAIN": "zawgyi-unicode-converter.myanmartools.org",
         "PAGE_LINK_DOMAIN": "myanmartools.org/apps",
         "FIREBASE_CORE_VERSION": "17.2.1",
-        "FIREBASE_DYNAMIC_LINKS_VERSION": "19.0.+"
+        "FIREBASE_DYNAMIC_LINKS_VERSION": "19.0.+",
+        "FIREBASE_ANALYTICS_VERSION": "17.2.+"
       },
       "cordova-plugin-theme-detection": {}
     },
