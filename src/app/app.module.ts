@@ -21,6 +21,7 @@ import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { ThemeDetection } from '@ionic-native/theme-detection/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 
 import { ConfigModule } from '@dagonmetric/ng-config';
@@ -54,23 +55,23 @@ export const settings: { app: AppConfig } = {
         navLinks: [
             {
                 url: 'https://www.facebook.com/DagonMetric',
-                label: 'Learn more on Facebook',
+                label: 'Post များ ဖတ်ရှုရန်',
                 iconName: 'logo-facebook-24'
             },
             {
                 url: 'https://www.youtube.com/channel/UCbJLAOU-kG6vkBOU1TSM5Cw',
-                label: 'Watch more on YouTube',
+                label: 'Video များ ကြည့်ရှုရန်',
                 iconName: 'logo-youtube-24'
             },
             {
                 url: 'https://github.com/myanmartools/zawgyi-unicode-converter-native',
-                label: 'Open source on GitHub',
+                label: 'Source code ရယူရန်',
                 iconName: 'logo-github-24'
             },
             {
                 url: 'https://myanmartools.org',
-                label: 'Explore Myanmar Tools',
-                iconName: 'globe'
+                label: 'Myanmar Tools ဝက်ဘ်ဆိုက်',
+                iconName: 'logo-myanmartools-24'
             }
         ],
         socialSharing: {
@@ -78,58 +79,7 @@ export const settings: { app: AppConfig } = {
             message: 'ဇော်ဂျီ ယူနီကုဒ် အခက်အခဲရှိနေသူများအတွက် ဇော်ဂျီကနေ ယူနီကုဒ်၊ ယူနီကုဒ်ကနေ ဇော်ဂျီ အပြန်အလှန် အလိုအလျောက် ပြောင်းပေးတဲ့ app တစ်ခု မျှဝေလိုက်ပါတယ်။',
             linkUrl: 'https://myanmartools.org/apps/zawgyi-unicode-converter'
         },
-        privacyUrl: 'https://privacy.dagonmetric.com/privacy-statement',
-        appAboutImageUrl: 'assets/images/about-welcome.png',
-        aboutSlides: [
-            {
-                label: 'Ability to convert Zawgyi to Unicode and Unicode to Zawgyi',
-                language: 'en-US'
-            },
-            {
-                label: 'ဇော်ဂျီ မှ ယူနီကုဒ် နှင့် ယူနီကုဒ် မှ ဇော်ဂျီ အပြန်အလှန်ပြောင်းလဲနိုင်ခြင်း',
-                language: 'my-MM'
-            },
-            {
-                label: 'Amazing correctness in every conversion',
-                language: 'en-US'
-            },
-            {
-                label: 'ပြောင်းလဲခြင်းတိုင်းမှာ အံ့သြဖွယ် တိကျမှန်ကန်မှုရှိခြင်း',
-                language: 'my-MM'
-            },
-            {
-                label: 'Intelligent understanding of your input and convert automatically',
-                language: 'en-US'
-            },
-            {
-                label: 'စာရိုက်လိုက်တာနှင့် ဇော်ဂျီ ယူနီကုဒ် အလိုအလျောက်သိရှိပြီး ပြောင်းလဲပေးခြင်း',
-                language: 'my-MM'
-            },
-            {
-                label: 'Ability to use anytime even disconnected from internet',
-                language: 'en-US'
-            },
-            {
-                label: 'အင်တာနက် ပြတ်တောက်နေချိန်တွင်လည်း အချိန်မရွေးအသုံးပြုနိုင်ခြင်း',
-                language: 'my-MM'
-            },
-            {
-                label: 'Created by DagonMetric',
-                language: 'en-US'
-            },
-            {
-                label: 'ဒဂုန်မက်ထရစ်မှ ဖန်တီးထားသည်',
-                language: 'my-MM'
-            },
-            {
-                label: "Let's start converting now to Unicode to improve Myanmar language in digital world!",
-                language: 'en-US'
-            },
-            {
-                label: 'ကွန်ပျူတာသုံးမြန်မာစာစနစ် တိုးတက်ဖို့ ယူနီကုဒ်ကိုစတင်ပြောင်းလဲကြစို့...',
-                language: 'my-MM'
-            }
-        ]
+        privacyUrl: 'https://privacy.dagonmetric.com/privacy-statement'
     }
 };
 
@@ -177,6 +127,7 @@ export const settings: { app: AppConfig } = {
         FirebaseDynamicLinks,
         HeaderColor,
         StatusBar,
+        ThemeDetection,
         SplashScreen,
         SocialSharing,
         WebIntent
