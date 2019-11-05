@@ -58,6 +58,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private readonly _targetPlaceholderZg = 'Converted Zawgyi text will be appeared here';
     private readonly _targetPlaceholderUni = 'Converted Unicode text will be appeared here';
 
+    private readonly _darkModeText = 'Dark mode ပြောင်းရန်';
+    private readonly _lightModeText = 'Light mode ပြောင်းရန်';
+
     private readonly _translitSubject = new Subject<string>();
     private readonly _destroyed = new Subject<void>();
 
@@ -76,6 +79,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private _curRuleName = '';
 
     private _lastTimeBackPress = 0;
+    private _isDarkMode?: boolean | null = null;
 
     get appName(): string {
         return this._appConfig.appName;
@@ -172,6 +176,25 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     get targetPlaceholderText(): string {
         return this._targetPlaceholderText || this._targetPlaceholderAuto;
+    }
+
+    get isDarkMode(): boolean {
+        return this._isDarkMode == null ? false : this._isDarkMode;
+    }
+    set isDarkMode(value: boolean) {
+        this.setDarkMode(value);
+
+        this._logService.trackEvent({
+            name: 'change_dark_mode',
+            properties: {
+                is_dark: value,
+                app_version: this._appConfig.appVersion
+            }
+        });
+    }
+
+    get colorModeText(): string {
+        return this.isDarkMode ? this._lightModeText : this._darkModeText;
     }
 
     constructor(
@@ -354,7 +377,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             });
 
             const toast = await this._toastController.create({
-                message: 'Thank you for sharing the app.',
+                message: 'Thank you for sharing the app 😊.',
                 duration: 2000
             });
             // tslint:disable-next-line: no-floating-promises
@@ -447,21 +470,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
         // tslint:disable-next-line: no-floating-promises
         this._platform.ready().then(() => {
-            this._themeDetection.isAvailable()
-                .then(res => {
-                    if (res.value) {
-                        this._themeDetection.isDarkModeEnabled()
-                            .then(res2 => {
-                                this.toggleDarkTheme(res2.value);
-                            })
-                            .catch(() => {
-                                this.detectFallbackDarkTheme();
-                            });
-                    }
-                })
-                .catch(() => {
-                    this.detectFallbackDarkTheme();
-                });
+            // tslint:disable-next-line: no-floating-promises
+            this.detectDarkTheme();
 
             if (this._platform.is('android') || this._platform.is('ios')) {
                 this._statusBar.styleLightContent();
@@ -502,18 +512,90 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
     }
 
+    private async detectDarkTheme(): Promise<void> {
+        let isDarkModeCached: boolean | null = null;
+        let currentVersion: string | null = null;
+
+        try {
+            // tslint:disable-next-line: no-backbone-get-set-outside-model no-unsafe-any
+            isDarkModeCached = await this._storage.get('isDarkMode');
+
+            // tslint:disable-next-line: no-backbone-get-set-outside-model no-unsafe-any
+            currentVersion = await this._storage.get('currentVersion');
+        } catch (err) {
+            // tslint:disable-next-line: no-unsafe-any
+            const errMsg = err && err.message ? ` ${err.message}` : '';
+            this._logService.error(`An error occurs while calling _storage.get() method.${errMsg}`);
+        }
+
+        if (isDarkModeCached != null) {
+            this.setDarkMode(isDarkModeCached);
+
+            return;
+        }
+
+        let defaultValue = true;
+        let forceDefaultValue = !currentVersion ? true : false;
+
+        if (!currentVersion) {
+            try {
+                // tslint:disable-next-line: no-backbone-get-set-outside-model no-unsafe-any
+                await this._storage.set('currentVersion', this._appConfig.appVersion);
+            } catch (err) {
+                // tslint:disable-next-line: no-unsafe-any
+                const errMsg = err && err.message ? ` ${err.message}` : '';
+                this._logService.error(`An error occurs while calling _storage.set() method.${errMsg}`);
+            }
+        } else if (this._platform.is('android') || this._platform.is('ios')) {
+            try {
+                const a = await this._themeDetection.isAvailable();
+                if (a.value) {
+                    const d = await this._themeDetection.isDarkModeEnabled();
+                    defaultValue = d.value;
+                    forceDefaultValue = true;
+                }
+            } catch (err) {
+                // Do nothing
+            }
+        }
+
+        this.detectDarkThemeChange(defaultValue, forceDefaultValue);
+    }
+
     private toggleDarkTheme(isDark: boolean): void {
         document.body.classList.toggle('dark', isDark);
     }
 
-    private detectFallbackDarkTheme(): void {
-        const mql = window.matchMedia('(prefers-color-scheme: dark)');
-        this.toggleDarkTheme(mql.matches);
+    private detectDarkThemeChange(defaultValue: boolean, forceDefaultValue?: boolean): void {
+        if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
+            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            if (forceDefaultValue) {
+                this.setDarkMode(defaultValue);
+            } else {
+                this.setDarkMode(darkModeMediaQuery.matches);
+            }
 
-        // prefersDark.addListener((mediaQuery) => this.toggleDarkTheme(mediaQuery.matches));
-        mql.addEventListener('change', (mediaQuery) => {
-            this.toggleDarkTheme(mediaQuery.matches);
-        });
+            if (darkModeMediaQuery.addEventListener) {
+                darkModeMediaQuery.addEventListener('change', (mediaQuery) => {
+                    this.setDarkMode(mediaQuery.matches);
+                });
+            }
+        } else {
+            this.setDarkMode(defaultValue);
+        }
+    }
+
+    private setDarkMode(value: boolean): void {
+        this._isDarkMode = value;
+        this.toggleDarkTheme(value);
+
+        // tslint:disable-next-line: no-floating-promises no-backbone-get-set-outside-model
+        this._storage.set('isDarkMode', value)
+            .catch((err) => {
+                // tslint:disable-next-line: no-unsafe-any
+                const errMsg = err && err.message ? ` ${err.message}` : '';
+                this._logService.error(`An error occurs while calling _storage.set() method.${errMsg}`);
+            });
     }
 
     private onPlatformPaused(): void {
