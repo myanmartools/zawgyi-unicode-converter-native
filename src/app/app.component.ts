@@ -530,6 +530,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
         if (isDarkModeCached != null) {
             this.setDarkMode(isDarkModeCached);
+            this.detectDarkThemeChange(isDarkModeCached, true);
 
             return;
         }
