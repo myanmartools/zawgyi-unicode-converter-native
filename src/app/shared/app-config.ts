@@ -14,7 +14,6 @@ export interface AppConfig {
     appName: string;
     appVersion: string;
     appThemeColor: string;
-    appDescription: string;
     navLinks: NavLinkItem[];
     storeAppUrlInfo: StoreAppUrlInfo;
     socialSharing: SocialSharingOptions;
