@@ -1,30 +1,85 @@
-<ion-content color="primary" fullscreen>
-    <ion-grid class="ion-no-padding">
-        <ion-row class="ion-justify-content-center ion-align-items-center">
-            <ion-col>
-                <div class="ion-text-center">
-                    <img class="about-welcome" [src]="appAboutImageUrl" alt="{{appName}}">
-                </div>
-                <div class="app-name ion-text-center">
-                    {{appName}}
-                </div>
-                <div class="ion-text-center">
-                    Version: {{appVersion}}
-                </div>
-                <ion-slides [options]="slidesOptions">
-                    <ion-slide *ngFor="let item of aboutSlides">
-                        <p class="ion-text-center myanmar-text my-uni">
-                            {{item.label}}
-                        </p>
-                    </ion-slide>
-                </ion-slides>
-                <div class="ion-text-center">
-                    <ion-button class="continue-btn" color="light" fill="outline" (click)="dismissModal()">Continue
-                        <ion-icon slot="end" name="arrow-forward">
-                        </ion-icon>
-                    </ion-button>
-                </div>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
+<ion-content>
+    <ion-item lines="none">
+        <ion-thumbnail slot="start">
+            <ion-img src="assets/images/logo.png"></ion-img>
+        </ion-thumbnail>
+        <ion-label>
+            <ion-card-title>{{appName}}</ion-card-title>
+            <ion-card-subtitle>Version: {{appVersion}}</ion-card-subtitle>
+        </ion-label>
+    </ion-item>
+    <ion-card-content>
+        <div class="about-content myanmar-text my-uni">
+            <div class="about-section what-is-new">
+                <h3 class="subtitle">ယခုဗားရှင်းအသစ်တွင်</h3>
+                <p>Dark mode ပြောင်းနိုင်အောင် လုပ်ဆောင်ပေးထားခြင်းနှင့် အခြားတိုးတက်မှုများ ပါဝင်ပါတယ်။</p>
+            </div>
+            <div class="about-section features">
+                <h3 class="subtitle">ထူးခြားချက်များ</h3>
+                <ul class="features-list">
+                    <li>
+                        ဇော်ဂျီ နှင့် မြန်မာ ယူနီကုဒ် တို့ကို အပြန်အလှန် အမှားအယွင်းမရှိ တိကျမှန်ကန်စွာ
+                        ပြောင်းပေးနိုင်အောင် မြန်မာစာလုံးပေါင်း သတ်ပုံကျမ်း၊ မြန်မာအဘိဓာန် နှင့်
+                        ဆိုရှယ်မီဒီယာများမှ စာသားများစွာဖြင့် သေချာစွာစမ်းသပ်ဖန်တီးပေးထားပါတယ်။
+                    </li>
+                    <li>
+                        စာရိုက်လိုက်တာနှင့် ဇော်ဂျီလား၊ ယူနီကုဒ်လား ဆိုတာကို သိရှိနားလည်ပြီး အလိုအလျောက်
+                        ပြောင်းလဲပေးနိုင်ပါတယ်။
+                    </li>
+                    <li>
+                        SMS Messaging, Viber စတဲ့ app များကနေ ဖတ်မရတဲ့ စာသားတွေကို Share menu ကနေ တဆင့် Zawgyi
+                        Unicode
+                        Converter ကို ပေးပို့ခြင်းဖြင့် လွယ်ကူမြန်ဆန်စွာ ဇော်ဂျီ ယူနီကုဒ် ပြောင်းပေးနိုင်အောင်
+                        ပြုလုပ်ပေးထားပါတယ်။
+                    </li>
+                    <li>
+                        အင်တာနက် မရှိချိန်တွင်လည်း အချိန်မရွေး အသုံးပြုနိုင်ပါတယ်။
+                    </li>
+                    <li>
+                        ကြော်ငြာများမပါရှိခြင်း၊ အခမဲ့ဖြစ်ခြင်းနှင့် open source ကိုပါ GitHub ကနေရယူနိုင်ပါတယ်။
+                    </li>
+                </ul>
+            </div>
+            <div class="about-section short-description">
+                <h3 class="subtitle">အကြောင်း</h3>
+                <p>
+                    Zawgyi Unicode Converter ကို DagonMetric ရဲ့ Myanmar Tools
+                    အဖွဲ့ကနေ ဖန်တီးခဲ့ပြီး open source MIT license အနေနှင့် အခမဲ့ မျှဝေထားခြင်းဖြစ်ပါတယ်။
+                </p>
+            </div>
+            <div class="about-section long-description">
+                <h3 class="subtitle">ပိုမိုသိရှိရန်</h3>
+                <p>
+                    Zawgyi Unicode Converter ရဲ့ သတင်းအချက်အလက်များနှင့် social / community စာမျက်နှာများကို
+                    စုစည်းဖော်ပြလိုက်ပါတယ်။
+                </p>
+                <ion-list lines="none">
+                    <ion-item *ngFor="let navLinkItem of navLinks" [href]="[navLinkItem.url]">
+                        <ion-icon slot="start" [name]="navLinkItem.iconName"></ion-icon>
+                        <ion-label class="myanmar-text my-uni">
+                            {{navLinkItem.label}}
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+                <p>
+                    ဤ Zawgyi Unicode Converter ကို အသုံးပြုရတာ ကြိုက်နှစ်သက်လိမ့်မယ်လို့ ယုံကြည်ပါတယ်။
+                    သင့်မိတ်ဆွေများထံ မျှဝေခြင်းဖြင့် ကူညီလိုက်ပါ။
+                </p>
+                <ion-button fill="clear" class="share-btn" (click)="showShareSheet()">
+                    <ion-icon name="share"></ion-icon> SHARE
+                </ion-button>
+            </div>
+
+        </div>
+    </ion-card-content>
 </ion-content>
+<ion-footer>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button (click)="dismissModal()">CONTINUE
+                <ion-icon slot="end" name="arrow-forward">
+                </ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

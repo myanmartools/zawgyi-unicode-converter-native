@@ -2,7 +2,7 @@ ion-grid, ion-row {
     height: 100%;
 }
 
-img.about-welcome {
+img.about-welcome-img {
     max-width: 50%;
     max-height: 50%;
 
@@ -53,17 +53,28 @@ img.about-welcome {
     }
 }
 
-ion-slide .myanmar-text {
-    font-size: 14px;
-    line-height: 1.6;
-    font-weight: 400;
-}
+.about-content {
+    .about-section + .about-section {
+        margin-top: 24px;
+    }
 
-ion-slide .my-uni {
-    font-family: "Noto Sans Myanmar UI", "Myanmar Text", Padauk, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
-}
+    h3.subtitle {
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
 
-ion-button.continue-btn {
-    font-weight: 400;
-    --border-width: 1px;
+    ul.features-list {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        li + li {
+            margin-top: 8px;
+        }
+    }
+
+    .share-btn {
+        margin-top: 12px;
+        margin-bottom: 8px;
+    }
 }
