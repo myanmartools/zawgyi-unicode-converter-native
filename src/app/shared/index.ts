@@ -6,7 +6,6 @@
  * found under the LICENSE file in the root directory of this source tree.
  */
 
-export * from './about-slide-item';
 export * from './app-config';
 export * from './nav-link-item';
 export * from './store-app-url-info';
