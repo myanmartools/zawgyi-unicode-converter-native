@@ -12,16 +12,15 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { IonicModule } from '@ionic/angular';
-import { IonicStorageModule } from '@ionic/storage';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
 import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { ThemeDetection } from '@ionic-native/theme-detection/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 
 import { ConfigModule } from '@dagonmetric/ng-config';
@@ -46,7 +45,7 @@ import { SupportModalComponent } from './support/support-modal.component';
 export const settings: { app: AppConfig } = {
     app: {
         appName: 'Zawgyi Unicode Converter',
-        appVersion: '3.0.0',
+        appVersion: '3.2.0',
         appThemeColor: '#8764B8',
         storeAppUrlInfo: {
             android: 'market://details?id=com.dagonmetric.zawgyiunicodeconverter'
@@ -69,13 +68,13 @@ export const settings: { app: AppConfig } = {
             },
             {
                 url: 'https://myanmartools.org',
-                label: 'Myanmar Tools ဝက်ဘ်ဆိုက်',
+                label: 'Myanmar Tools ဝဘ်ဆိုက်',
                 iconName: 'logo-myanmartools-24'
             }
         ],
         socialSharing: {
             subject: 'Zawgyi Unicode Converter app you may also like',
-            message: 'ဇော်ဂျီ ယူနီကုဒ် အခက်အခဲရှိနေသူများအတွက် ဇော်ဂျီကနေ ယူနီကုဒ်၊ ယူနီကုဒ်ကနေ ဇော်ဂျီ အပြန်အလှန် အလိုအလျောက် ပြောင်းပေးတဲ့ app တစ်ခု မျှဝေလိုက်ပါတယ်။',
+            message: 'ဇော်ဂျီ ယူနီကုဒ် ဖတ်မရတဲ့ အခက်အခဲရှိနေသူများအတွက် ဇော်ဂျီကနေ ယူနီကုဒ်၊ ယူနီကုဒ်ကနေ ဇော်ဂျီ အပြန်အလှန် အလိုအလျောက် ပြောင်းပေးတဲ့ app တစ်ခု မျှဝေလိုက်ပါတယ်။',
             linkUrl: 'https://myanmartools.org/apps/zawgyi-unicode-converter'
         },
         privacyUrl: 'https://privacy.dagonmetric.com/privacy-statement'
@@ -97,7 +96,6 @@ export const settings: { app: AppConfig } = {
         FormsModule,
 
         IonicModule.forRoot(),
-        IonicStorageModule.forRoot(),
 
         // ng-config modules
         ConfigModule.init(),
@@ -125,8 +123,8 @@ export const settings: { app: AppConfig } = {
         FirebaseX,
         FirebaseDynamicLinks,
         HeaderColor,
+        NativeStorage,
         StatusBar,
-        ThemeDetection,
         SplashScreen,
         SocialSharing,
         WebIntent
