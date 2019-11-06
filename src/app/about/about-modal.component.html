@@ -1,18 +1,17 @@
 <ion-content>
-    <ion-item lines="none">
-        <ion-thumbnail slot="start">
-            <ion-img src="assets/images/logo.png"></ion-img>
-        </ion-thumbnail>
+    <ion-item lines="none" color="primary">
+        <ion-icon class="app-logo" slot="start" name="logo-zawgyi-unicode-converter" size="large"></ion-icon>
         <ion-label>
-            <ion-card-title>{{appName}}</ion-card-title>
-            <ion-card-subtitle>Version: {{appVersion}}</ion-card-subtitle>
+            <h2>{{appName}}</h2>
+            <p>Version: {{appVersion}}</p>
         </ion-label>
     </ion-item>
     <ion-card-content>
-        <div class="about-content myanmar-text my-uni">
+        <div class="about-content myanmar-text my-uni" lang="my">
             <div class="about-section what-is-new">
                 <h3 class="subtitle">ယခုဗားရှင်းအသစ်တွင်</h3>
-                <p>Dark mode ပြောင်းနိုင်အောင် လုပ်ဆောင်ပေးထားခြင်းနှင့် အခြားတိုးတက်မှုများ ပါဝင်ပါတယ်။</p>
+                <p>Dark mode ပြောင်းနိုင်အောင် လုပ်ဆောင်ပေးထားခြင်း၊ အချို့သော bug များကို ပြုပြင်ထားခြင်းနှင့်
+                    အခြားတိုးတက်မှုများ ပါဝင်ပါတယ်။</p>
             </div>
             <div class="about-section features">
                 <h3 class="subtitle">ထူးခြားချက်များ</h3>
@@ -65,9 +64,11 @@
                     ဤ Zawgyi Unicode Converter ကို အသုံးပြုရတာ ကြိုက်နှစ်သက်လိမ့်မယ်လို့ ယုံကြည်ပါတယ်။
                     သင့်မိတ်ဆွေများထံ မျှဝေခြင်းဖြင့် ကူညီလိုက်ပါ။
                 </p>
-                <ion-button fill="clear" class="share-btn" (click)="showShareSheet()">
-                    <ion-icon name="share"></ion-icon> SHARE
-                </ion-button>
+                <div lang="en">
+                    <ion-button fill="clear" class="share-btn" (click)="showShareSheet()">
+                        <ion-icon name="share"></ion-icon> SHARE
+                    </ion-button>
+                </div>
             </div>
 
         </div>
