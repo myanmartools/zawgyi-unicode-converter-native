@@ -12,15 +12,14 @@ import { of, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 
 import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
-import { Storage as IonicStorage } from '@ionic/storage';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
 import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { ThemeDetection } from '@ionic-native/theme-detection/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 
 import { ConfigService } from '@dagonmetric/ng-config';
@@ -209,11 +208,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         private readonly _modalController: ModalController,
         private readonly _toastController: ToastController,
         private readonly _socialSharing: SocialSharing,
-        private readonly _storage: IonicStorage,
+        private readonly _storage: NativeStorage,
         private readonly _appRate: AppRate,
         private readonly _webIntent: WebIntent,
         private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
-        private readonly _themeDetection: ThemeDetection,
         configService: ConfigService) {
         this._appConfig = configService.getValue<AppConfig>('app');
         this.initializeApp();
@@ -397,14 +395,20 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     promptForRating(): void {
-        this._appRate.promptForRating(true);
+        try {
+            this._appRate.promptForRating(true);
 
-        this._logService.trackEvent({
-            name: 'rate',
-            properties: {
-                method: 'App Rate Native'
-            }
-        });
+            this._logService.trackEvent({
+                name: 'rate',
+                properties: {
+                    method: 'App Rate Native'
+                }
+            });
+        } catch (err) {
+            // tslint:disable-next-line: no-unsafe-any
+            const errMsg = err && err.message ? ` ${err.message}` : '';
+            this._logService.error(`An error occurs while calling _appRate.promptForRating() method.${errMsg}`);
+        }
     }
 
     async toggleSideNav(): Promise<void> {
@@ -513,54 +517,27 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async detectDarkTheme(): Promise<void> {
-        let isDarkModeCached: boolean | null = null;
-        let currentVersion: string | null = null;
+        let isDarkModeCached: string | null = null;
+        let hasNativeStorageError = false;
 
         try {
             // tslint:disable-next-line: no-backbone-get-set-outside-model no-unsafe-any
-            isDarkModeCached = await this._storage.get('isDarkMode');
-
-            // tslint:disable-next-line: no-backbone-get-set-outside-model no-unsafe-any
-            currentVersion = await this._storage.get('currentVersion');
+            isDarkModeCached = await this._storage.getItem('isDarkMode');
         } catch (err) {
-            // tslint:disable-next-line: no-unsafe-any
-            const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs while calling _storage.get() method.${errMsg}`);
+            this._logService.error('An error occurs while calling _storage.getItem() method.');
+
+            hasNativeStorageError = true;
         }
 
-        if (isDarkModeCached != null) {
-            this.setDarkMode(isDarkModeCached);
-            this.detectDarkThemeChange(isDarkModeCached, true);
-
-            return;
-        }
-
-        let defaultValue = true;
-        let forceDefaultValue = !currentVersion ? true : false;
-
-        if (!currentVersion) {
+        if (hasNativeStorageError && typeof localStorage === 'object') {
             try {
-                // tslint:disable-next-line: no-backbone-get-set-outside-model no-unsafe-any
-                await this._storage.set('currentVersion', this._appConfig.appVersion);
+                isDarkModeCached = localStorage.getItem('isDarkMode');
             } catch (err) {
-                // tslint:disable-next-line: no-unsafe-any
-                const errMsg = err && err.message ? ` ${err.message}` : '';
-                this._logService.error(`An error occurs while calling _storage.set() method.${errMsg}`);
-            }
-        } else if (this._platform.is('android') || this._platform.is('ios')) {
-            try {
-                const a = await this._themeDetection.isAvailable();
-                if (a.value) {
-                    const d = await this._themeDetection.isDarkModeEnabled();
-                    defaultValue = d.value;
-                    forceDefaultValue = true;
-                }
-            } catch (err) {
-                // Do nothing
+                this._logService.error('An error occurs while calling localStorage.getItem() method.');
             }
         }
 
-        this.detectDarkThemeChange(defaultValue, forceDefaultValue);
+        this.detectDarkThemeChange(isDarkModeCached == null ? true : isDarkModeCached === 'true', true);
     }
 
     private toggleDarkTheme(isDark: boolean): void {
@@ -591,12 +568,81 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this.toggleDarkTheme(value);
 
         // tslint:disable-next-line: no-floating-promises no-backbone-get-set-outside-model
-        this._storage.set('isDarkMode', value)
-            .catch((err) => {
-                // tslint:disable-next-line: no-unsafe-any
-                const errMsg = err && err.message ? ` ${err.message}` : '';
-                this._logService.error(`An error occurs while calling _storage.set() method.${errMsg}`);
+        this._storage.setItem('isDarkMode', `${value}`.toLocaleLowerCase())
+            .catch(() => {
+                this._logService.error('An error occurs while calling _storage.setItem() method.');
+
+                if (typeof localStorage === 'object') {
+                    try {
+                        localStorage.setItem('isDarkMode', `${value}`.toLocaleLowerCase());
+                    } catch (err) {
+                        this._logService.error('An error occurs while calling localStorage.setItem() method.');
+                    }
+                }
             });
+    }
+
+    private async  handleWelcomeScreen(): Promise<void> {
+        let cachedAppVersion: string | null = null;
+        let hasNativeStorageError = false;
+        let hasLocalStorageError = false;
+
+        try {
+            // tslint:disable-next-line: no-unsafe-any
+            cachedAppVersion = await this._storage.getItem('appVersion');
+        } catch (err) {
+            hasNativeStorageError = true;
+        }
+
+        if (hasNativeStorageError && typeof localStorage === 'object') {
+            try {
+                // tslint:disable-next-line: no-unsafe-any
+                cachedAppVersion = localStorage.getItem('appVersion');
+            } catch (err) {
+                hasLocalStorageError = true;
+            }
+        }
+
+        if (hasNativeStorageError && hasLocalStorageError) {
+            this._logService.trackEvent({
+                name: 'screen_view',
+                properties: {
+                    screen_name: 'Home'
+                }
+            });
+
+            return;
+        }
+
+        if (cachedAppVersion !== this.appVersion) {
+            // tslint:disable-next-line: no-floating-promises
+            this.showAboutModal();
+
+            if (!hasNativeStorageError) {
+                try {
+                    await this._storage.setItem('appVersion', this.appVersion);
+                } catch (err) {
+                    // tslint:disable-next-line: no-unsafe-any
+                    const errMsg = err && err.message ? ` ${err.message}` : '';
+                    this._logService.error(`An error occurs while calling _storage.setItem() method.${errMsg}`);
+                }
+            } else {
+                try {
+                    localStorage.setItem('appVersion', this.appVersion);
+                } catch (err) {
+                    // tslint:disable-next-line: no-unsafe-any
+                    const errMsg = err && err.message ? ` ${err.message}` : '';
+                    this._logService.error(`An error occurs while calling localStorage.setItem() method.${errMsg}`);
+                }
+            }
+        } else {
+            this._logService.trackEvent({
+                name: 'screen_view',
+                properties: {
+                    screen_name: 'Home'
+                }
+            });
+        }
     }
 
     private onPlatformPaused(): void {
@@ -620,32 +666,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async handlePlatformReady(): Promise<void> {
-        const welcomeCachekey = `is-shown-welcome-screen-v${this.appVersion}`;
-
-        let welcomeScreenShown = false;
-        let hasStorageError = false;
-        try {
-            // tslint:disable-next-line: no-unsafe-any
-            welcomeScreenShown = await this._storage.get(welcomeCachekey);
-        } catch (err) {
-            // tslint:disable-next-line: no-unsafe-any
-            const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs while calling _storage.get() method.${errMsg}`);
-
-            hasStorageError = true;
-        }
-
-        if (!welcomeScreenShown && !hasStorageError) {
-            await this.showAboutModal();
-            await this._storage.set(welcomeCachekey, true);
-        } else {
-            this._logService.trackEvent({
-                name: 'screen_view',
-                properties: {
-                    screen_name: 'Home'
-                }
-            });
-        }
+        // tslint:disable-next-line: no-floating-promises
+        this.handleWelcomeScreen();
 
         if (this._platform.is('android') || this._platform.is('ios')) {
             // tslint:disable-next-line: no-floating-promises
@@ -679,25 +701,19 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             }
         };
 
-        this._appRate.promptForRating(false);
-
+        try {
+            this._appRate.promptForRating(false);
+        } catch (err) {
+            // tslint:disable-next-line: no-unsafe-any
+            const errMsg = err && err.message ? ` ${err.message}` : '';
+            this._logService.error(`An error occurs while calling _appRate.promptForRating() method.${errMsg}`);
+        }
     }
 
     private handleDynamicLinks(): void {
         this._firebaseDynamicLinks.onDynamicLink()
-            .subscribe((dynamicLinkData) => {
-                if (dynamicLinkData.deepLink.startsWith('https://zawgyi-unicode-converter.myanmartools.org/about')) {
-                    // tslint:disable-next-line: no-floating-promises
-                    this.showAboutModal().then(() => {
-                        const welcomeCachekey = `is-shown-welcome-screen-v${this.appVersion}`;
-                        // tslint:disable-next-line: no-floating-promises
-                        this._storage.set(welcomeCachekey, true);
-                    });
-                } else if (dynamicLinkData.deepLink.startsWith('https://zawgyi-unicode-converter.myanmartools.org/support')) {
-                    // tslint:disable-next-line: no-floating-promises
-                    this.showHelpModal();
-                }
-
+            .subscribe(() => {
+                // Do nothing
             }, (err) => {
                 // tslint:disable-next-line: no-unsafe-any
                 const errMsg = err && err.message ? ` ${err.message}` : '';
@@ -712,6 +728,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             if (intent.extras) {
                 const textExtras = (intent.extras as { [key: string]: string })['android.intent.extra.TEXT'];
                 if (textExtras) {
+                    this._logService.trackEvent({
+                        name: 'web_intent_received',
+                        properties: {
+                            action: intent.action,
+                            type: intent.type
+                        }
+                    });
+
                     this._convertSource = 'web_intent';
                     this._sourceText = textExtras;
                     this.translitNext();
