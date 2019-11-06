@@ -26,11 +26,6 @@
                 "output": "assets/images"
               },
               {
-                "glob": "**/*",
-                "input": "src/assets/fonts",
-                "output": "assets/fonts"
-              },
-              {
                 "glob": "**/*.svg",
                 "input": "src/assets/svgicons",
                 "output": "./svg"
