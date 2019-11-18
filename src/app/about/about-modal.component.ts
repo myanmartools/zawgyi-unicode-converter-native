@@ -88,7 +88,8 @@ export class AboutModalComponent {
             this._logService.trackEvent({
                 name: 'share',
                 properties: {
-                    method: 'Social Sharing Native'
+                    method: 'Social Sharing Native',
+                    app_version: this._appConfig.appVersion
                 }
             });
         } catch (err) {

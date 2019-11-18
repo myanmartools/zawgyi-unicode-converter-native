@@ -184,9 +184,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this.setDarkMode(value);
 
         this._logService.trackEvent({
-            name: 'change_dark_mode',
+            name: value ? 'change_dark_mode' : 'change_light_mode',
             properties: {
-                is_dark: value,
+                mode: value ? 'dark' : 'light',
                 app_version: this._appConfig.appVersion
             }
         });
@@ -281,12 +281,13 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
             if (this._sourceText.length && this._curRuleName && result.replaced) {
                 this._logService.trackEvent({
-                    name: 'convert',
+                    name: `convert_${this._curRuleName}`,
                     properties: {
                         method: this._curRuleName,
                         input_length: this._sourceText.length,
                         duration_msec: result.duration,
-                        source: this._convertSource
+                        source: this._convertSource,
+                        app_version: this._appConfig.appVersion
                     }
                 });
 
@@ -318,9 +319,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                     this._menuController.close();
 
                     this._logService.trackEvent({
-                        name: 'toggle_drawer_menu',
+                        name: 'close_drawer_menu',
                         properties: {
-                            action: 'close'
+                            action: 'close',
+                            app_version: this._appConfig.appVersion
                         }
                     });
 
@@ -384,7 +386,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._logService.trackEvent({
                 name: 'share',
                 properties: {
-                    method: 'Social Sharing Native'
+                    method: 'Social Sharing Native',
+                    app_version: this._appConfig.appVersion
                 }
             });
         } catch (err) {
@@ -401,7 +404,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._logService.trackEvent({
                 name: 'rate',
                 properties: {
-                    method: 'App Rate Native'
+                    method: 'App Rate Native',
+                    app_version: this._appConfig.appVersion
                 }
             });
         } catch (err) {
@@ -414,9 +418,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     async toggleSideNav(): Promise<void> {
         const isOpened = await this._menuController.toggle();
         this._logService.trackEvent({
-            name: 'toggle_drawer_menu',
+            name: isOpened ? 'open_drawer_menu' : 'close_drawer_menu',
             properties: {
-                action: isOpened ? 'open' : 'close'
+                action: isOpened ? 'open' : 'close',
+                app_version: this._appConfig.appVersion
             }
         });
     }
@@ -732,7 +737,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                         name: 'web_intent_received',
                         properties: {
                             action: intent.action,
-                            type: intent.type
+                            type: intent.type,
+                            app_version: this._appConfig.appVersion
                         }
                     });
 
@@ -776,9 +782,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
 
         this._logService.trackEvent({
-            name: 'change_input_font_enc',
+            name: `change_input_font_${this.sourceEnc}`,
             properties: {
-                font_enc: this.sourceEnc
+                font_enc: this.sourceEnc,
+                app_version: this._appConfig.appVersion
             }
         });
 
