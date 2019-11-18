@@ -1,6 +1,6 @@
 {
   "name": "zawgyi-unicode-converter-native",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "private": true,
   "author": "DagonMetric",
   "license": "MIT",
@@ -127,7 +127,8 @@
         "ANDROID_FIREBASE_AUTH_VERSION": "19.1.0",
         "ANDROID_CRASHLYTICS_VERSION": "2.10.1",
         "ANDROID_CRASHLYTICS_NDK_VERSION": "2.1.1",
-        "ANDROID_SHORTCUTBADGER_VERSION": "1.1.22"
+        "ANDROID_SHORTCUTBADGER_VERSION": "1.1.22",
+        "ANDROID_FIREBASE_ANALYTICS_VERSION": "17.2.1"
       },
       "cordova-plugin-firebase-dynamiclinks": {
         "APP_DOMAIN": "zawgyi-unicode-converter.myanmartools.org",
