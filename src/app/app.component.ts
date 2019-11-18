@@ -208,9 +208,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         private readonly _modalController: ModalController,
         private readonly _toastController: ToastController,
         private readonly _socialSharing: SocialSharing,
-        private readonly _storage: NativeStorage,
         private readonly _appRate: AppRate,
         private readonly _webIntent: WebIntent,
+        private readonly _nativeStorage: NativeStorage,
         private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
         configService: ConfigService) {
         this._appConfig = configService.getValue<AppConfig>('app');
@@ -522,26 +522,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async detectDarkTheme(): Promise<void> {
-        let isDarkModeCached: string | null = null;
-        let hasNativeStorageError = false;
-
-        try {
-            // tslint:disable-next-line: no-backbone-get-set-outside-model no-unsafe-any
-            isDarkModeCached = await this._storage.getItem('isDarkMode');
-        } catch (err) {
-            this._logService.error('An error occurs while calling _storage.getItem() method.');
-
-            hasNativeStorageError = true;
-        }
-
-        if (hasNativeStorageError && typeof localStorage === 'object') {
-            try {
-                isDarkModeCached = localStorage.getItem('isDarkMode');
-            } catch (err) {
-                this._logService.error('An error occurs while calling localStorage.getItem() method.');
-            }
-        }
-
+        const isDarkModeCached = await this.getCacheItem('isDarkMode');
         this.detectDarkThemeChange(isDarkModeCached == null ? true : isDarkModeCached === 'true', true);
     }
 
@@ -572,74 +553,19 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._isDarkMode = value;
         this.toggleDarkTheme(value);
 
-        // tslint:disable-next-line: no-floating-promises no-backbone-get-set-outside-model
-        this._storage.setItem('isDarkMode', `${value}`.toLocaleLowerCase())
-            .catch(() => {
-                this._logService.error('An error occurs while calling _storage.setItem() method.');
-
-                if (typeof localStorage === 'object') {
-                    try {
-                        localStorage.setItem('isDarkMode', `${value}`.toLocaleLowerCase());
-                    } catch (err) {
-                        this._logService.error('An error occurs while calling localStorage.setItem() method.');
-                    }
-                }
-            });
+        // tslint:disable-next-line: no-floating-promises
+        this.setCacheItem('isDarkMode', `${value}`.toLocaleLowerCase()).then(() => {
+            // Do nothing
+        });
     }
 
     private async  handleWelcomeScreen(): Promise<void> {
-        let cachedAppVersion: string | null = null;
-        let hasNativeStorageError = false;
-        let hasLocalStorageError = false;
-
-        try {
-            // tslint:disable-next-line: no-unsafe-any
-            cachedAppVersion = await this._storage.getItem('appVersion');
-        } catch (err) {
-            hasNativeStorageError = true;
-        }
-
-        if (hasNativeStorageError && typeof localStorage === 'object') {
-            try {
-                // tslint:disable-next-line: no-unsafe-any
-                cachedAppVersion = localStorage.getItem('appVersion');
-            } catch (err) {
-                hasLocalStorageError = true;
-            }
-        }
-
-        if (hasNativeStorageError && hasLocalStorageError) {
-            this._logService.trackEvent({
-                name: 'screen_view',
-                properties: {
-                    screen_name: 'Home'
-                }
-            });
-
-            return;
-        }
+        const cachedAppVersion = await this.getCacheItem('appVersion');
 
         if (cachedAppVersion !== this.appVersion) {
             // tslint:disable-next-line: no-floating-promises
             this.showAboutModal();
-
-            if (!hasNativeStorageError) {
-                try {
-                    await this._storage.setItem('appVersion', this.appVersion);
-                } catch (err) {
-                    // tslint:disable-next-line: no-unsafe-any
-                    const errMsg = err && err.message ? ` ${err.message}` : '';
-                    this._logService.error(`An error occurs while calling _storage.setItem() method.${errMsg}`);
-                }
-            } else {
-                try {
-                    localStorage.setItem('appVersion', this.appVersion);
-                } catch (err) {
-                    // tslint:disable-next-line: no-unsafe-any
-                    const errMsg = err && err.message ? ` ${err.message}` : '';
-                    this._logService.error(`An error occurs while calling localStorage.setItem() method.${errMsg}`);
-                }
-            }
+            await this.setCacheItem('appVersion', this.appVersion);
         } else {
             this._logService.trackEvent({
                 name: 'screen_view',
@@ -678,18 +604,42 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             // tslint:disable-next-line: no-floating-promises
             this.handleWebIntent();
             this.handleDynamicLinks();
+            // tslint:disable-next-line: no-floating-promises
             this.handlePromptForRating();
         }
     }
 
-    private handlePromptForRating(): void {
+    private async handlePromptForRating(): Promise<void> {
         const storeAppUrlInfo = this._appConfig.storeAppUrlInfo;
+
+        let ratePromptedCount = 0;
+        let rateButtonTouchCount = 0;
+
+        const rateButtonTouchCountStr = await this.getCacheItem('rateButtonTouchCount');
+        if (rateButtonTouchCountStr && rateButtonTouchCountStr.length) {
+            try {
+                rateButtonTouchCount = parseInt(rateButtonTouchCountStr, 10);
+            } catch (err) {
+                // Do nothing
+            }
+        }
+
+        if (rateButtonTouchCount === 0) {
+            const ratePromptedCountStr = await this.getCacheItem('ratePromptedCount');
+            if (ratePromptedCountStr && ratePromptedCountStr.length) {
+                try {
+                    ratePromptedCount = parseInt(ratePromptedCountStr, 10);
+                } catch (err) {
+                    // Do nothing
+                }
+            }
+        }
 
         this._appRate.preferences = {
             useLanguage: 'en',
             displayAppName: this.appName,
-            usesUntilPrompt: 3,
-            promptAgainForEachNewVersion: true,
+            usesUntilPrompt: rateButtonTouchCount > 0 ? rateButtonTouchCount * 10 : ratePromptedCount > 0 ? ratePromptedCount * 5 : 3,
+            promptAgainForEachNewVersion: false,
             simpleMode: true,
             useCustomRateDialog: true,
             storeAppURL: {
@@ -703,8 +653,32 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 rateButtonLabel: 'Rate it now',
                 yesButtonLabel: 'Yes',
                 noButtonLabel: 'No'
+            },
+            callbacks: {
+                onButtonClicked: async (buttonIndex?: number) => {
+                    if (buttonIndex === 3) {
+                        ++rateButtonTouchCount;
+                        // tslint:disable-next-line: no-floating-promises
+                        this.setCacheItem('rateButtonTouchCount', `${rateButtonTouchCount}`);
+
+                        const toast = await this._toastController.create({
+                            message: 'Thank you for your review.',
+                            duration: 2000
+                        });
+                        // tslint:disable-next-line: no-floating-promises
+                        toast.present();
+                    } else {
+                        ++ratePromptedCount;
+                        // tslint:disable-next-line: no-floating-promises
+                        this.setCacheItem('ratePromptedCount', `${ratePromptedCount}`);
+                    }
+                }
             }
         };
+
+        if (rateButtonTouchCount > 1 || ratePromptedCount > 3) {
+            return;
+        }
 
         try {
             this._appRate.promptForRating(false);
@@ -798,5 +772,45 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private translitNext(): void {
         this._translitSubject.next(`${this._sourceEnc}|${this._convertSource}|${this._sourceText}`);
+    }
+
+    private async setCacheItem(key: string, value: string): Promise<void> {
+        if (typeof localStorage === 'object') {
+            try {
+                localStorage.setItem(key, value);
+            } catch (err) {
+                this._logService.error('An error occurs while calling localStorage.setItem() method.');
+            }
+        }
+
+        try {
+            await this._nativeStorage.setItem(key, value);
+        } catch (err) {
+            this._logService.error('An error occurs while calling _nativeStorage.setItem() method.');
+        }
+    }
+
+    private async getCacheItem(key: string): Promise<string | null> {
+        if (typeof localStorage === 'object') {
+            try {
+                const cachedValue = localStorage.getItem(key);
+                if (cachedValue != null) {
+                    return cachedValue;
+                }
+            } catch (err) {
+                this._logService.error('An error occurs while calling localStorage.getItem() method.');
+            }
+        }
+
+        try {
+            const cachedValue = await this._nativeStorage.getItem(key);
+            if (cachedValue != null) {
+                return cachedValue as string;
+            }
+        } catch (err) {
+            this._logService.error('An error occurs while calling _nativeStorage.getItem() method.');
+        }
+
+        return null;
     }
 }
