@@ -44,7 +44,7 @@
     "@ionic/angular": "^4.11.5",
     "@myanmartools/ng-zawgyi-detector": "^1.1.4",
     "@myanmartools/zawgyi-unicode-translit-rules": "^1.1.2",
-    "com-darryncampbell-cordova-plugin-intent": "^1.2.0",
+    "com-darryncampbell-cordova-plugin-intent": "^2.0.0",
     "cordova-android": "^8.1.0",
     "cordova-plugin-androidx": "^1.0.2",
     "cordova-plugin-androidx-adapter": "^1.1.0",
