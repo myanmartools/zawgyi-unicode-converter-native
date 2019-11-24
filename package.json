@@ -50,7 +50,7 @@
     "cordova-plugin-androidx-adapter": "^1.1.0",
     "cordova-plugin-apprate": "^1.5.0",
     "cordova-plugin-dialogs": "^2.0.2",
-    "cordova-plugin-firebase-dynamiclinks": "^4.0.1",
+    "cordova-plugin-firebase-dynamiclinks": "^4.0.2",
     "cordova-plugin-firebasex": "^7.0.1",
     "cordova-plugin-globalization": "^1.11.0",
     "cordova-plugin-headercolor": "^1.0.0",
