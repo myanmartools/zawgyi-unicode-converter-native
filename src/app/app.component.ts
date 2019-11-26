@@ -184,7 +184,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             name: value ? 'change_dark_mode' : 'change_light_mode',
             properties: {
                 mode: value ? 'dark' : 'light',
-                app_version: this._appConfig.appVersion
+                app_version: this._appConfig.appVersion,
+                app_platform: 'android'
             }
         });
     }
@@ -280,7 +281,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                         input_length: this._sourceText.length,
                         duration_msec: result.duration,
                         source: this._convertSource,
-                        app_version: this._appConfig.appVersion
+                        app_version: this._appConfig.appVersion,
+                        app_platform: 'android'
                     }
                 });
 
@@ -315,7 +317,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                         name: 'close_drawer_menu',
                         properties: {
                             action: 'close',
-                            app_version: this._appConfig.appVersion
+                            app_version: this._appConfig.appVersion,
+                            app_platform: 'android'
                         }
                     });
 
@@ -380,7 +383,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 name: 'share',
                 properties: {
                     method: 'Social Sharing Native',
-                    app_version: this._appConfig.appVersion
+                    app_version: this._appConfig.appVersion,
+                    app_platform: 'android'
                 }
             });
         } catch (err) {
@@ -398,7 +402,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 name: 'rate',
                 properties: {
                     method: 'App Rate Native',
-                    app_version: this._appConfig.appVersion
+                    app_version: this._appConfig.appVersion,
+                    app_platform: 'android'
                 }
             });
         } catch (err) {
@@ -414,7 +419,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             name: isOpened ? 'open_drawer_menu' : 'close_drawer_menu',
             properties: {
                 action: isOpened ? 'open' : 'close',
-                app_version: this._appConfig.appVersion
+                app_version: this._appConfig.appVersion,
+                app_platform: 'android'
             }
         });
     }
@@ -429,7 +435,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._logService.trackEvent({
                 name: 'screen_view',
                 properties: {
-                    screen_name: 'Home'
+                    screen_name: 'Home',
+                    app_platform: 'android'
                 }
             });
         });
@@ -438,7 +445,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._logService.trackEvent({
             name: 'screen_view',
             properties: {
-                screen_name: 'About'
+                screen_name: 'About',
+                app_platform: 'android'
             }
         });
     }
@@ -453,7 +461,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._logService.trackEvent({
                 name: 'screen_view',
                 properties: {
-                    screen_name: 'Home'
+                    screen_name: 'Home',
+                    app_platform: 'android'
                 }
             });
         });
@@ -462,7 +471,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._logService.trackEvent({
             name: 'screen_view',
             properties: {
-                screen_name: 'Support'
+                screen_name: 'Support',
+                app_platform: 'android'
             }
         });
     }
@@ -563,7 +573,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._logService.trackEvent({
                 name: 'screen_view',
                 properties: {
-                    screen_name: 'Home'
+                    screen_name: 'Home',
+                    app_platform: 'android'
                 }
             });
         }
@@ -705,7 +716,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                         properties: {
                             action: intent.action,
                             type: intent.type,
-                            app_version: this._appConfig.appVersion
+                            app_version: this._appConfig.appVersion,
+                            app_platform: 'android'
                         }
                     });
 
@@ -752,7 +764,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             name: `change_input_font_${this.sourceEnc}`,
             properties: {
                 font_enc: this.sourceEnc,
-                app_version: this._appConfig.appVersion
+                app_version: this._appConfig.appVersion,
+                app_platform: 'android'
             }
         });
 
