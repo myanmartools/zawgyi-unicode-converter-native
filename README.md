@@ -1,4 +1,4 @@
-# Zawgyi Unicode Converter Ionic Native (Android / iOS)
+# Zawgyi Unicode Converter Native Ionic App (Android / iOS)
 
 [![Gitter](https://badges.gitter.im/myanmartools/community.svg)](https://gitter.im/myanmartools/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
