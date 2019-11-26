@@ -57,9 +57,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private readonly _targetPlaceholderZg = 'Converted Zawgyi text will be appeared here';
     private readonly _targetPlaceholderUni = 'Converted Unicode text will be appeared here';
 
-    private readonly _darkModeText = 'Dark mode ပြောင်းရန်';
-    private readonly _lightModeText = 'Light mode ပြောင်းရန်';
-
     private readonly _translitSubject = new Subject<string>();
     private readonly _destroyed = new Subject<void>();
 
@@ -190,10 +187,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 app_version: this._appConfig.appVersion
             }
         });
-    }
-
-    get colorModeText(): string {
-        return this.isDarkMode ? this._lightModeText : this._darkModeText;
     }
 
     constructor(
