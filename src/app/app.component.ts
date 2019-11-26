@@ -154,15 +154,15 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         if (platformHeight >= 900) {
             return 10;
         } else if (platformHeight >= 820) {
-            return 8;
+            return 9;
         } else if (platformHeight >= 730) {
-            return 7;
+            return 8;
         } else if (platformHeight >= 640) {
-            return 6;
+            return 7;
         } else if (platformHeight >= 580) {
-            return 5;
+            return 6;
         } else {
-            return 4;
+            return 5;
         }
     }
 
