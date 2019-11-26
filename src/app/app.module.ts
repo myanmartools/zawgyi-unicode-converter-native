@@ -52,24 +52,24 @@ export const settings: { app: AppConfig } = {
         },
         navLinks: [
             {
+                url: 'https://myanmartools.org',
+                label: 'More Myanmar Tools',
+                iconName: 'logo-myanmartools-24'
+            },
+            {
                 url: 'https://www.facebook.com/DagonMetric',
-                label: 'Post များ ဖတ်ရှုရန်',
+                label: 'Posts on Facebook',
                 iconName: 'logo-facebook-24'
             },
             {
                 url: 'https://www.youtube.com/channel/UCbJLAOU-kG6vkBOU1TSM5Cw',
-                label: 'Video များ ကြည့်ရှုရန်',
+                label: 'Videos on YouTube',
                 iconName: 'logo-youtube-24'
             },
             {
                 url: 'https://github.com/myanmartools/zawgyi-unicode-converter-native',
-                label: 'Source code ရယူရန်',
+                label: 'Source code on GitHub',
                 iconName: 'logo-github-24'
-            },
-            {
-                url: 'https://myanmartools.org',
-                label: 'Myanmar Tools ဝဘ်ဆိုက်',
-                iconName: 'logo-myanmartools-24'
             }
         ],
         socialSharing: {
