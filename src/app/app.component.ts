@@ -526,7 +526,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private async detectDarkTheme(): Promise<void> {
         const isDarkModeCached = await this.getCacheItem('isDarkMode');
-        this.detectDarkThemeChange(isDarkModeCached == null ? true : isDarkModeCached === 'true', true);
+        this.detectDarkThemeChange(isDarkModeCached != null ? false : isDarkModeCached === 'true', true);
     }
 
     private toggleDarkTheme(isDark: boolean): void {
