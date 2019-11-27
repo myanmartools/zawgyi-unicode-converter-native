@@ -45,7 +45,7 @@ import { SupportModalComponent } from './support/support-modal.component';
 export const settings: { app: AppConfig } = {
     app: {
         appName: 'Zawgyi Unicode Converter',
-        appVersion: '3.4.0',
+        appVersion: '3.4.1',
         appThemeColor: '#8764B8',
         storeAppUrlInfo: {
             android: 'market://details?id=com.dagonmetric.zawgyiunicodeconverter'
@@ -53,7 +53,7 @@ export const settings: { app: AppConfig } = {
         navLinks: [
             {
                 url: 'https://myanmartools.org',
-                label: 'More Myanmar Tools',
+                label: 'Explore Myanmar Tools',
                 iconName: 'logo-myanmartools-24'
             },
             {
