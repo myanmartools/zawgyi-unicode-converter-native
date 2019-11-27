@@ -161,6 +161,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             return 7;
         } else if (platformHeight >= 580) {
             return 6;
+        } else if (platformHeight >= 540) {
+            return 5;
         } else {
             return 4;
         }
@@ -640,7 +642,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
 
         this._appRate.preferences = {
-            useLanguage: 'en',
             displayAppName: this.appName,
             usesUntilPrompt: rateButtonTouchCount > 0 ? rateButtonTouchCount * 10 : ratePromptedCount > 0 ? ratePromptedCount * 5 : 3,
             promptAgainForEachNewVersion: false,
@@ -649,6 +650,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             storeAppURL: {
                 ...storeAppUrlInfo
             },
+            useLanguage: 'en',
             customLocale: {
                 title: 'Do you \u2764\uFE0F using this app?',
                 message: 'We hope yoou like using Zawgyi Unicode Converter.\nWe love to hear your feedback.',
@@ -657,8 +659,19 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 rateButtonLabel: 'Rate it now',
                 yesButtonLabel: 'Yes',
                 noButtonLabel: 'No'
+                // appRatePromptTitle: 'Do you \u2764\uFE0F using this app?',
+                // feedbackPromptTitle: 'Would you mind giving us some feedback?',
             },
             callbacks: {
+                // handleNegativeFeedback: () => {
+                //     window.open('mailto:app-support@dagonmetric.com', '_system');
+                // },
+                // // tslint:disable-next-line: no-any
+                // onRateDialogShow: (cb: any) => {
+                //     // cause immediate click on 'Rate Now' button
+                //     // tslint:disable-next-line: no-unsafe-any
+                //     cb(1);
+                // },
                 onButtonClicked: async (buttonIndex?: number) => {
                     if (buttonIndex === 3) {
                         ++rateButtonTouchCount;
