@@ -10,11 +10,11 @@ This issue tracker is ONLY used for reporting bugs. NO NEW FEATURE ACCEPTED!
 Please fill in the *entire* template below. 
 -->
 
-## Current behavior
+## Current Behavior
 
 <!-- Describe the current behavior. -->
 
-## Expected behavior
+## Expected Behavior
 
 <!-- Describe what the desired behavior would be. -->
 
