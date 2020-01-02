@@ -19,27 +19,7 @@ indent_size = 2
 
 # Markdown file
 [*.md]
-insert_final_newline = false
 trim_trailing_whitespace = false
-
-# Server-side code files
-[*.{cs,csx,vb,vbx}]
-indent_size = 4
-# charset = utf-8-bom
-
-# ASP.Net Core server-side file
-[*.cshtml]
-indent_size = 4
-# charset = utf-8-bom
-
-# Solution file
-[*.sln]
-indent_style = tab
-# charset = utf-8-bom
-
-# VS project configuration files
-[*.{config,*proj,projitems,nuspec,props,resx,targets,tasks,ruleset,vsixmanifest,vsct,stylecop}]
-indent_size = 2
 
 # Powershell files
 [*.{ps1,psm1}]
