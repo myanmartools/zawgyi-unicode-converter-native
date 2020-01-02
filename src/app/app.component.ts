@@ -545,7 +545,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             }
 
             if (darkModeMediaQuery.addEventListener) {
-                darkModeMediaQuery.addEventListener('change', (mediaQuery) => {
+                darkModeMediaQuery.addEventListener('change', mediaQuery => {
                     this.setDarkMode(mediaQuery.matches);
                 });
             }
@@ -710,7 +710,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._firebaseDynamicLinks.onDynamicLink()
             .subscribe(() => {
                 // Do nothing
-            }, (err) => {
+            }, err => {
                 // tslint:disable-next-line: no-unsafe-any
                 const errMsg = err && err.message ? ` ${err.message}` : '';
                 this._logService.error(`An error occurs on receiving dynamic link.${errMsg}`);

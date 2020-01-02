@@ -46,7 +46,7 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
                     });
             } else {
                 Promise.resolve(this._userInfo.userId)
-                    .then(async (userId) => userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve())
+                    .then(async userId => userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve())
                     .then(() => analytics.logError(messageStr))
                     .then(() => {
                         // Do nothing;
@@ -68,7 +68,7 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
             }
 
             Promise.resolve(this._userInfo.userId)
-                .then(async (userId) => userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve())
+                .then(async userId => userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve())
                 .then(() => analytics.logMessage(`${level}: ${messageStr}`))
                 .then(() => {
                     // Do nothing;
