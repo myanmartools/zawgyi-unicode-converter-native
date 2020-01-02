@@ -1,16 +1,16 @@
 {
   "extends": [
-    "tslint-microsoft-contrib"
+    "tslint:recommended",
+    "tslint-microsoft-contrib/recommended"
   ],
   "rulesDirectory": [
     "node_modules/tslint-microsoft-contrib",
     "node_modules/codelyzer"
   ],
   "rules": {
-    "align": false,
-    "eofline": false,
-    "linebreak-style": false,
+    // Core rules with custom configurations
     "array-type": [true, "array"],
+    "arrow-parens": [true, "ban-single-arg-parens"],
     "arrow-return-shorthand": true,
     "callable-types": true,
     "class-name": true,
@@ -19,7 +19,6 @@
       "check-space"
     ],
     "curly": true,
-    "cyclomatic-complexity": false,
     "deprecation": {
       "severity": "warn"
     },
@@ -37,6 +36,7 @@
     ],
     "jsdoc-format": true,
     "label-position": true,
+    "linebreak-style": false,
     "max-line-length": [
       true,
       140
@@ -61,10 +61,8 @@
         ]
       }
     ],
-    "newline-per-chained-call": false,
     "no-angle-bracket-type-assertion": true,
     "no-arg": true,
-    "no-bitwise": true,
     "no-console": [
       true,
       "debug",
@@ -96,7 +94,6 @@
     "no-unnecessary-class": false,
     "no-unnecessary-initializer": true,
     "no-unused-expression": true,
-    "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
     "one-line": [
@@ -161,12 +158,13 @@
       "check-type"
     ],
 
+    // tslint-microsoft-contrib overides
     "export-name": false,
     "function-name": false,
-    "no-increment-decrement": false,
     "no-relative-imports": false,
     "prefer-type-cast": false,
 
+    // codelyzer overides
     "component-class-suffix": true,
     "component-selector": [
       true,
