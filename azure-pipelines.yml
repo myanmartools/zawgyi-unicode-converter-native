@@ -32,11 +32,12 @@ steps:
     secureFile: 'google-services.json'
 - task: CopyFiles@2
   inputs:
-    contents: $(googleServices.secureFilePath)
+    sourceFolder: $(Agent.TempDirectory)
+    contents: google-services.json
     targetFolder: $(Build.SourcesDirectory)
-- script: |
-    ionic cordova build android
-  displayName: "Run build android"
+# - script: |
+#     ionic cordova build android
+#   displayName: "Run build android"
 # - script: |
 #     npm run lint --if-present
 #   displayName: 'Run linting'
