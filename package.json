@@ -48,7 +48,7 @@
     "cordova-android": "^8.1.0",
     "cordova-plugin-androidx": "^1.0.2",
     "cordova-plugin-androidx-adapter": "^1.1.0",
-    "cordova-plugin-apprate": "1.5.0",
+    "cordova-plugin-apprate": "1.4.0",
     "cordova-plugin-dialogs": "^2.0.2",
     "cordova-plugin-firebase-dynamiclinks": "^4.0.3",
     "cordova-plugin-firebasex": "^7.0.1",
@@ -66,8 +66,8 @@
     "zone.js": "^0.10.2"
   },
   "devDependencies": {
-    "@angular-devkit/architect": "0.803.19",
-    "@angular-devkit/build-angular": "0.803.19",
+    "@angular-devkit/architect": "^0.803.21",
+    "@angular-devkit/build-angular": "0.803.20",
     "@angular-devkit/core": "^8.3.21",
     "@angular-devkit/schematics": "^8.3.21",
     "@angular/cli": "^8.3.21",
