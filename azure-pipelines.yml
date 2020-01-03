@@ -25,6 +25,15 @@ steps:
 - script: |
     npm ci
   displayName: 'Install dependencies'
+- task: DownloadSecureFile@1
+  name: googleServices
+  displayName: 'Download google-services.json'
+  inputs:
+    secureFile: 'google-services.json'
+- task: CopyFiles@2
+  inputs:
+    contents: $(googleServices.secureFilePath)
+    targetFolder: $(Build.SourcesDirectory)
 - script: |
     ionic cordova build android
   displayName: "Run build android"
