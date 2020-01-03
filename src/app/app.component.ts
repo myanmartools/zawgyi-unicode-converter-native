@@ -641,54 +641,52 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             }
         }
 
-        this._appRate.preferences = {
-            displayAppName: this.appName,
-            usesUntilPrompt: rateButtonTouchCount > 0 ? rateButtonTouchCount * 10 : ratePromptedCount > 0 ? ratePromptedCount * 5 : 3,
-            promptAgainForEachNewVersion: false,
-            simpleMode: true,
-            useCustomRateDialog: true,
-            storeAppURL: {
-                ...storeAppUrlInfo
-            },
-            useLanguage: 'en',
-            customLocale: {
-                title: 'Do you \u2764\uFE0F using this app?',
-                message: 'We hope yoou like using Zawgyi Unicode Converter.\nWe love to hear your feedback.',
-                cancelButtonLabel: 'No, thanks',
-                laterButtonLabel: 'Later',
-                rateButtonLabel: 'Rate it now',
-                yesButtonLabel: 'Yes',
-                noButtonLabel: 'No'
-                // appRatePromptTitle: 'Do you \u2764\uFE0F using this app?',
-                // feedbackPromptTitle: 'Would you mind giving us some feedback?',
-            },
-            callbacks: {
-                // handleNegativeFeedback: () => {
-                //     window.open('mailto:app-support@dagonmetric.com', '_system');
-                // },
-                // // tslint:disable-next-line: no-any
-                // onRateDialogShow: (cb: any) => {
-                //     // cause immediate click on 'Rate Now' button
-                //     // tslint:disable-next-line: no-unsafe-any
-                //     cb(1);
-                // },
-                onButtonClicked: async (buttonIndex?: number) => {
-                    if (buttonIndex === 3) {
-                        ++rateButtonTouchCount;
-                        // tslint:disable-next-line: no-floating-promises
-                        this.setCacheItem('rateButtonTouchCount', `${rateButtonTouchCount}`);
+        this._appRate.preferences.storeAppURL = {
+            ...storeAppUrlInfo
+        };
+        this._appRate.preferences.displayAppName = this.appName;
+        this._appRate.preferences.usesUntilPrompt =
+            rateButtonTouchCount > 0 ? rateButtonTouchCount * 10 : ratePromptedCount > 0 ? ratePromptedCount * 5 : 3;
+        this._appRate.preferences.simpleMode = true;
+        this._appRate.preferences.useCustomRateDialog = true;
+        this._appRate.preferences.useLanguage = 'en';
+        this._appRate.preferences.customLocale = {
+            title: 'Do you \u2764\uFE0F using this app?',
+            message: 'We hope yoou like using Zawgyi Unicode Converter.\nWe love to hear your feedback.',
+            cancelButtonLabel: 'No, thanks',
+            laterButtonLabel: 'Later',
+            rateButtonLabel: 'Rate it now',
+            yesButtonLabel: 'Yes',
+            noButtonLabel: 'No'
+            // appRatePromptTitle: 'Do you \u2764\uFE0F using this app?',
+            // feedbackPromptTitle: 'Would you mind giving us some feedback?',
+        };
+        this._appRate.preferences.callbacks = {
+            // handleNegativeFeedback: () => {
+            //     window.open('mailto:app-support@dagonmetric.com', '_system');
+            // },
+            // // tslint:disable-next-line: no-any
+            // onRateDialogShow: (cb: any) => {
+            //     // cause immediate click on 'Rate Now' button
+            //     // tslint:disable-next-line: no-unsafe-any
+            //     cb(1);
+            // },
+            onButtonClicked: async (buttonIndex?: number) => {
+                if (buttonIndex === 3) {
+                    ++rateButtonTouchCount;
+                    // tslint:disable-next-line: no-floating-promises
+                    this.setCacheItem('rateButtonTouchCount', `${rateButtonTouchCount}`);
 
-                        const toast = await this._toastController.create({
-                            message: 'Thank you for your review.',
-                            duration: 2000
-                        });
-                        // tslint:disable-next-line: no-floating-promises
-                        toast.present();
-                    } else {
-                        ++ratePromptedCount;
-                        // tslint:disable-next-line: no-floating-promises
-                        this.setCacheItem('ratePromptedCount', `${ratePromptedCount}`);
-                    }
+                    const toast = await this._toastController.create({
+                        message: 'Thank you for your review.',
+                        duration: 2000
+                    });
+                    // tslint:disable-next-line: no-floating-promises
+                    toast.present();
+                } else {
+                    ++ratePromptedCount;
+                    // tslint:disable-next-line: no-floating-promises
+                    this.setCacheItem('ratePromptedCount', `${ratePromptedCount}`);
                 }
             }
         };
