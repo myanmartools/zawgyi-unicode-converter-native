@@ -13,19 +13,25 @@ steps:
     version: '12.x'
   displayName: 'Use Node 12.x'
 - script: |
-    npm ci
-  displayName: 'Install dependencies'
-- script: |
-    npm run build --if-present
-  displayName: "Run build"
-- script: |
-    npm run lint --if-present
-  displayName: 'Run linting'
-- task: PublishPipelineArtifact@0
-  inputs:
-    artifactName: 'android'
-    targetPath: 'platforms/android'
-  displayName: 'Publish build android artifacts'
+    java -version
+  displayName: 'Print java version'
+# - script: |
+#     npm install -g ionic cordova
+#   displayName: 'Install ionic & cordova tools'
+# - script: |
+#     npm ci
+#   displayName: 'Install dependencies'
+# - script: |
+#     npm run build --if-present
+#   displayName: "Run build"
+# - script: |
+#     npm run lint --if-present
+#   displayName: 'Run linting'
+# - task: PublishPipelineArtifact@0
+#   inputs:
+#     artifactName: 'android'
+#     targetPath: 'platforms/android'
+#   displayName: 'Publish build android artifacts'
 # - task: Gradle@2
 #   inputs:
 #     workingDirectory: ''
