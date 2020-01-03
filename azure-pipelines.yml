@@ -13,16 +13,25 @@ steps:
     version: '12.x'
   displayName: 'Use Node 12.x'
 - script: |
-    node -version
-    java -version
-    gradle -v
-  displayName: 'Print versions'
+    npm install -g ionic cordova
+  displayName: 'Install ionic & cordova tools'
 - script: |
-    printenv
-  displayName: 'Print env'
+    java -version
+    node -v
+    gradle -v
+    ionic -v
+    cordova -v
+  displayName: 'Print versions'
 # - script: |
-#     npm install -g ionic cordova
-#   displayName: 'Install ionic & cordova tools'
+#     printenv
+#   displayName: 'Print environment variables'
+- script: |
+    export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+    export PATH=$PATH:$ANDROID_SDK_ROOT/tools/bin
+    export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools
+    export PATH=$PATH:$ANDROID_SDK_ROOT/emulator
+    export PATH=$PATH:$ANDROID_SDK_ROOT/build-tools
+  displayName: 'Export environment variables'
 # - script: |
 #     npm ci
 #   displayName: 'Install dependencies'
