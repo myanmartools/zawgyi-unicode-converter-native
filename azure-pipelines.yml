@@ -17,6 +17,9 @@ steps:
     java -version
     gradle -v
   displayName: 'Print versions'
+- script: |
+    printenv
+  displayName: 'Print env'
 # - script: |
 #     npm install -g ionic cordova
 #   displayName: 'Install ionic & cordova tools'
