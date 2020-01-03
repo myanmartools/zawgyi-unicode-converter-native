@@ -359,6 +359,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._logService.flush();
     }
 
+    clearInput(): void {
+        this.sourceText = '';
+    }
+
     async showShareSheet(): Promise<void> {
         this._appConfig.socialSharing = this._appConfig.socialSharing || {};
         const socialSharingSubject = this._appConfig.socialSharing.subject;

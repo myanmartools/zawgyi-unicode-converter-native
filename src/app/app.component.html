@@ -120,6 +120,10 @@
                         <ion-select-option value="uni">UNICODE</ion-select-option>
                     </ion-select>
                 </ion-item>
+                <ion-item *ngIf="sourceText">
+                    <ion-button slot="end" size="small" fill="clear" color="medium" (click)="clearInput()">Clear
+                    </ion-button>
+                </ion-item>
             </ion-list>
             <ion-grid>
                 <ion-row>
