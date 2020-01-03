@@ -16,28 +16,18 @@ steps:
     npm install -g ionic cordova
   displayName: 'Install ionic & cordova tools'
 - script: |
-    java -version
-    node -v
-    gradle -v
-    ionic -v
-    cordova -v
-  displayName: 'Print versions'
-# - script: |
-#     printenv
-#   displayName: 'Print environment variables'
-- script: |
     export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
     export PATH=$PATH:$ANDROID_SDK_ROOT/tools/bin
     export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools
     export PATH=$PATH:$ANDROID_SDK_ROOT/emulator
     export PATH=$PATH:$ANDROID_SDK_ROOT/build-tools
   displayName: 'Export environment variables'
-# - script: |
-#     npm ci
-#   displayName: 'Install dependencies'
-# - script: |
-#     npm run build --if-present
-#   displayName: "Run build"
+- script: |
+    npm ci
+  displayName: 'Install dependencies'
+- script: |
+    ionic cordova build android
+  displayName: "Run build android"
 # - script: |
 #     npm run lint --if-present
 #   displayName: 'Run linting'
