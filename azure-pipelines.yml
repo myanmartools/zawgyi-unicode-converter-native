@@ -35,9 +35,9 @@ steps:
     sourceFolder: $(Agent.TempDirectory)
     contents: google-services.json
     targetFolder: $(Build.SourcesDirectory)
-# - script: |
-#     ionic cordova build android
-#   displayName: "Run build android"
+- script: |
+    ionic cordova build android
+  displayName: "Run build android"
 # - script: |
 #     npm run lint --if-present
 #   displayName: 'Run linting'
