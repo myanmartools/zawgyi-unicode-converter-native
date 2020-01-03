@@ -13,8 +13,10 @@ steps:
     version: '12.x'
   displayName: 'Use Node 12.x'
 - script: |
+    node -version
     java -version
-  displayName: 'Print java version'
+    gradle -v
+  displayName: 'Print versions'
 # - script: |
 #     npm install -g ionic cordova
 #   displayName: 'Install ionic & cordova tools'
