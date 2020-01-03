@@ -8,13 +8,27 @@ trigger:
 pool:
   vmImage: 'macos-latest'
 steps:
+- task: DownloadSecureFile@1
+  name: googleServices
+  displayName: 'Download google-services.json'
+  inputs:
+    secureFile: 'google-services.json'
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: $(Agent.TempDirectory)
+    contents: google-services.json
+    targetFolder: $(Build.SourcesDirectory)
+
 - task: UseNode@1
   inputs:
     version: '12.x'
   displayName: 'Use Node 12.x'
+
 - script: |
     npm install -g ionic cordova
   displayName: 'Install ionic & cordova tools'
+
 - script: |
     export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
     export PATH=$PATH:$ANDROID_SDK_ROOT/tools/bin
@@ -22,35 +36,21 @@ steps:
     export PATH=$PATH:$ANDROID_SDK_ROOT/emulator
     export PATH=$PATH:$ANDROID_SDK_ROOT/build-tools
   displayName: 'Export environment variables'
+
 - script: |
     npm ci
   displayName: 'Install dependencies'
-- task: DownloadSecureFile@1
-  name: googleServices
-  displayName: 'Download google-services.json'
-  inputs:
-    secureFile: 'google-services.json'
-- task: CopyFiles@2
-  inputs:
-    sourceFolder: $(Agent.TempDirectory)
-    contents: google-services.json
-    targetFolder: $(Build.SourcesDirectory)
+
+- script: |
+    npm run lint --if-present
+  displayName: 'Run lint'
+
 - script: |
     ionic cordova build android
-  displayName: "Run build android"
-# - script: |
-#     npm run lint --if-present
-#   displayName: 'Run linting'
-# - task: PublishPipelineArtifact@0
-#   inputs:
-#     artifactName: 'android'
-#     targetPath: 'platforms/android'
-#   displayName: 'Publish build android artifacts'
-# - task: Gradle@2
-#   inputs:
-#     workingDirectory: ''
-#     gradleWrapperFile: 'gradlew'
-#     gradleOptions: '-Xmx3072m'
-#     publishJUnitResults: false
-#     testResultsFiles: '**/TEST-*.xml'
-#     tasks: 'assembleDebug'
+  displayName: "Run build android (dev)"
+
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'app-debug.apk'
+    targetPath: 'platforms/android/app/build/outputs/apk/debug/app-debug.apk'
+  displayName: 'Publish app-debug.apk artifact'
