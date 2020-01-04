@@ -51,6 +51,6 @@ steps:
 
 - task: PublishPipelineArtifact@0
   inputs:
-    artifactName: 'app-debug.apk'
+    artifactName: 'debug'
     targetPath: 'platforms/android/app/build/outputs/apk/debug/app-debug.apk'
   displayName: 'Publish app-debug.apk artifact'
