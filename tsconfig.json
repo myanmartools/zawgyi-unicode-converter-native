@@ -4,17 +4,17 @@
     "module": "esnext",
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
 
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strictNullChecks": true,
-    "stripInternal": true,
-    "strictPropertyInitialization": true,
+    // "noUnusedParameters": true,
+
+    // "strictNullChecks": true,
+    // "stripInternal": true,
+    // "strictPropertyInitialization": true,
 
     "downlevelIteration": true,
     "sourceMap": true,
@@ -22,18 +22,13 @@
     "importHelpers": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "lib": [ "es2018", "dom" ],
-
-    "baseUrl": ".",
-    "rootDir": ".",
-    "outDir": "./dist/out-tsc",
-
-    "plugins": [
-      {
-        "name": "typescript-tslint-plugin",
-        "configFile": "tslint.json"
-      }
-    ]
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "baseUrl": "./",
+    "rootDir": "./",
+    "outDir": "./dist/out-tsc"
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
