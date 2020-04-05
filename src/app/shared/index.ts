@@ -8,4 +8,5 @@
 
 export * from './app-config';
 export * from './nav-link-item';
+export * from './sponsor';
 export * from './store-app-url-info';

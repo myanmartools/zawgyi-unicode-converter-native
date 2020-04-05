@@ -45,7 +45,7 @@ import { SupportModalComponent } from './support/support-modal.component';
 export const settings: { app: AppConfig } = {
     app: {
         appName: 'Zawgyi Unicode Converter',
-        appVersion: '3.6.0',
+        appVersion: '3.7.0',
         appThemeColor: '#8764B8',
         storeAppUrlInfo: {
             android: 'market://details?id=com.dagonmetric.zawgyiunicodeconverter'

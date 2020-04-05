@@ -22,6 +22,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
+
 import { ConfigService } from '@dagonmetric/ng-config';
 import { LogService } from '@dagonmetric/ng-log';
 import { TranslitResult, TranslitService } from '@dagonmetric/ng-translit';
@@ -30,7 +32,7 @@ import { DetectedEnc, ZawgyiDetector } from '@myanmartools/ng-zawgyi-detector';
 
 import { environment } from '../environments/environment';
 
-import { AppConfig, NavLinkItem } from './shared';
+import { AppConfig, NavLinkItem, Sponsor } from './shared';
 
 import { AboutModalComponent } from './about/about-modal.component';
 import { SupportModalComponent } from './support/support-modal.component';
@@ -76,6 +78,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private _lastTimeBackPress = 0;
     private _isDarkMode?: boolean | null = null;
+
+    private _sponsorSectionVisible = false;
+    private _sponsors: Sponsor[] = [];
+
+    // Sync configs
+    private _appThemeColor: string;
 
     get appName(): string {
         return this._appConfig.appName;
@@ -192,6 +200,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
     }
 
+    get sponsorSectionVisible(): boolean {
+        return this._sponsorSectionVisible && !this.sourceText.length;
+    }
+
+    get sponsors(): Sponsor[] {
+        return this._sponsors;
+    }
+
     constructor(
         private readonly _translitService: TranslitService,
         private readonly _zawgyiDetector: ZawgyiDetector,
@@ -208,8 +224,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         private readonly _webIntent: WebIntent,
         private readonly _nativeStorage: NativeStorage,
         private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
+        private readonly _firebaseX: FirebaseX,
         configService: ConfigService) {
         this._appConfig = configService.getValue<AppConfig>('app');
+        this._appThemeColor = this._appConfig.appThemeColor;
         this.initializeApp();
     }
 
@@ -364,6 +382,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     async showShareSheet(): Promise<void> {
+        this._sponsorSectionVisible = false;
+
         this._appConfig.socialSharing = this._appConfig.socialSharing || {};
         const socialSharingSubject = this._appConfig.socialSharing.subject;
         const socialSharingLink = this._appConfig.socialSharing.linkUrl;
@@ -484,22 +504,29 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private initializeApp(): void {
-        const appThemeColor = this._appConfig.appThemeColor;
+        this._platform.ready().then(async () => {
+            await this.initRemoteConfigs();
 
-        // tslint:disable-next-line: no-floating-promises
-        this._platform.ready().then(() => {
-            // tslint:disable-next-line: no-floating-promises
-            this.detectDarkTheme();
+            if (this._platform.is('android') || this._platform.is('ios')) {
+                try {
+                    const remoteThemeColor = await this._firebaseX.getValue('themeColor');
+                    if (remoteThemeColor) {
+                        this._appThemeColor = remoteThemeColor;
+                    }
+                } catch (err) {
+                    // Do nothing
+                }
+            }
+
+            await this.detectDarkTheme();
 
             if (this._platform.is('android') || this._platform.is('ios')) {
                 this._statusBar.styleLightContent();
             }
 
             if (this._platform.is('android')) {
-                this._statusBar.backgroundColorByHexString(`#FF${appThemeColor.replace('#', '')}`);
-
-                // tslint:disable-next-line: no-floating-promises
-                this._headerColor.tint(appThemeColor);
+                this._statusBar.backgroundColorByHexString(`#FF${this._appThemeColor.replace('#', '')}`);
+                this._headerColor.tint(this._appThemeColor);
             }
 
             if (this._platform.is('android') || this._platform.is('ios')) {
@@ -525,36 +552,66 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                     this.onPlatformResumed();
                 });
 
-            // tslint:disable-next-line: no-floating-promises
-            this.handlePlatformReady();
+            await this.handlePlatformReady();
         });
     }
 
-    private async detectDarkTheme(): Promise<void> {
-        const isDarkModeCached = await this.getCacheItem('isDarkMode');
-        this.detectDarkThemeChange(isDarkModeCached != null ? false : isDarkModeCached === 'true', true);
-    }
+    private async initRemoteConfigs(): Promise<void> {
+        if (!this._platform.is('android') && !this._platform.is('ios')) {
+            return;
+        }
 
-    private toggleDarkTheme(isDark: boolean): void {
-        document.body.classList.toggle('dark', isDark);
-    }
-
-    private detectDarkThemeChange(defaultValue: boolean, forceDefaultValue?: boolean): void {
-        if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
-            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            if (forceDefaultValue) {
-                this.setDarkMode(defaultValue);
+        try {
+            if (environment.production) {
+                await this._firebaseX.fetch();
             } else {
-                this.setDarkMode(darkModeMediaQuery.matches);
+                await this._firebaseX.fetch(900);
             }
 
-            if (darkModeMediaQuery.addEventListener) {
-                darkModeMediaQuery.addEventListener('change', mediaQuery => {
-                    this.setDarkMode(mediaQuery.matches);
-                });
+            await this._firebaseX.activateFetched();
+        } catch (err) {
+            const errMsg = err && err.message ? ` ${err.message}` : '';
+            this._logService.error(`An error occurs while fetching firebase remote config.${errMsg}`);
+        }
+    }
+
+    private async detectDarkTheme(): Promise<void> {
+        if (this._platform.is('android') || this._platform.is('ios')) {
+            try {
+                const colorMode = await this._firebaseX.getValue('colorMode');
+
+                if (colorMode === 'dark') {
+                    this.setDarkMode(true);
+
+                    return;
+                } else if (colorMode === 'light') {
+                    this.setDarkMode(false);
+
+                    return;
+                }
+
+            } catch (err) {
+                // Do nothing
             }
+        }
+
+        let isDarkModeCached = await this.getCacheItem('isDarkMode');
+        if (isDarkModeCached && (isDarkModeCached.toLowerCase() === 'true' || isDarkModeCached.toLowerCase() === '1')) {
+            this.setDarkMode(true);
         } else {
-            this.setDarkMode(defaultValue);
+            if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
+                const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+                this.setDarkMode(darkModeMediaQuery.matches);
+
+                if (darkModeMediaQuery.addEventListener) {
+                    darkModeMediaQuery.addEventListener('change', mediaQuery => {
+                        this.setDarkMode(mediaQuery.matches);
+                    });
+                }
+            } else {
+                this.setDarkMode(true);
+            }
         }
     }
 
@@ -562,20 +619,38 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._isDarkMode = value;
         this.toggleDarkTheme(value);
 
-        // tslint:disable-next-line: no-floating-promises
-        this.setCacheItem('isDarkMode', `${value}`.toLocaleLowerCase()).then(() => {
-            // Do nothing
-        });
+        this.setCacheItem('isDarkMode', `${value}`.toLocaleLowerCase())
+            .then(() => {
+                // Do nothing
+            });
+    }
+
+    private toggleDarkTheme(isDark: boolean): void {
+        document.body.classList.toggle('dark', isDark);
     }
 
     private async  handleWelcomeScreen(): Promise<void> {
         const cachedAppVersion = await this.getCacheItem('appVersion');
 
         if (cachedAppVersion !== this.appVersion) {
-            // tslint:disable-next-line: no-floating-promises
+            this._sponsorSectionVisible = false;
             this.showAboutModal();
             await this.setCacheItem('appVersion', this.appVersion);
         } else {
+            if (this._platform.is('android') || this._platform.is('ios')) {
+                try {
+                    // Sponsors
+                    const sStr = await this._firebaseX.getValue('sponsors');
+                    const sponsorList = JSON.parse(sStr) as Sponsor[];
+                    this._sponsors = sponsorList.filter(s => !s.inactive && (s.expiresIn == null || s.expiresIn >= Date.now()));
+
+                    const svStr = await this._firebaseX.getValue('sponsorSectionVisible');
+                    this._sponsorSectionVisible = svStr === 'true' ? true : false;
+                } catch (err) {
+                    // Do nothing
+                }
+            }
+
             this._logService.trackEvent({
                 name: 'screen_view',
                 properties: {
@@ -607,14 +682,11 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async handlePlatformReady(): Promise<void> {
-        // tslint:disable-next-line: no-floating-promises
         this.handleWelcomeScreen();
 
         if (this._platform.is('android') || this._platform.is('ios')) {
-            // tslint:disable-next-line: no-floating-promises
             this.handleWebIntent();
             this.handleDynamicLinks();
-            // tslint:disable-next-line: no-floating-promises
             this.handlePromptForRating();
         }
     }
@@ -804,6 +876,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             }
         }
 
+        if (!this._platform.is('android') && !this._platform.is('ios')) {
+            return null;
+        }
+
         try {
             await this._nativeStorage.setItem(key, value);
         } catch (err) {
@@ -821,6 +897,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             } catch (err) {
                 this._logService.error('An error occurs while calling localStorage.getItem() method.');
             }
+        }
+
+        if (!this._platform.is('android') && !this._platform.is('ios')) {
+            return null;
         }
 
         try {

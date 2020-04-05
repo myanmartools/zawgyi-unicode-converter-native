@@ -119,6 +119,10 @@
 //     }
 // }
 
+.ion-yellow {
+    color: #FF6F00;
+}
+
 body.dark {
     --ion-background-color: #121212;
     --ion-background-color-rgb: 18,18,18;
@@ -149,4 +153,10 @@ body.dark {
     --ion-color-step-950: #f3f3f3;
 
     --ion-item-background: #1A1B1E;
+
+    .ion-yellow {
+        color: #FFFF00;
+    }
+
 }
+

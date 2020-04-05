@@ -25,7 +25,7 @@
                     </ion-menu-toggle>
                     <ion-menu-toggle>
                         <ion-item button (click)="showHelpModal()">
-                            <ion-icon slot="start" name="help"></ion-icon>
+                            <ion-icon slot="start" name="help-circle"></ion-icon>
                             <ion-label>
                                 Help & Feedback
                             </ion-label>
@@ -33,7 +33,7 @@
                     </ion-menu-toggle>
                     <ion-menu-toggle>
                         <ion-item button (click)="showAboutModal()">
-                            <ion-icon slot="start" name="info"></ion-icon>
+                            <ion-icon slot="start" name="information-circle"></ion-icon>
                             <ion-label>
                                 About
                             </ion-label>
@@ -50,7 +50,7 @@
                 <ion-list lines="none">
                     <ion-menu-toggle>
                         <ion-item button (click)="showShareSheet()">
-                            <ion-icon slot="start" name="share"></ion-icon>
+                            <ion-icon slot="start" name="share-social"></ion-icon>
                             <ion-label>
                                 Share
                             </ion-label>
@@ -103,9 +103,8 @@
                     {{appName}}
                 </ion-title>
                 <ion-buttons slot="primary">
-                    <!-- <ion-menu-button></ion-menu-button> -->
                     <ion-button (click)="toggleSideNav()">
-                        <ion-icon slot="icon-only" name="menu"></ion-icon>
+                        <ion-icon slot="icon-only" name="menu-sharp"></ion-icon>
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
@@ -137,7 +136,7 @@
                             </ion-textarea>
                         </ion-item>
                     </ion-col>
-                    <ion-col size="12" size-sm>
+                    <ion-col size="12" size-sm [class.ion-hide-sm-down]="!outText">
                         <ion-item>
                             <ion-label position="floating" *ngIf="targeetEncLabel">{{targeetEncLabel}}</ion-label>
                             <ion-textarea class="myanmar-text" [placeholder]="targetPlaceholderText"
@@ -153,10 +152,36 @@
                             <ion-icon name="star"></ion-icon> Rate
                         </ion-button>
                         <ion-button shape="round" fill="clear" color="medium" (click)="showShareSheet()">
-                            <ion-icon name="share"></ion-icon> Share
+                            <ion-icon name="share-social"></ion-icon> Share
                         </ion-button>
 
                     </ion-col>
+                </ion-row>
+                <ion-row class="sponsor-cards" *ngIf="sponsorSectionVisible">
+                    <ion-col *ngFor="let sponsor of sponsors">
+                        <ion-card class="sponsor-card" [href]="sponsor.detailUrlForMobile">
+                            <img *ngIf="sponsor.imageUrl" [src]="sponsor.imageUrl" />
+                            <ion-item lines="none">
+                                <img class="sponsor-logo" [src]="sponsor.logoUrl" slot="start" />
+                                <div>
+                                    <ion-card-subtitle *ngIf="sponsor.subTitle">{{sponsor.subTitle}}</ion-card-subtitle>
+                                    <ion-card-title>{{sponsor.title}}</ion-card-title>
+                                </div>
+                            </ion-item>
+                            <ion-card-content>
+                                <p lass="myanmar-text my-uni" [innerHTML]="sponsor.description"></p>
+                                <p class="sponsor-website" [class]="'ion-' + sponsor.themeColor">
+                                    {{sponsor.detailUrlLabelForMobile}}
+                                </p>
+                            </ion-card-content>
+                        </ion-card>
+                    </ion-col>
+                    <ion-col>
+                        <ion-button shape="round" fill="clear" disabled>
+                            <ion-icon name="add-circle-outline"></ion-icon> Become A Sponsor
+                        </ion-button>
+                    </ion-col>
+                    <ion-col *ngIf="sponsors.length < 2"></ion-col>
                 </ion-row>
             </ion-grid>
         </ion-content>
