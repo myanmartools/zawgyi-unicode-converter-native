@@ -25,6 +25,18 @@
     },
     {
       "packagePatterns": [
+        "^@ionic-native\/.*"
+      ],
+      "groupName": "ionic-native"
+    },
+    {
+      "packagePatterns": [
+        "^@ionic\/.*"
+      ],
+      "groupName": "ionic"
+    },
+    {
+      "packagePatterns": [
         "^@dagonmetric\/.*"
       ],
       "groupName": "dagonmetric"
@@ -54,7 +66,7 @@
       "groupName": "protractor"
     },
     {
-      "packageNames": ["typescript"],
+      "packageNames": ["cordova-plugin-apprate"],
       "automerge": false
     }
   ]
