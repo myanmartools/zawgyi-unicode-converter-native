@@ -33,8 +33,8 @@ The PWA project repo is at [github.com/myanmartools/zawgyi-unicode-converter-ang
 
 ## Programming Languages & Frameworks
 
-* Latest version of Angular (v8)
-* Latest version of Ionic (v4)
+* Latest version of Angular
+* Latest version of Ionic
 * Ionic Native
 * Ionic UI Components
 * Cordova
