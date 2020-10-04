@@ -308,54 +308,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this._backButtonSubscription = this._platform.backButton.subscribe(async () => {
-            try {
-                const ele = await this._modalController.getTop();
-                if (ele) {
-                    this._modalController.dismiss({
-                        dismissed: true
-                    });
-
-                    return;
-                }
-            } catch (err) {
-                // Do nothing
-            }
-
-            try {
-                const isMenuOpened = await this._menuController.isOpen();
-                if (isMenuOpened) {
-                    this._menuController.close();
-
-                    this._logService.trackEvent({
-                        name: 'close_drawer_menu',
-                        properties: {
-                            action: 'close',
-                            app_version: appSettings.appVersion,
-                            app_platform: 'android'
-                        }
-                    });
-
-                    return;
-                }
-            } catch (err) {
-                // Do nothing
-            }
-
-            if (new Date().getTime() - this._lastTimeBackPress < this._timePeriodToExit) {
-                this._logService.flush();
-
-                (navigator as any).app.exitApp();
-            } else {
-                const toast = await this._toastController.create({
-                    message: 'Press back again to exit the app.',
-                    duration: 2000
-                });
-
-                toast.present();
-
-                this._lastTimeBackPress = new Date().getTime();
-            }
+        this._backButtonSubscription = this._platform.backButton.subscribe(() => {
+            void this.handleBackButton();
         });
     }
 
@@ -496,18 +450,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private initializeApp(): void {
         void this._platform.ready().then(async () => {
             await this.initRemoteConfigs();
-
-            if (this._platform.is('android') || this._platform.is('ios')) {
-                try {
-                    const remoteThemeColor = await this._firebaseX.getValue('themeColor');
-                    if (remoteThemeColor) {
-                        this._appThemeColor = remoteThemeColor;
-                    }
-                } catch (err) {
-                    // Do nothing
-                }
-            }
-
             await this.detectDarkTheme();
 
             if (this._platform.is('android') || this._platform.is('ios')) {
@@ -516,7 +458,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
             if (this._platform.is('android')) {
                 this._statusBar.backgroundColorByHexString(`#FF${this._appThemeColor.replace('#', '')}`);
-                this._headerColor.tint(this._appThemeColor);
+                void this._headerColor.tint(this._appThemeColor);
             }
 
             if (this._platform.is('android') || this._platform.is('ios')) {
@@ -535,7 +477,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 this.onPlatformResumed();
             });
 
-            await this.handlePlatformReady();
+            this.handlePlatformReady();
         });
     }
 
@@ -552,6 +494,11 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             }
 
             await this._firebaseX.activateFetched();
+
+            const remoteThemeColor = (await this._firebaseX.getValue('themeColor')) as string;
+            if (remoteThemeColor) {
+                this._appThemeColor = remoteThemeColor;
+            }
         } catch (err) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const errMsg = err && err.message ? ` ${err.message}` : '';
@@ -562,7 +509,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private async detectDarkTheme(): Promise<void> {
         if (this._platform.is('android') || this._platform.is('ios')) {
             try {
-                const colorMode = await this._firebaseX.getValue('colorMode');
+                const colorMode = (await this._firebaseX.getValue('colorMode')) as string;
 
                 if (colorMode === 'dark') {
                     this.setDarkMode(true);
@@ -602,7 +549,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._isDarkMode = value;
         this.toggleDarkTheme(value);
 
-        this.setCacheItem('isDarkMode', `${value}`.toLocaleLowerCase()).then(() => {
+        void this.setCacheItem('isDarkMode', `${value}`.toLocaleLowerCase()).then(() => {
             // Do nothing
         });
     }
@@ -616,19 +563,19 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
         if (cachedAppVersion !== this.appVersion) {
             this._sponsorSectionVisible = false;
-            this.showAboutModal();
+            void this.showAboutModal();
             await this.setCacheItem('appVersion', this.appVersion);
         } else {
             if (this._platform.is('android') || this._platform.is('ios')) {
                 try {
                     // Sponsors
-                    const sStr = await this._firebaseX.getValue('sponsors');
+                    const sStr = (await this._firebaseX.getValue('sponsors')) as string;
                     const sponsorList = JSON.parse(sStr) as Sponsor[];
                     this._sponsors = sponsorList.filter(
                         (s) => !s.inactive && (s.expiresIn == null || s.expiresIn >= Date.now())
                     );
 
-                    const svStr = await this._firebaseX.getValue('sponsorSectionVisible');
+                    const svStr = (await this._firebaseX.getValue('sponsorSectionVisible')) as string;
                     this._sponsorSectionVisible = svStr === 'true' ? true : false;
                 } catch (err) {
                     // Do nothing
@@ -663,13 +610,56 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
     }
 
-    private async handlePlatformReady(): Promise<void> {
-        this.handleWelcomeScreen();
+    private handlePlatformReady(): void {
+        void this.handleWelcomeScreen();
 
         if (this._platform.is('android') || this._platform.is('ios')) {
-            this.handleWebIntent();
+            void this.handleWebIntent();
             this.handleDynamicLinks();
-            this.handlePromptForRating();
+            void this.handlePromptForRating();
+        }
+    }
+
+    private async handleBackButton(): Promise<void> {
+        const ele = await this._modalController.getTop();
+        if (ele) {
+            void this._modalController.dismiss({
+                dismissed: true
+            });
+
+            return;
+        }
+
+        const isMenuOpened = await this._menuController.isOpen();
+        if (isMenuOpened) {
+            void this._menuController.close();
+
+            this._logService.trackEvent({
+                name: 'close_drawer_menu',
+                properties: {
+                    action: 'close',
+                    app_version: appSettings.appVersion,
+                    app_platform: 'android'
+                }
+            });
+
+            return;
+        }
+
+        if (new Date().getTime() - this._lastTimeBackPress < this._timePeriodToExit) {
+            this._logService.flush();
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+            (navigator as any).app.exitApp();
+        } else {
+            const toast = await this._toastController.create({
+                message: 'Press back again to exit the app.',
+                duration: 2000
+            });
+
+            void toast.present();
+
+            this._lastTimeBackPress = new Date().getTime();
         }
     }
 
