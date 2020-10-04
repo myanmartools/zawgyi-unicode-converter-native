@@ -132,8 +132,10 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "styles": [],
-            "scripts": [],
+            "codeCoverageExclude": [
+              "**/test.ts",
+              "**/index.ts"
+            ],
             "assets": [
               {
                 "glob": "favicon.ico",
@@ -150,10 +152,25 @@
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               }
-            ]
+            ],
+            "styles": [
+              {
+                "input": "src/theme/variables.scss"
+              },
+              {
+                "input": "src/styles.scss"
+              }
+            ],
+            "scripts": []
+       
           },
           "configurations": {
             "ci": {
+              "browsers": "ChromeHeadlessCI",
+              "reporters": [
+                "progress",
+                "junit"
+              ],
               "progress": false,
               "watch": false
             }
