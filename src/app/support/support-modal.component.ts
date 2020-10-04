@@ -18,11 +18,10 @@ import { ModalController } from '@ionic/angular';
     templateUrl: 'support-modal.component.html'
 })
 export class SupportModalComponent {
-    constructor(private readonly _modalController: ModalController) { }
+    constructor(private readonly _modalController: ModalController) {}
 
     dismissModal(): void {
-        // tslint:disable-next-line: no-floating-promises
-        this._modalController.dismiss({
+        void this._modalController.dismiss({
             dismissed: true
         });
     }
