@@ -48,6 +48,7 @@ export type SourceEnc = 'auto' | DetectedEnc;
 })
 export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     fontEncSelectedText = 'AUTO DETECT';
+    textAreaAutoGrow: boolean;
 
     private readonly _sourcePlaceholderAuto = 'Enter Zawgyi or Unicode text here';
     private readonly _sourcePlaceholderZg = 'Enter Zawgyi text here';
@@ -151,28 +152,28 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         return this._outText;
     }
 
-    get textAreaMinRows(): number {
-        const platformHeight = this._platform.height();
+    // get textAreaMinRows(): number {
+    //     const platformHeight = this._platform.height();
 
-        // iPhone: 568, 640, 667,  736, 812,  896
-        //  Android: 640, 732, 740, 824, 847,  853
+    //     // iPhone: 568, 640, 667,  736, 812,  896
+    //     //  Android: 640, 732, 740, 824, 847,  853
 
-        if (platformHeight >= 900) {
-            return 10;
-        } else if (platformHeight >= 820) {
-            return 9;
-        } else if (platformHeight >= 730) {
-            return 8;
-        } else if (platformHeight >= 640) {
-            return 7;
-        } else if (platformHeight >= 580) {
-            return 6;
-        } else if (platformHeight >= 540) {
-            return 5;
-        } else {
-            return 4;
-        }
-    }
+    //     if (platformHeight >= 900) {
+    //         return 10;
+    //     } else if (platformHeight >= 820) {
+    //         return 9;
+    //     } else if (platformHeight >= 730) {
+    //         return 8;
+    //     } else if (platformHeight >= 640) {
+    //         return 7;
+    //     } else if (platformHeight >= 580) {
+    //         return 6;
+    //     } else if (platformHeight >= 540) {
+    //         return 5;
+    //     } else {
+    //         return 4;
+    //     }
+    // }
 
     get sourcePlaceholderText(): string {
         return this._sourcePlaceholderText || this._sourcePlaceholderAuto;
@@ -284,6 +285,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             )
             .subscribe((result: TranslitResult) => {
                 this._outText = result.outputText || '';
+                if (!this.textAreaAutoGrow) {
+                    this.textAreaAutoGrow = true;
+                }
 
                 if (!environment.production && this._sourceText === '_CrashlyticsTest_') {
                     this._logService.fatal('', {});

@@ -130,9 +130,9 @@
                         <ion-item>
                             <ion-label position="floating" *ngIf="sourceEncLabel">{{sourceEncLabel}}</ion-label>
                             <ion-textarea class="myanmar-text" [placeholder]="sourcePlaceholderText"
-                                [rows]="textAreaMinRows" spellcheck="false" [(ngModel)]="sourceText"
+                                spellcheck="false" [(ngModel)]="sourceText"
                                 [class.my-uni]="!detectedEnc || detectedEnc == 'uni'"
-                                [class.my-zg]="detectedEnc == 'zg'">
+                                [class.my-zg]="detectedEnc == 'zg'" [autoGrow]="textAreaAutoGrow">
                             </ion-textarea>
                         </ion-item>
                     </ion-col>
@@ -140,9 +140,9 @@
                         <ion-item>
                             <ion-label position="floating" *ngIf="targeetEncLabel">{{targeetEncLabel}}</ion-label>
                             <ion-textarea class="myanmar-text" [placeholder]="targetPlaceholderText"
-                                [rows]="textAreaMinRows" spellcheck="false" [ngModel]="outText"
+                                spellcheck="false" [ngModel]="outText"
                                 [class.my-uni]="targetEnc == 'uni'" [class.my-zg]="!targetEnc || targetEnc == 'zg'"
-                                [readonly]="!outText"></ion-textarea>
+                                [readonly]="!outText" [autoGrow]="textAreaAutoGrow"></ion-textarea>
                         </ion-item>
                     </ion-col>
                 </ion-row>
