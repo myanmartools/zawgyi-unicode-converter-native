@@ -11,9 +11,9 @@ import { Injectable } from '@angular/core';
 import {
     EventInfo,
     EventTimingInfo,
+    LogLevel,
     Logger,
     LoggerProvider,
-    LogLevel,
     PageViewInfo,
     PageViewTimingInfo
 } from '@dagonmetric/ng-log';
@@ -46,10 +46,7 @@ export class IonicFirebaseAnalyticsLoggerProvider extends Logger implements Logg
             return this._currentLogger;
         }
 
-        this._currentLogger = new IonicFirebaseAnalyticsLogger(
-            '',
-            this._userInfo,
-            this._analytics);
+        this._currentLogger = new IonicFirebaseAnalyticsLogger('', this._userInfo, this._analytics);
 
         return this._currentLogger;
     }
@@ -62,10 +59,7 @@ export class IonicFirebaseAnalyticsLoggerProvider extends Logger implements Logg
     }
 
     createLogger(category: string): Logger {
-        return new IonicFirebaseAnalyticsLogger(
-            category,
-            this._userInfo,
-            this._analytics);
+        return new IonicFirebaseAnalyticsLogger(category, this._userInfo, this._analytics);
     }
 
     setUserProperties(userId: string, accountId?: string): void {
