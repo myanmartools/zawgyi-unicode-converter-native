@@ -24,48 +24,6 @@
       "groupName": "angular"
     },
     {
-      "packagePatterns": [
-        "^@ionic-native\/.*"
-      ],
-      "groupName": "ionic-native"
-    },
-    {
-      "packagePatterns": [
-        "^@ionic\/.*"
-      ],
-      "groupName": "ionic"
-    },
-    {
-      "packagePatterns": [
-        "^@dagonmetric\/.*"
-      ],
-      "groupName": "dagonmetric"
-    },
-    {
-      "packagePatterns": [
-        "^@myanmartools\/.*"
-      ],
-      "groupName": "myanmartools"
-    },
-    {
-      "packagePatterns": [
-        "^@types\/.*"
-      ],
-      "groupName": "types"
-    },
-    {
-      "packagePatterns": ["^jasmine.*"],
-      "groupName": "jasmine"
-    },
-    {
-      "packagePatterns": ["^karma.*"],
-      "groupName": "karma"
-    },
-    {
-      "packagePatterns": ["^protractor.*"],
-      "groupName": "protractor"
-    },
-    {
       "packageNames": ["cordova-plugin-apprate"],
       "automerge": false
     }
