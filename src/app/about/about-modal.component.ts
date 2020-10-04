@@ -63,7 +63,6 @@ export class AboutModalComponent {
         const socialSharingMessage = appSettings.socialSharing.message;
 
         try {
-            // tslint:disable-next-line: no-floating-promises
             await this._socialSharing.shareWithOptions({
                 message: socialSharingMessage,
                 subject: socialSharingSubject,
