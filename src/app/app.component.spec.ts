@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, async } from '@angular/core/testing';
 
 import { Platform } from '@ionic/angular';
 
@@ -7,8 +7,6 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
-
-// tslint:disable: no-any no-unsafe-any no-floating-promises
 
 describe('AppComponent', () => {
     let statusBarSpy: any;
@@ -28,8 +26,8 @@ describe('AppComponent', () => {
             providers: [
                 { provide: StatusBar, useValue: statusBarSpy },
                 { provide: SplashScreen, useValue: splashScreenSpy },
-                { provide: Platform, useValue: platformSpy },
-            ],
+                { provide: Platform, useValue: platformSpy }
+            ]
         }).compileComponents();
     }));
 
