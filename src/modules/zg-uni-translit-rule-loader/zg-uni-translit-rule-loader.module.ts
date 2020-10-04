@@ -23,4 +23,4 @@ import { ZgUniTranslitRuleLoader } from './zg-uni-translit-rule-loader';
         }
     ]
 })
-export class ZgUniTranslitRuleLoaderModule { }
+export class ZgUniTranslitRuleLoaderModule {}
