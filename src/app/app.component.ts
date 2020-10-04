@@ -312,7 +312,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             try {
                 const ele = await this._modalController.getTop();
                 if (ele) {
-                    // tslint:disable-next-line: no-floating-promises
                     this._modalController.dismiss({
                         dismissed: true
                     });
@@ -384,7 +383,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         const socialSharingMessage = appSettings.socialSharing.message;
 
         try {
-            // tslint:disable-next-line: no-floating-promises
             await this._socialSharing.shareWithOptions({
                 message: socialSharingMessage,
                 subject: socialSharingSubject,
@@ -396,8 +394,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 message: 'Thank you for sharing the app 😊.',
                 duration: 2000
             });
-            // tslint:disable-next-line: no-floating-promises
-            toast.present();
+
+            void toast.present();
 
             this._logService.trackEvent({
                 name: 'share',
@@ -408,7 +406,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
             });
         } catch (err) {
-            // tslint:disable-next-line: no-unsafe-any
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const errMsg = err && err.message ? ` ${err.message}` : '';
             this._logService.error(`An error occurs when sharing via Web API.${errMsg}`);
         }
@@ -725,10 +723,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             // handleNegativeFeedback: () => {
             //     window.open('mailto:app-support@dagonmetric.com', '_system');
             // },
-            // // tslint:disable-next-line: no-any
+
             // onRateDialogShow: (cb: any) => {
             //     // cause immediate click on 'Rate Now' button
-            //     // tslint:disable-next-line: no-unsafe-any
             //     cb(1);
             // },
             onButtonClicked: async (buttonIndex?: number) => {
