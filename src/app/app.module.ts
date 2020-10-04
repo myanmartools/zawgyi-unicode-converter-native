@@ -23,8 +23,6 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 
-import { ConfigModule } from '@dagonmetric/ng-config';
-import { StaticConfigLoaderModule } from '@dagonmetric/ng-config/static-loader';
 import { LogModule } from '@dagonmetric/ng-log';
 import { ConsoleLoggerModule } from '@dagonmetric/ng-log/console';
 import { TranslitModule } from '@dagonmetric/ng-translit';
@@ -35,71 +33,22 @@ import { environment } from '../environments/environment';
 import { IonicFirebaseAnalyticsLoggerModule } from '../modules/ng-log-ionic-firebase-analytics';
 import { ZgUniTranslitRuleLoaderModule } from '../modules/zg-uni-translit-rule-loader';
 
-import { AppConfig } from './shared';
-
 import { AppComponent } from './app.component';
 
 import { AboutModalComponent } from './about/about-modal.component';
 import { SupportModalComponent } from './support/support-modal.component';
 
-export const settings: { app: AppConfig } = {
-    app: {
-        appName: 'Zawgyi Unicode Converter',
-        appVersion: '3.7.0',
-        appThemeColor: '#8764B8',
-        storeAppUrlInfo: {
-            android: 'market://details?id=com.dagonmetric.zawgyiunicodeconverter'
-        },
-        navLinks: [
-            {
-                url: 'https://myanmartools.org',
-                label: 'Explore Myanmar Tools',
-                iconName: 'logo-myanmartools-24'
-            },
-            {
-                url: 'https://www.facebook.com/DagonMetric',
-                label: 'Posts on Facebook',
-                iconName: 'logo-facebook-24'
-            },
-            {
-                url: 'https://www.youtube.com/channel/UCbJLAOU-kG6vkBOU1TSM5Cw',
-                label: 'Videos on YouTube',
-                iconName: 'logo-youtube-24'
-            },
-            {
-                url: 'https://github.com/myanmartools/zawgyi-unicode-converter-native',
-                label: 'Source code on GitHub',
-                iconName: 'logo-github-24'
-            }
-        ],
-        socialSharing: {
-            subject: 'Zawgyi Unicode Converter app you may also like',
-            message: 'ဇော်ဂျီ ယူနီကုဒ် ဖတ်မရတဲ့ အခက်အခဲရှိနေသူများအတွက် ဇော်ဂျီကနေ ယူနီကုဒ်၊ ယူနီကုဒ်ကနေ ဇော်ဂျီ အပြန်အလှန် အလိုအလျောက် ပြောင်းပေးတဲ့ app တစ်ခု မျှဝေလိုက်ပါတယ်။',
-            linkUrl: 'https://myanmartools.org/apps/zawgyi-unicode-converter'
-        },
-        privacyUrl: 'https://privacy.dagonmetric.com/privacy-statement'
-    }
-};
-
 /**
  * App module for both node and web platforms.
  */
 @NgModule({
-    declarations: [
-        AppComponent,
-        AboutModalComponent,
-        SupportModalComponent
-    ],
+    declarations: [AppComponent, AboutModalComponent, SupportModalComponent],
     imports: [
         BrowserModule,
         CommonModule,
         FormsModule,
 
         IonicModule.forRoot(),
-
-        // ng-config modules
-        ConfigModule.init(),
-        StaticConfigLoaderModule.withSettings(settings),
 
         // ng-log modules
         LogModule.withConfig({
@@ -130,9 +79,6 @@ export const settings: { app: AppConfig } = {
         WebIntent
     ],
     bootstrap: [AppComponent],
-    entryComponents: [
-        AboutModalComponent,
-        SupportModalComponent
-    ]
+    entryComponents: [AboutModalComponent, SupportModalComponent]
 })
-export class AppModule { }
+export class AppModule {}
