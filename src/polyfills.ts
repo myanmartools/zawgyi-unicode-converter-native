@@ -6,8 +6,5 @@
  * found under the LICENSE file in the root directory of this source tree.
  */
 
-// tslint:disable: no-import-side-effect
-
 import './zone-flags.ts';
-
 import 'zone.js/dist/zone';
