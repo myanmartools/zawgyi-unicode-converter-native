@@ -8,7 +8,7 @@
 
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 
-import { of, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 
 import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
@@ -24,7 +24,6 @@ import { WebIntent } from '@ionic-native/web-intent/ngx';
 
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
-import { ConfigService } from '@dagonmetric/ng-config';
 import { LogService } from '@dagonmetric/ng-log';
 import { TranslitResult, TranslitService } from '@dagonmetric/ng-translit';
 
@@ -32,7 +31,7 @@ import { DetectedEnc, ZawgyiDetector } from '@myanmartools/ng-zawgyi-detector';
 
 import { environment } from '../environments/environment';
 
-import { AppConfig, NavLinkItem, Sponsor } from './shared';
+import { NavLinkItem, Sponsor, appSettings } from './shared';
 
 import { AboutModalComponent } from './about/about-modal.component';
 import { SupportModalComponent } from './support/support-modal.component';
@@ -50,7 +49,6 @@ export type SourceEnc = 'auto' | DetectedEnc;
 export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     fontEncSelectedText = 'AUTO DETECT';
 
-    private readonly _appConfig: AppConfig;
     private readonly _sourcePlaceholderAuto = 'Enter Zawgyi or Unicode text here';
     private readonly _sourcePlaceholderZg = 'Enter Zawgyi text here';
     private readonly _sourcePlaceholderUni = 'Enter Unicode text here';
@@ -86,19 +84,19 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private _appThemeColor: string;
 
     get appName(): string {
-        return this._appConfig.appName;
+        return appSettings.appName;
     }
 
     get appVersion(): string {
-        return this._appConfig.appVersion;
+        return appSettings.appVersion;
     }
 
     get navLinks(): NavLinkItem[] {
-        return this._appConfig.navLinks || [];
+        return appSettings.navLinks || [];
     }
 
     get privacyUrl(): string | undefined {
-        return this._appConfig.privacyUrl;
+        return appSettings.privacyUrl;
     }
 
     get detectedEnc(): DetectedEnc {
@@ -194,7 +192,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             name: value ? 'change_dark_mode' : 'change_light_mode',
             properties: {
                 mode: value ? 'dark' : 'light',
-                app_version: this._appConfig.appVersion,
+                app_version: appSettings.appVersion,
                 app_platform: 'android'
             }
         });
@@ -224,91 +222,89 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         private readonly _webIntent: WebIntent,
         private readonly _nativeStorage: NativeStorage,
         private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
-        private readonly _firebaseX: FirebaseX,
-        configService: ConfigService) {
-        this._appConfig = configService.getValue<AppConfig>('app');
-        this._appThemeColor = this._appConfig.appThemeColor;
+        private readonly _firebaseX: FirebaseX
+    ) {
+        this._appThemeColor = appSettings.appThemeColor;
         this.initializeApp();
     }
 
     ngOnInit(): void {
-        this._translitSubject.pipe(
-            debounceTime(200),
-            distinctUntilChanged(),
-            takeUntil(this._destroyed),
-            switchMap(() => {
-                const input = this._sourceText;
-                if (!input || !input.trim().length) {
-                    if (this._sourceEnc === 'auto' || !this.detectedEnc) {
-                        this.resetFontEncSelectedText();
-                        this._sourceEnc = 'auto';
-                        this._detectedEnc = null;
-                    }
-
-                    return of({
-                        outputText: input,
-                        replaced: false,
-                        duration: 0
-                    });
-                }
-
-                if (this._sourceEnc === 'auto' || !this.detectedEnc) {
-                    const detectorResult = this._zawgyiDetector.detect(input, { detectMixType: false });
-                    this._detectedEnc = detectorResult.detectedEnc;
-
-                    if (detectorResult.detectedEnc === 'zg') {
-                        this.resetFontEncSelectedText('ZAWGYI DETECTED');
-                        this._sourceEnc = 'auto';
-                        this._detectedEnc = 'zg';
-                        this._targetEnc = 'uni';
-                    } else if (detectorResult.detectedEnc === 'uni') {
-                        this.resetFontEncSelectedText('UNICODE DETECTED');
-                        this._sourceEnc = 'auto';
-                        this._detectedEnc = 'uni';
-                        this._targetEnc = 'zg';
-                    } else {
-                        this.resetFontEncSelectedText();
-                        this._sourceEnc = 'auto';
-                        this._detectedEnc = null;
+        this._translitSubject
+            .pipe(
+                debounceTime(200),
+                distinctUntilChanged(),
+                takeUntil(this._destroyed),
+                switchMap(() => {
+                    const input = this._sourceText;
+                    if (!input || !input.trim().length) {
+                        if (this._sourceEnc === 'auto' || !this.detectedEnc) {
+                            this.resetFontEncSelectedText();
+                            this._sourceEnc = 'auto';
+                            this._detectedEnc = null;
+                        }
 
                         return of({
-                            replaced: false,
                             outputText: input,
+                            replaced: false,
                             duration: 0
                         });
                     }
+
+                    if (this._sourceEnc === 'auto' || !this.detectedEnc) {
+                        const detectorResult = this._zawgyiDetector.detect(input, { detectMixType: false });
+                        this._detectedEnc = detectorResult.detectedEnc;
+
+                        if (detectorResult.detectedEnc === 'zg') {
+                            this.resetFontEncSelectedText('ZAWGYI DETECTED');
+                            this._sourceEnc = 'auto';
+                            this._detectedEnc = 'zg';
+                            this._targetEnc = 'uni';
+                        } else if (detectorResult.detectedEnc === 'uni') {
+                            this.resetFontEncSelectedText('UNICODE DETECTED');
+                            this._sourceEnc = 'auto';
+                            this._detectedEnc = 'uni';
+                            this._targetEnc = 'zg';
+                        } else {
+                            this.resetFontEncSelectedText();
+                            this._sourceEnc = 'auto';
+                            this._detectedEnc = null;
+
+                            return of({
+                                replaced: false,
+                                outputText: input,
+                                duration: 0
+                            });
+                        }
+                    }
+
+                    this._curRuleName = this.detectedEnc === 'zg' ? 'zg2uni' : 'uni2zg';
+
+                    return this._translitService.translit(input, this._curRuleName).pipe(takeUntil(this._destroyed));
+                })
+            )
+            .subscribe((result: TranslitResult) => {
+                this._outText = result.outputText || '';
+
+                if (!environment.production && this._sourceText === '_CrashlyticsTest_') {
+                    this._logService.fatal('', {});
                 }
 
-                this._curRuleName = this.detectedEnc === 'zg' ? 'zg2uni' : 'uni2zg';
+                if (this._sourceText.length && this._curRuleName && result.replaced) {
+                    this._logService.trackEvent({
+                        name: `convert_${this._curRuleName}`,
+                        properties: {
+                            method: this._curRuleName,
+                            input_length: this._sourceText.length,
+                            duration_msec: result.duration,
+                            source: this._convertSource,
+                            app_version: appSettings.appVersion,
+                            app_platform: 'android'
+                        }
+                    });
 
-                return this._translitService.translit(input, this._curRuleName)
-                    .pipe(
-                        takeUntil(this._destroyed)
-                    );
-            })
-        ).subscribe((result: TranslitResult) => {
-            this._outText = result.outputText || '';
-
-            if (!environment.production && this._sourceText === '_CrashlyticsTest_') {
-                this._logService.fatal('', {});
-            }
-
-            if (this._sourceText.length && this._curRuleName && result.replaced) {
-                this._logService.trackEvent({
-                    name: `convert_${this._curRuleName}`,
-                    properties: {
-                        method: this._curRuleName,
-                        input_length: this._sourceText.length,
-                        duration_msec: result.duration,
-                        source: this._convertSource,
-                        app_version: this._appConfig.appVersion,
-                        app_platform: 'android'
-                    }
-                });
-
-                this._convertSource = 'direct';
-            }
-        });
+                    this._convertSource = 'direct';
+                }
+            });
     }
 
     ngAfterViewInit(): void {
@@ -330,14 +326,13 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             try {
                 const isMenuOpened = await this._menuController.isOpen();
                 if (isMenuOpened) {
-                    // tslint:disable-next-line: no-floating-promises
                     this._menuController.close();
 
                     this._logService.trackEvent({
                         name: 'close_drawer_menu',
                         properties: {
                             action: 'close',
-                            app_version: this._appConfig.appVersion,
+                            app_version: appSettings.appVersion,
                             app_platform: 'android'
                         }
                     });
@@ -351,14 +346,13 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             if (new Date().getTime() - this._lastTimeBackPress < this._timePeriodToExit) {
                 this._logService.flush();
 
-                // tslint:disable-next-line: no-any no-unsafe-any no-string-literal
-                (navigator as any)['app'].exitApp();
+                (navigator as any).app.exitApp();
             } else {
                 const toast = await this._toastController.create({
                     message: 'Press back again to exit the app.',
                     duration: 2000
                 });
-                // tslint:disable-next-line: no-floating-promises
+
                 toast.present();
 
                 this._lastTimeBackPress = new Date().getTime();
@@ -384,10 +378,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     async showShareSheet(): Promise<void> {
         this._sponsorSectionVisible = false;
 
-        this._appConfig.socialSharing = this._appConfig.socialSharing || {};
-        const socialSharingSubject = this._appConfig.socialSharing.subject;
-        const socialSharingLink = this._appConfig.socialSharing.linkUrl;
-        const socialSharingMessage = this._appConfig.socialSharing.message;
+        appSettings.socialSharing = appSettings.socialSharing || {};
+        const socialSharingSubject = appSettings.socialSharing.subject;
+        const socialSharingLink = appSettings.socialSharing.linkUrl;
+        const socialSharingMessage = appSettings.socialSharing.message;
 
         try {
             // tslint:disable-next-line: no-floating-promises
@@ -409,7 +403,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 name: 'share',
                 properties: {
                     method: 'Social Sharing Native',
-                    app_version: this._appConfig.appVersion,
+                    app_version: appSettings.appVersion,
                     app_platform: 'android'
                 }
             });
@@ -428,12 +422,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 name: 'rate',
                 properties: {
                     method: 'App Rate Native',
-                    app_version: this._appConfig.appVersion,
+                    app_version: appSettings.appVersion,
                     app_platform: 'android'
                 }
             });
         } catch (err) {
-            // tslint:disable-next-line: no-unsafe-any
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const errMsg = err && err.message ? ` ${err.message}` : '';
             this._logService.error(`An error occurs while calling _appRate.promptForRating() method.${errMsg}`);
         }
@@ -445,7 +439,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             name: isOpened ? 'open_drawer_menu' : 'close_drawer_menu',
             properties: {
                 action: isOpened ? 'open' : 'close',
-                app_version: this._appConfig.appVersion,
+                app_version: appSettings.appVersion,
                 app_platform: 'android'
             }
         });
@@ -456,8 +450,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             component: AboutModalComponent
         });
 
-        // tslint:disable-next-line: no-floating-promises
-        modal.onDidDismiss().then(() => {
+        void modal.onDidDismiss().then(() => {
             this._logService.trackEvent({
                 name: 'screen_view',
                 properties: {
@@ -482,8 +475,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             component: SupportModalComponent
         });
 
-        // tslint:disable-next-line: no-floating-promises
-        modal.onDidDismiss().then(() => {
+        void modal.onDidDismiss().then(() => {
             this._logService.trackEvent({
                 name: 'screen_view',
                 properties: {
@@ -504,7 +496,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private initializeApp(): void {
-        this._platform.ready().then(async () => {
+        void this._platform.ready().then(async () => {
             await this.initRemoteConfigs();
 
             if (this._platform.is('android') || this._platform.is('ios')) {
@@ -537,20 +529,13 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 this.registerBroadcastReceiverAndroid();
             }
 
-            this._platform.pause
-                .pipe(
-                    takeUntil(this._destroyed),
-                ).subscribe(() => {
-                    this.onPlatformPaused();
-                });
+            this._platform.pause.pipe(takeUntil(this._destroyed)).subscribe(() => {
+                this.onPlatformPaused();
+            });
 
-            this._platform.resume
-                .pipe(
-                    takeUntil(this._destroyed),
-                )
-                .subscribe(() => {
-                    this.onPlatformResumed();
-                });
+            this._platform.resume.pipe(takeUntil(this._destroyed)).subscribe(() => {
+                this.onPlatformResumed();
+            });
 
             await this.handlePlatformReady();
         });
@@ -570,6 +555,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
             await this._firebaseX.activateFetched();
         } catch (err) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const errMsg = err && err.message ? ` ${err.message}` : '';
             this._logService.error(`An error occurs while fetching firebase remote config.${errMsg}`);
         }
@@ -589,13 +575,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
                     return;
                 }
-
             } catch (err) {
                 // Do nothing
             }
         }
 
-        let isDarkModeCached = await this.getCacheItem('isDarkMode');
+        const isDarkModeCached = await this.getCacheItem('isDarkMode');
         if (isDarkModeCached && (isDarkModeCached.toLowerCase() === 'true' || isDarkModeCached.toLowerCase() === '1')) {
             this.setDarkMode(true);
         } else {
@@ -605,7 +590,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 this.setDarkMode(darkModeMediaQuery.matches);
 
                 if (darkModeMediaQuery.addEventListener) {
-                    darkModeMediaQuery.addEventListener('change', mediaQuery => {
+                    darkModeMediaQuery.addEventListener('change', (mediaQuery) => {
                         this.setDarkMode(mediaQuery.matches);
                     });
                 }
@@ -619,17 +604,16 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._isDarkMode = value;
         this.toggleDarkTheme(value);
 
-        this.setCacheItem('isDarkMode', `${value}`.toLocaleLowerCase())
-            .then(() => {
-                // Do nothing
-            });
+        this.setCacheItem('isDarkMode', `${value}`.toLocaleLowerCase()).then(() => {
+            // Do nothing
+        });
     }
 
     private toggleDarkTheme(isDark: boolean): void {
         document.body.classList.toggle('dark', isDark);
     }
 
-    private async  handleWelcomeScreen(): Promise<void> {
+    private async handleWelcomeScreen(): Promise<void> {
         const cachedAppVersion = await this.getCacheItem('appVersion');
 
         if (cachedAppVersion !== this.appVersion) {
@@ -642,7 +626,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                     // Sponsors
                     const sStr = await this._firebaseX.getValue('sponsors');
                     const sponsorList = JSON.parse(sStr) as Sponsor[];
-                    this._sponsors = sponsorList.filter(s => !s.inactive && (s.expiresIn == null || s.expiresIn >= Date.now()));
+                    this._sponsors = sponsorList.filter(
+                        (s) => !s.inactive && (s.expiresIn == null || s.expiresIn >= Date.now())
+                    );
 
                     const svStr = await this._firebaseX.getValue('sponsorSectionVisible');
                     this._sponsorSectionVisible = svStr === 'true' ? true : false;
@@ -675,9 +661,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private registerBroadcastReceiverAndroid(): void {
         this._webIntent.registerBroadcastReceiver({
-            filterActions: [
-                'com.darryncampbell.cordova.plugin.broadcastIntent.ACTION'
-            ]
+            filterActions: ['com.darryncampbell.cordova.plugin.broadcastIntent.ACTION']
         });
     }
 
@@ -692,7 +676,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async handlePromptForRating(): Promise<void> {
-        const storeAppUrlInfo = this._appConfig.storeAppUrlInfo;
+        const storeAppUrlInfo = appSettings.storeAppUrlInfo;
 
         let ratePromptedCount = 0;
         let rateButtonTouchCount = 0;
@@ -750,19 +734,17 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             onButtonClicked: async (buttonIndex?: number) => {
                 if (buttonIndex === 3) {
                     ++rateButtonTouchCount;
-                    // tslint:disable-next-line: no-floating-promises
-                    this.setCacheItem('rateButtonTouchCount', `${rateButtonTouchCount}`);
+                    void this.setCacheItem('rateButtonTouchCount', `${rateButtonTouchCount}`);
 
                     const toast = await this._toastController.create({
                         message: 'Thank you for your review.',
                         duration: 2000
                     });
-                    // tslint:disable-next-line: no-floating-promises
-                    toast.present();
+
+                    void toast.present();
                 } else {
                     ++ratePromptedCount;
-                    // tslint:disable-next-line: no-floating-promises
-                    this.setCacheItem('ratePromptedCount', `${ratePromptedCount}`);
+                    void this.setCacheItem('ratePromptedCount', `${ratePromptedCount}`);
                 }
             }
         };
@@ -774,21 +756,23 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         try {
             this._appRate.promptForRating(false);
         } catch (err) {
-            // tslint:disable-next-line: no-unsafe-any
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const errMsg = err && err.message ? ` ${err.message}` : '';
             this._logService.error(`An error occurs while calling _appRate.promptForRating() method.${errMsg}`);
         }
     }
 
     private handleDynamicLinks(): void {
-        this._firebaseDynamicLinks.onDynamicLink()
-            .subscribe(() => {
+        this._firebaseDynamicLinks.onDynamicLink().subscribe(
+            () => {
                 // Do nothing
-            }, err => {
-                // tslint:disable-next-line: no-unsafe-any
+            },
+            (err) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 const errMsg = err && err.message ? ` ${err.message}` : '';
                 this._logService.error(`An error occurs on receiving dynamic link.${errMsg}`);
-            });
+            }
+        );
     }
 
     private async handleWebIntent(): Promise<void> {
@@ -803,7 +787,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                         properties: {
                             action: intent.action,
                             type: intent.type,
-                            app_version: this._appConfig.appVersion,
+                            app_version: appSettings.appVersion,
                             app_platform: 'android'
                         }
                     });
@@ -814,7 +798,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
             }
         } catch (err) {
-            // tslint:disable-next-line: no-unsafe-any
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const errMsg = err && err.message ? ` ${err.message}` : '';
             this._logService.error(`An error occurs while calling _webIntent.getIntent() method.${errMsg}`);
         }
@@ -851,7 +835,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             name: `change_input_font_${this.sourceEnc}`,
             properties: {
                 font_enc: this.sourceEnc,
-                app_version: this._appConfig.appVersion,
+                app_version: appSettings.appVersion,
                 app_platform: 'android'
             }
         });
@@ -904,6 +888,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
 
         try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const cachedValue = await this._nativeStorage.getItem(key);
             if (cachedValue != null) {
                 return cachedValue as string;
