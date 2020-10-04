@@ -24,4 +24,4 @@ import { IonicFirebaseAnalyticsLoggerProvider } from './ionic-firebase-analytics
         }
     ]
 })
-export class IonicFirebaseAnalyticsLoggerModule { }
+export class IonicFirebaseAnalyticsLoggerModule {}
