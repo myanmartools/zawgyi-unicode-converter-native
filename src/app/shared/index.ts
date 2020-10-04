@@ -7,6 +7,7 @@
  */
 
 export * from './app-config';
+export * from './app-settings';
 export * from './nav-link-item';
 export * from './sponsor';
 export * from './store-app-url-info';
