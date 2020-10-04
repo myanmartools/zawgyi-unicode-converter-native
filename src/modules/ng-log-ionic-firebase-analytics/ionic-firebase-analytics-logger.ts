@@ -6,7 +6,7 @@
  * found under the LICENSE file in the root directory of this source tree.
  */
 
-import { EventInfo, EventTimingInfo, Logger, LogLevel, PageViewInfo, PageViewTimingInfo } from '@dagonmetric/ng-log';
+import { EventInfo, EventTimingInfo, LogLevel, Logger, PageViewInfo, PageViewTimingInfo } from '@dagonmetric/ng-log';
 
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 
@@ -18,10 +18,7 @@ import { UserInfo } from './user-info';
 export class IonicFirebaseAnalyticsLogger extends Logger {
     private readonly _eventTiming: Map<string, number> = new Map<string, number>();
 
-    constructor(
-        readonly name: string,
-        private readonly _userInfo: UserInfo,
-        private readonly _analytics?: FirebaseX) {
+    constructor(readonly name: string, private readonly _userInfo: UserInfo, private readonly _analytics?: FirebaseX) {
         super();
     }
 
@@ -37,7 +34,8 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
         if (logLevel === LogLevel.Error || logLevel === LogLevel.Critical) {
             if (logLevel === LogLevel.Critical && !message) {
                 // Simulates (causes) a fatal native crash
-                analytics.sendCrash()
+                analytics
+                    .sendCrash()
                     .then(() => {
                         // Do nothing;
                     })
@@ -46,7 +44,7 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
                     });
             } else {
                 Promise.resolve(this._userInfo.userId)
-                    .then(async userId => userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve())
+                    .then(async (userId) => (userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve()))
                     .then(() => analytics.logError(messageStr))
                     .then(() => {
                         // Do nothing;
@@ -68,7 +66,7 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
             }
 
             Promise.resolve(this._userInfo.userId)
-                .then(async userId => userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve())
+                .then(async (userId) => (userId ? analytics.setCrashlyticsUserId(userId) : Promise.resolve()))
                 .then(() => analytics.logMessage(`${level}: ${messageStr}`))
                 .then(() => {
                     // Do nothing;
@@ -87,7 +85,9 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
         }
 
         if (this._eventTiming.get(name) != null) {
-            console.error(`The 'startTrackPage' was called more than once for this event without calling stop, name: ${name}.`);
+            console.error(
+                `The 'startTrackPage' was called more than once for this event without calling stop, name: ${name}.`
+            );
 
             return;
         }
@@ -119,11 +119,12 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
             return;
         }
 
-        this._analytics.logEvent('timing_complete', {
-            ...properties,
-            name: 'page_view',
-            value: duration
-        })
+        this._analytics
+            .logEvent('timing_complete', {
+                ...properties,
+                name: 'page_view',
+                value: duration
+            })
             .then(() => {
                 // Do nothing;
             })
@@ -146,7 +147,8 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
             return;
         }
 
-        this._analytics.logEvent('page_view', properties)
+        this._analytics
+            .logEvent('page_view', properties)
             .then(() => {
                 // Do nothing;
             })
@@ -157,7 +159,9 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
 
     startTrackEvent(name: string): void {
         if (this._eventTiming.get(name) != null) {
-            console.error(`The 'startTrackEvent' was called more than once for this event without calling stop, name: ${name}.`);
+            console.error(
+                `The 'startTrackEvent' was called more than once for this event without calling stop, name: ${name}.`
+            );
 
             return;
         }
@@ -182,11 +186,12 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
             return;
         }
 
-        this._analytics.logEvent('timing_complete', {
-            ...properties,
-            name,
-            value: duration
-        })
+        this._analytics
+            .logEvent('timing_complete', {
+                ...properties,
+                name,
+                value: duration
+            })
             .then(() => {
                 // Do nothing;
             })
@@ -203,7 +208,8 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
         if (eventInfo.name === 'screen_view' && eventInfo.properties && eventInfo.properties.screen_name) {
             const screenName = eventInfo.properties.screen_name as string;
 
-            this._analytics.setScreenName(screenName)
+            this._analytics
+                .setScreenName(screenName)
                 .then(() => {
                     // Do nothing;
                 })
@@ -213,7 +219,8 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
         } else {
             const properties = this.getMappedEventProps(eventInfo);
 
-            this._analytics.logEvent(eventInfo.name, eventInfo.properties || properties)
+            this._analytics
+                .logEvent(eventInfo.name, eventInfo.properties || properties)
                 .then(() => {
                     // Do nothing;
                 })
@@ -227,14 +234,12 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
         // Do nothing
     }
 
-    // tslint:disable-next-line: no-any
-    private getMappedEventProps(eventInfo?: EventTimingInfo): { [key: string]: any } {
+    private getMappedEventProps(eventInfo?: EventTimingInfo): { [key: string]: unknown } {
         if (!eventInfo) {
             return {};
         }
 
-        // tslint:disable-next-line: no-any
-        const mappedProps: { [key: string]: any } = {
+        const mappedProps: { [key: string]: unknown } = {
             ...eventInfo.properties,
             ...eventInfo.measurements
         };
@@ -250,14 +255,12 @@ export class IonicFirebaseAnalyticsLogger extends Logger {
         return mappedProps;
     }
 
-    // tslint:disable-next-line: no-any
-    private getMappedPageViewProps(pageViewInfo?: PageViewTimingInfo): { [key: string]: any } {
+    private getMappedPageViewProps(pageViewInfo?: PageViewTimingInfo): { [key: string]: unknown } {
         if (!pageViewInfo) {
             return {};
         }
 
-        // tslint:disable-next-line: no-any
-        const mappedProps: { [key: string]: any } = {
+        const mappedProps: { [key: string]: unknown } = {
             ...pageViewInfo.properties,
             ...pageViewInfo.measurements
         };
