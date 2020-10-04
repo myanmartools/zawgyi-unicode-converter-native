@@ -4,18 +4,11 @@
     "module": "esnext",
     "moduleResolution": "node",
     "experimentalDecorators": true,
-
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-
-    // "strictNullChecks": true,
-    // "stripInternal": true,
-    // "strictPropertyInitialization": true,
-
     "downlevelIteration": true,
     "sourceMap": true,
     "declaration": false,
@@ -28,7 +21,7 @@
     ],
     "baseUrl": "./",
     "rootDir": "./",
-    "outDir": "./dist/out-tsc"
+    "outDir": "./out-tsc"
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
