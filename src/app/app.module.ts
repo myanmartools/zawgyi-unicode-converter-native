@@ -10,6 +10,10 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -36,17 +40,21 @@ import { ZgUniTranslitRuleLoaderModule } from '../modules/zg-uni-translit-rule-l
 import { AppComponent } from './app.component';
 
 import { AboutModalComponent } from './about/about-modal.component';
-import { SupportModalComponent } from './support/support-modal.component';
 
 /**
  * App module for both node and web platforms.
  */
 @NgModule({
-    declarations: [AppComponent, AboutModalComponent, SupportModalComponent],
+    declarations: [AppComponent, AboutModalComponent],
     imports: [
         BrowserModule,
         CommonModule,
         FormsModule,
+
+        BrowserAnimationsModule,
+
+        MatFormFieldModule,
+        MatInputModule,
 
         IonicModule.forRoot(),
 
@@ -79,6 +87,6 @@ import { SupportModalComponent } from './support/support-modal.component';
         WebIntent
     ],
     bootstrap: [AppComponent],
-    entryComponents: [AboutModalComponent, SupportModalComponent]
+    entryComponents: [AboutModalComponent]
 })
 export class AppModule {}
