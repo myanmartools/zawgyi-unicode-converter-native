@@ -429,35 +429,33 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private initializeApp(): void {
         void this._platform.ready().then(async () => {
-            await this.initRemoteConfigs();
-            await this.detectDarkTheme();
-
             if (this._platform.is('android') || this._platform.is('ios')) {
+                await this.initRemoteConfigs();
+                await this.detectDarkTheme();
+
                 this._statusBar.styleLightContent();
-            }
 
-            if (this._platform.is('android')) {
-                this._statusBar.backgroundColorByHexString(`#FF${this._appThemeColor.replace('#', '')}`);
-                void this._headerColor.tint(this._appThemeColor);
-            }
+                if (this._platform.is('android')) {
+                    this._statusBar.backgroundColorByHexString(`#FF${this._appThemeColor.replace('#', '')}`);
+                    void this._headerColor.tint(this._appThemeColor);
+                }
 
-            if (this._platform.is('android') || this._platform.is('ios')) {
                 this._splashScreen.hide();
+
+                if (this._platform.is('android')) {
+                    this.registerBroadcastReceiverAndroid();
+                }
+
+                this._platform.pause.pipe(takeUntil(this._destroyed)).subscribe(() => {
+                    this.onPlatformPaused();
+                });
+
+                this._platform.resume.pipe(takeUntil(this._destroyed)).subscribe(() => {
+                    this.onPlatformResumed();
+                });
+
+                this.handlePlatformReady();
             }
-
-            if (this._platform.is('android')) {
-                this.registerBroadcastReceiverAndroid();
-            }
-
-            this._platform.pause.pipe(takeUntil(this._destroyed)).subscribe(() => {
-                this.onPlatformPaused();
-            });
-
-            this._platform.resume.pipe(takeUntil(this._destroyed)).subscribe(() => {
-                this.onPlatformResumed();
-            });
-
-            this.handlePlatformReady();
         });
     }
 
@@ -592,12 +590,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private handlePlatformReady(): void {
         void this.handleWelcomeScreen();
-
-        if (this._platform.is('android') || this._platform.is('ios')) {
-            void this.handleWebIntent();
-            // this.handleDynamicLinks();
-            void this.handlePromptForRating();
-        }
+        void this.handleWebIntent();
+        // this.handleDynamicLinks();
+        void this.handlePromptForRating();
     }
 
     private async handleBackButton(): Promise<void> {
