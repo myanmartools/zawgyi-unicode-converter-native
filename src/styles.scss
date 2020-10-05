@@ -24,97 +24,8 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
-// Theming
-//
-// @import "variables";
-
-
-$font-size-base: 14px;
-$line-height-base: 20px;
-$font-weight-base: 400;
-
-body {
-    font-size: $font-size-base;
-    line-height: $line-height-base;
-    font-weight: $font-weight-base;
-}
-
-.md {
-    ion-title.title-md {
-        font-size: 16px; // 20px; (Default)
-        font-weight: 400; // 500; (Default)
-
-        // padding-left: 5px; // 20px (Default)
-        // -webkit-user-select: none;
-        // -moz-user-select: none;
-        // -ms-user-select: none;
-        // user-select: none;
-    }
-
-    ion-footer {
-        ion-title.title-md {
-            font-size: $font-size-base;
-        }
-
-        ion-button {
-            font-size: $font-size-base;
-            text-transform: none;
-        }
-    }
-
-    ion-item {
-        font-size: $font-size-base;
-        font-weight: $font-weight-base;
-    }
-
-    ion-select-popover {
-        ion-list {
-            ion-item {
-                --border-width: 0;
-                --inner-border-width: 0;
-            }
-        }
-    }
-
-    ion-textarea {
-        font-size: $font-size-base;
-
-        &.myanmar-text {
-            font-size: 1em;
-            line-height: 1.6;
-            font-weight: 400;
-        }
-
-        &.my-zg {
-            font-family: Zawgyi-One, sans-serif;
-        }
-
-        &.my-uni {
-            font-family: "Noto Sans Myanmar UI", "Myanmar Text", Pyidaungsu, Padauk, Myanmar3, sans-serif;
-        }
-
-        .native-textarea[readonly] {
-            &::placeholder {
-                opacity: .4;
-            }
-        }
-    }
-}
-
-.myanmar-text {
-    font-size: 1em;
-    line-height: 1.6;
-    font-weight: 400;
-}
-
-.my-zg {
-    font-family: Zawgyi-One, sans-serif;
-}
-
-.my-uni {
-    font-family: "Noto Sans Myanmar UI", "Myanmar Text", Pyidaungsu, Padauk, Myanmar3, sans-serif;
-}
-
+// Font faces and font classes
+// ----------------------------------------
 @font-face {
     font-family: 'Zawgyi-One';
     font-style: normal;
@@ -138,3 +49,24 @@ body {
         url(assets/fonts/notosansmyanmarui/NotoSansMyanmarUI-Regular.woff) format('woff'),
         url(assets/fonts/notosansmyanmarui/NotoSansMyanmarUI-Regular.ttf) format('truetype');
 }
+
+.my-zg {
+    font-family: Zawgyi-One, sans-serif;
+    line-height: 1.6;
+}
+
+.my-uni {
+    font-family: "Noto Sans Myanmar UI", "Myanmar Text", Pyidaungsu, Padauk, Myanmar3, sans-serif;
+    line-height: 1.6;
+}
+
+
+// Theming
+// ----------------------------------------
+@import "styles/mat-theme";
+@import "styles/ion-theme";
+
+// Components
+// ----------------------------------------
+@import "styles/mat-components";
+@import "styles/ion-components";
