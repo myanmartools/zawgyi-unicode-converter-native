@@ -14,7 +14,7 @@ import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/o
 import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
-import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
+// import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
@@ -226,7 +226,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         private readonly _appRate: AppRate,
         private readonly _webIntent: WebIntent,
         private readonly _nativeStorage: NativeStorage,
-        private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
+        // private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
         private readonly _firebaseX: FirebaseX
     ) {
         this._appThemeColor = appSettings.appThemeColor;
@@ -595,7 +595,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
         if (this._platform.is('android') || this._platform.is('ios')) {
             void this.handleWebIntent();
-            this.handleDynamicLinks();
+            // this.handleDynamicLinks();
             void this.handlePromptForRating();
         }
     }
@@ -729,18 +729,18 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
     }
 
-    private handleDynamicLinks(): void {
-        this._firebaseDynamicLinks.onDynamicLink().subscribe(
-            () => {
-                // Do nothing
-            },
-            (err) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                const errMsg = err && err.message ? ` ${err.message}` : '';
-                this._logService.error(`An error occurs on receiving dynamic link.${errMsg}`);
-            }
-        );
-    }
+    // private handleDynamicLinks(): void {
+    //     this._firebaseDynamicLinks.onDynamicLink().subscribe(
+    //         () => {
+    //             // Do nothing
+    //         },
+    //         (err) => {
+    //             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    //             const errMsg = err && err.message ? ` ${err.message}` : '';
+    //             this._logService.error(`An error occurs on receiving dynamic link.${errMsg}`);
+    //         }
+    //     );
+    // }
 
     private async handleWebIntent(): Promise<void> {
         try {
