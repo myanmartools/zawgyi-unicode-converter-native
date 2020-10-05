@@ -34,7 +34,6 @@ import { environment } from '../environments/environment';
 import { NavLinkItem, Sponsor, appSettings } from './shared';
 
 import { AboutModalComponent } from './about/about-modal.component';
-import { SupportModalComponent } from './support/support-modal.component';
 
 export type SourceEnc = 'auto' | DetectedEnc;
 
@@ -47,16 +46,14 @@ export type SourceEnc = 'auto' | DetectedEnc;
     styleUrls: ['app.component.scss']
 })
 export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
-    fontEncSelectedText = 'AUTO DETECT';
-    textAreaAutoGrow: boolean;
+    private readonly _selectInputFontText = 'ထည့်သွင်းဖောင့်ရွေးချယ်ရန် (အော်တိုသိရှိ)';
+    private readonly _sourcePlaceholderAuto = 'ဇော်ဂျီ(သို့)ယူနီကုတ်စာသားကိုဤနေရာတွင်ထည့်ပါ';
+    private readonly _sourcePlaceholderZg = 'ဇော်ဂျီစာသားကိုဤနေရာတွင်ထည့်ပါ';
+    private readonly _sourcePlaceholderUni = 'ယူနီကုတ်စာသားကိုဤနေရာတွင်ထည့်ပါ';
 
-    private readonly _sourcePlaceholderAuto = 'Enter Zawgyi or Unicode text here';
-    private readonly _sourcePlaceholderZg = 'Enter Zawgyi text here';
-    private readonly _sourcePlaceholderUni = 'Enter Unicode text here';
-
-    private readonly _targetPlaceholderAuto = 'Converted text will be appeared here';
-    private readonly _targetPlaceholderZg = 'Converted Zawgyi text will be appeared here';
-    private readonly _targetPlaceholderUni = 'Converted Unicode text will be appeared here';
+    private readonly _targetPlaceholderAuto = 'ပြောင်းပြီးစာသားကိုဤနေရာတွင်တွေ့ရမည်';
+    private readonly _targetPlaceholderZg = 'ပြောင်းပြီးဇော်ဂျီစာသားကိုဤနေရာတွင်တွေ့ရမည်';
+    private readonly _targetPlaceholderUni = 'ပြောင်းပြီးယူနီကုတ်စာသားကိုဤနေရာတွင်တွေ့ရမည်';
 
     private readonly _translitSubject = new Subject<string>();
     private readonly _destroyed = new Subject<void>();
@@ -81,6 +78,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private _sponsorSectionVisible = false;
     private _sponsors: Sponsor[] = [];
 
+    private _fontEncSelectedText = this._selectInputFontText;
+
     // Sync configs
     private _appThemeColor: string;
 
@@ -100,27 +99,31 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         return appSettings.privacyUrl;
     }
 
+    get fontEncSelectedText(): string {
+        return this._fontEncSelectedText;
+    }
+
     get detectedEnc(): DetectedEnc {
         return this._detectedEnc;
     }
 
     get sourceEncLabel(): string {
-        if (this._detectedEnc === 'zg') {
+        if (this._detectedEnc === 'zg' && this._sourceText && this._sourceText.trim().length) {
             return 'ZAWGYI';
-        } else if (this._detectedEnc === 'uni') {
+        } else if (this._detectedEnc === 'uni' && this._sourceText && this._sourceText.trim().length) {
             return 'UNICODE';
         } else {
-            return '';
+            return this._sourcePlaceholderAuto;
         }
     }
 
     get targeetEncLabel(): string {
-        if (this._detectedEnc === 'zg') {
+        if (this._detectedEnc === 'zg' && this._outText && this._outText.trim().length) {
             return 'UNICODE';
         } else if (this._detectedEnc === 'uni') {
             return 'ZAWGYI';
         } else {
-            return '';
+            return this._targetPlaceholderAuto;
         }
     }
 
@@ -256,12 +259,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                         this._detectedEnc = detectorResult.detectedEnc;
 
                         if (detectorResult.detectedEnc === 'zg') {
-                            this.resetFontEncSelectedText('ZAWGYI DETECTED');
+                            this.resetFontEncSelectedText('ဇော်ဂျီဟုသိရှိ');
                             this._sourceEnc = 'auto';
                             this._detectedEnc = 'zg';
                             this._targetEnc = 'uni';
                         } else if (detectorResult.detectedEnc === 'uni') {
-                            this.resetFontEncSelectedText('UNICODE DETECTED');
+                            this.resetFontEncSelectedText('ယူနီကုတ်ဟုသိရှိ');
                             this._sourceEnc = 'auto';
                             this._detectedEnc = 'uni';
                             this._targetEnc = 'zg';
@@ -285,9 +288,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             )
             .subscribe((result: TranslitResult) => {
                 this._outText = result.outputText || '';
-                if (!this.textAreaAutoGrow) {
-                    this.textAreaAutoGrow = true;
-                }
 
                 if (!environment.production && this._sourceText === '_CrashlyticsTest_') {
                     this._logService.fatal('', {});
@@ -421,31 +421,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             name: 'screen_view',
             properties: {
                 screen_name: 'About',
-                app_platform: 'android'
-            }
-        });
-    }
-
-    async showHelpModal(): Promise<void> {
-        const modal = await this._modalController.create({
-            component: SupportModalComponent
-        });
-
-        void modal.onDidDismiss().then(() => {
-            this._logService.trackEvent({
-                name: 'screen_view',
-                properties: {
-                    screen_name: 'Home',
-                    app_platform: 'android'
-                }
-            });
-        });
-        await modal.present();
-
-        this._logService.trackEvent({
-            name: 'screen_view',
-            properties: {
-                screen_name: 'Support',
                 app_platform: 'android'
             }
         });
@@ -835,7 +810,13 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private resetFontEncSelectedText(text?: string): void {
-        this.fontEncSelectedText = text || 'AUTO DETECT';
+        if (text) {
+            this._fontEncSelectedText = text;
+        } else if (this._sourceText && this.sourceText.trim().length) {
+            this._fontEncSelectedText = 'ထည့်သွင်းဖောင့်ကိုရွေးချယ်ပါ';
+        } else {
+            this._fontEncSelectedText = this._selectInputFontText;
+        }
     }
 
     private translitNext(): void {

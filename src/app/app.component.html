@@ -3,7 +3,7 @@
         <ion-header>
             <ion-toolbar color="primary">
                 <ion-title>
-                    {{appName}}
+                    <span class="my-uni">ဇော်ဂျီယူနီကုတ်ပြောင်း</span>
                 </ion-title>
             </ion-toolbar>
         </ion-header>
@@ -11,7 +11,7 @@
             <ion-item-group>
                 <ion-item-divider>
                     <ion-label>
-                        Community & Links
+                        <span class="my-uni">အရင်းအမြစ်လင့်များ</span>
                     </ion-label>
                 </ion-item-divider>
                 <ion-list lines="none">
@@ -19,62 +19,29 @@
                         <ion-item [href]="[navLinkItem.url]">
                             <ion-icon slot="start" [name]="navLinkItem.iconName"></ion-icon>
                             <ion-label>
-                                {{navLinkItem.label}}
+                                <span class="my-uni">{{navLinkItem.label}}</span>
                             </ion-label>
                         </ion-item>
-                    </ion-menu-toggle>
-                    <ion-menu-toggle>
-                        <ion-item button (click)="showHelpModal()">
-                            <ion-icon slot="start" name="help-circle"></ion-icon>
-                            <ion-label>
-                                Help & Feedback
-                            </ion-label>
-                        </ion-item>
-                    </ion-menu-toggle>
+                    </ion-menu-toggle>                    
                     <ion-menu-toggle>
                         <ion-item button (click)="showAboutModal()">
                             <ion-icon slot="start" name="information-circle"></ion-icon>
                             <ion-label>
-                                About
+                                <span class="my-uni">ဤ App အကြောင်း</span>
                             </ion-label>
                         </ion-item>
                     </ion-menu-toggle>
                 </ion-list>
-            </ion-item-group>
+            </ion-item-group>            
             <ion-item-group>
                 <ion-item-divider>
                     <ion-label>
-                        Sharing & Review
-                    </ion-label>
-                </ion-item-divider>
-                <ion-list lines="none">
-                    <ion-menu-toggle>
-                        <ion-item button (click)="showShareSheet()">
-                            <ion-icon slot="start" name="share-social"></ion-icon>
-                            <ion-label>
-                                Share
-                            </ion-label>
-                        </ion-item>
-                    </ion-menu-toggle>
-                    <ion-menu-toggle>
-                        <ion-item button (click)="promptForRating()">
-                            <ion-icon slot="start" name="star"></ion-icon>
-                            <ion-label>
-                                Rate
-                            </ion-label>
-                        </ion-item>
-                    </ion-menu-toggle>
-                </ion-list>
-            </ion-item-group>
-            <ion-item-group>
-                <ion-item-divider>
-                    <ion-label>
-                        <h3>Personalization</h3>
+                        <span class="my-uni">စိတ်ကြိုက်ပြုလုပ်ခြင်း</span>
                     </ion-label>
                 </ion-item-divider>
                 <ion-list lines="none">
                     <ion-item>
-                        <ion-label>Dark mode</ion-label>
+                        <ion-label><span class="my-uni">Dark mode အမှောင်စနစ်</span></ion-label>
                         <ion-toggle [(ngModel)]="isDarkMode"></ion-toggle>
                     </ion-item>
                 </ion-list>
@@ -84,14 +51,14 @@
             <ion-toolbar>
                 <ion-buttons slot="start">
                     <ion-button color="medium" [href]="privacyUrl">
-                        Privacy
+                        <span class="my-uni">ကိုယ်ရေးအချက်အလက်မူဝါဒ</span>
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-footer>
     </ion-menu>
 
-    <div class="ion-page" id="main-content">        
+    <div class="ion-page" id="main-content">
         <ion-content>
             <ion-toolbar color="primary">
                 <ion-buttons slot="secondary">
@@ -108,50 +75,61 @@
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
-
-            <ion-list>
-                <ion-item>
-                    <ion-label>Select input font</ion-label>
-                    <ion-select [(ngModel)]="sourceEnc" [selectedText]="fontEncSelectedText" interface="popover">
-                        <ion-select-option value="auto">AUTO DETECT</ion-select-option>
-                        <ion-select-option value="zg">ZAWGYI</ion-select-option>
-                        <ion-select-option value="uni">UNICODE</ion-select-option>
+            <ion-toolbar>
+                <ion-buttons slot="start" *ngIf="sourceText;">
+                    <ion-button slot="end" size="small" fill="clear" (click)="clearInput()"><span class="my-uni">စာများဖျက်ပါ</span></ion-button>
+                </ion-buttons>
+                <ion-buttons slot="primary">
+                    <ion-select [(ngModel)]="sourceEnc" [selectedText]="fontEncSelectedText" interface="popover"
+                        placeholder="Select Input Font">
+                        <ion-select-option value="auto"><span class="my-uni">အော်တိုသိရှိ</span></ion-select-option>
+                        <ion-select-option value="zg"><span class="my-uni">ဇော်ဂျီ</span></ion-select-option>
+                        <ion-select-option value="uni"><span class="my-uni">ယူနီကုတ်</span></ion-select-option>
                     </ion-select>
-                </ion-item>
-                <ion-item *ngIf="sourceText">
-                    <ion-button slot="end" size="small" fill="clear" color="medium" (click)="clearInput()">Clear
-                    </ion-button>
-                </ion-item>
-            </ion-list>
+                </ion-buttons>
+            </ion-toolbar>
             <ion-grid>
                 <ion-row>
                     <ion-col size="12" size-sm>
-                        <ion-item>
+                        <!-- <ion-item>
                             <ion-label position="floating" *ngIf="sourceEncLabel">{{sourceEncLabel}}</ion-label>
-                            <ion-textarea class="myanmar-text" [placeholder]="sourcePlaceholderText"
+                            <ion-textarea class="my-uni" [placeholder]="sourcePlaceholderText"
                                 spellcheck="false" [(ngModel)]="sourceText"
                                 [class.my-uni]="!detectedEnc || detectedEnc == 'uni'"
-                                [class.my-zg]="detectedEnc == 'zg'" [autoGrow]="textAreaAutoGrow">
+                                [class.my-zg]="detectedEnc == 'zg'" autoGrow="true">
                             </ion-textarea>
-                        </ion-item>
+                        </ion-item> -->
+                        <mat-form-field class="full-width-form-field my-uni">
+                            <mat-label class="my-uni"><span class="my-uni">{{sourceEncLabel}}</span></mat-label>
+                            <textarea matInput class="my-uni" spellcheck="false" rows="4" [(ngModel)]="sourceText"
+                                [class.my-uni]="!detectedEnc || detectedEnc == 'uni'"
+                                [class.my-zg]="detectedEnc == 'zg'" cdkTextareaAutosize
+                                cdkAutosizeMinRows="4"></textarea>
+                        </mat-form-field>
                     </ion-col>
                     <ion-col size="12" size-sm [class.ion-hide-sm-down]="!outText">
-                        <ion-item>
+                        <!-- <ion-item>
                             <ion-label position="floating" *ngIf="targeetEncLabel">{{targeetEncLabel}}</ion-label>
-                            <ion-textarea class="myanmar-text" [placeholder]="targetPlaceholderText"
+                            <ion-textarea class="my-uni" [placeholder]="targetPlaceholderText"
                                 spellcheck="false" [ngModel]="outText"
                                 [class.my-uni]="targetEnc == 'uni'" [class.my-zg]="!targetEnc || targetEnc == 'zg'"
-                                [readonly]="!outText" [autoGrow]="textAreaAutoGrow"></ion-textarea>
-                        </ion-item>
+                                [readonly]="!outText" autoGrow="true"></ion-textarea>
+                        </ion-item> -->
+                        <mat-form-field class="full-width-form-field my-uni">                            
+                            <mat-label class="my-uni"><span class="my-uni">{{targeetEncLabel}}</span></mat-label>
+                            <textarea matInput class="my-uni" spellcheck="false" rows="4" [ngModel]="outText"
+                                [class.my-uni]="targetEnc == 'uni'" [class.my-zg]="!targetEnc || targetEnc == 'zg'"
+                                cdkTextareaAutosize cdkAutosizeMinRows="4" [readonly]="!outText"></textarea>
+                        </mat-form-field>
                     </ion-col>
                 </ion-row>
                 <ion-row>
                     <ion-col class="footer-buttons">
                         <ion-button shape="round" fill="clear" color="medium" (click)="promptForRating()">
-                            <ion-icon name="star"></ion-icon> Rate
+                            <ion-icon name="star"></ion-icon> <span class="my-uni">သုံးသပ်ချက်ပေးရန်</span>
                         </ion-button>
                         <ion-button shape="round" fill="clear" color="medium" (click)="showShareSheet()">
-                            <ion-icon name="share-social"></ion-icon> Share
+                            <ion-icon name="share-social"></ion-icon> <span class="my-uni">မျှဝေရန်</span>
                         </ion-button>
 
                     </ion-col>
@@ -168,7 +146,7 @@
                                 </div>
                             </ion-item>
                             <ion-card-content>
-                                <p lass="myanmar-text my-uni" [innerHTML]="sponsor.description"></p>
+                                <p lass="my-uni" [innerHTML]="sponsor.description"></p>
                                 <p class="sponsor-website" [class]="'ion-' + sponsor.themeColor">
                                     {{sponsor.detailUrlLabelForMobile}}
                                 </p>
