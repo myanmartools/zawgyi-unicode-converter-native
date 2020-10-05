@@ -9,6 +9,6 @@ export class AppPage {
     }
 
     async getTitleText(): Promise<string> {
-        return element(by.css('app-root app-about-modal app-name')).getText() as Promise<string>;
+        return element(by.css('app-root ion-page ion-toolbar ion-title')).getText() as Promise<string>;
     }
 }
