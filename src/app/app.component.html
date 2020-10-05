@@ -22,7 +22,7 @@
                                 <span class="my-uni">{{navLinkItem.label}}</span>
                             </ion-label>
                         </ion-item>
-                    </ion-menu-toggle>                    
+                    </ion-menu-toggle>
                     <ion-menu-toggle>
                         <ion-item button (click)="showAboutModal()">
                             <ion-icon slot="start" name="information-circle"></ion-icon>
@@ -32,7 +32,7 @@
                         </ion-item>
                     </ion-menu-toggle>
                 </ion-list>
-            </ion-item-group>            
+            </ion-item-group>
             <ion-item-group>
                 <ion-item-divider>
                     <ion-label>
@@ -77,7 +77,8 @@
             </ion-toolbar>
             <ion-toolbar>
                 <ion-buttons slot="start" *ngIf="sourceText;">
-                    <ion-button slot="end" size="small" fill="clear" (click)="clearInput()"><span class="my-uni">စာများဖျက်ပါ</span></ion-button>
+                    <ion-button slot="end" size="small" fill="clear" (click)="clearInput()"><span
+                            class="my-uni">စာများဖျက်ပါ</span></ion-button>
                 </ion-buttons>
                 <ion-buttons slot="primary">
                     <ion-select [(ngModel)]="sourceEnc" [selectedText]="fontEncSelectedText" interface="popover"
@@ -91,14 +92,6 @@
             <ion-grid>
                 <ion-row>
                     <ion-col size="12" size-sm>
-                        <!-- <ion-item>
-                            <ion-label position="floating" *ngIf="sourceEncLabel">{{sourceEncLabel}}</ion-label>
-                            <ion-textarea class="my-uni" [placeholder]="sourcePlaceholderText"
-                                spellcheck="false" [(ngModel)]="sourceText"
-                                [class.my-uni]="!detectedEnc || detectedEnc == 'uni'"
-                                [class.my-zg]="detectedEnc == 'zg'" autoGrow="true">
-                            </ion-textarea>
-                        </ion-item> -->
                         <mat-form-field class="full-width-form-field my-uni">
                             <mat-label class="my-uni"><span class="my-uni">{{sourceEncLabel}}</span></mat-label>
                             <textarea matInput class="my-uni" spellcheck="false" rows="4" [(ngModel)]="sourceText"
@@ -108,14 +101,7 @@
                         </mat-form-field>
                     </ion-col>
                     <ion-col size="12" size-sm [class.ion-hide-sm-down]="!outText">
-                        <!-- <ion-item>
-                            <ion-label position="floating" *ngIf="targeetEncLabel">{{targeetEncLabel}}</ion-label>
-                            <ion-textarea class="my-uni" [placeholder]="targetPlaceholderText"
-                                spellcheck="false" [ngModel]="outText"
-                                [class.my-uni]="targetEnc == 'uni'" [class.my-zg]="!targetEnc || targetEnc == 'zg'"
-                                [readonly]="!outText" autoGrow="true"></ion-textarea>
-                        </ion-item> -->
-                        <mat-form-field class="full-width-form-field my-uni">                            
+                        <mat-form-field class="full-width-form-field my-uni">
                             <mat-label class="my-uni"><span class="my-uni">{{targeetEncLabel}}</span></mat-label>
                             <textarea matInput class="my-uni" spellcheck="false" rows="4" [ngModel]="outText"
                                 [class.my-uni]="targetEnc == 'uni'" [class.my-zg]="!targetEnc || targetEnc == 'zg'"
