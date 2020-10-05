@@ -1,0 +1,22 @@
+// mat-form-field
+// ----------------------------------------
+.mat-form-field.full-width-form-field {
+    flex-direction: column;
+    box-sizing: border-box;
+    display: flex;
+    flex: 1 1 100%;
+}
+
+// textarea
+// ----------------------------------------
+textarea.mat-input-element {
+    &.my-zg {
+        font-family: Zawgyi-One, sans-serif;
+        line-height: 1.6;
+    }
+
+    &.my-uni {
+        font-family: "Noto Sans Myanmar UI", "Myanmar Text", Pyidaungsu, Padauk, Myanmar3, sans-serif;
+        line-height: 1.6;
+    }
+}

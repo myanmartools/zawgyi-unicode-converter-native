@@ -1,0 +1,40 @@
+.md.title-default, .ios.title-default {
+    font-size: 17px; // 20px; (Default)
+    font-weight: 400; // 500; (Default)
+}
+
+.md, .ios {
+    ion-footer { 
+        ion-button {
+            font-size: $font-size-base;
+        }
+    }
+
+    ion-item {
+        font-size: $font-size-base;
+        font-weight: $font-weight-base;
+    }
+
+    ion-select-popover {
+        ion-list {
+            ion-item {
+                --border-width: 0;
+                --inner-border-width: 0;
+            }
+        }
+    }
+
+    // ion-textarea {
+    //     font-size: $font-size-base;      
+
+    //     &.my-zg {
+    //         font-family: Zawgyi-One, sans-serif;
+    //         line-height: 1.6;
+    //     }
+
+    //     &.my-uni {
+    //         font-family: "Noto Sans Myanmar UI", "Myanmar Text", Pyidaungsu, Padauk, Myanmar3, sans-serif;
+    //         line-height: 1.6;
+    //     }
+    // }
+}
