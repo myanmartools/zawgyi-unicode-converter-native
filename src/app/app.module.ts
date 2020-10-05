@@ -18,7 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 import { IonicModule } from '@ionic/angular';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
-import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
+// import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
@@ -78,7 +78,7 @@ import { AboutModalComponent } from './about/about-modal.component';
     providers: [
         AppRate,
         FirebaseX,
-        FirebaseDynamicLinks,
+        // FirebaseDynamicLinks,
         HeaderColor,
         NativeStorage,
         StatusBar,
