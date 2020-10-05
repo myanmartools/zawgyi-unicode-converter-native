@@ -132,10 +132,6 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "codeCoverageExclude": [
-              "**/test.ts",
-              "**/index.ts"
-            ],
             "assets": [
               {
                 "glob": "favicon.ico",
@@ -161,15 +157,13 @@
                 "input": "src/styles.scss"
               }
             ],
-            "scripts": []
-       
+            "scripts": []       
           },
           "configurations": {
             "ci": {
               "browsers": "ChromeHeadlessCI",
               "reporters": [
-                "progress",
-                "junit"
+                "progress"
               ],
               "progress": false,
               "watch": false
