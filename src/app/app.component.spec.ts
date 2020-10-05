@@ -10,8 +10,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
 
-import { Subject } from 'rxjs';
-
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
@@ -34,7 +32,7 @@ import { ZgUniTranslitRuleLoaderModule } from '../modules/zg-uni-translit-rule-l
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-    let platformSpy: any;
+    // let platformSpy: any;
     let statusBarSpy: any;
     let splashScreenSpy: any;
 
@@ -50,15 +48,12 @@ describe('AppComponent', () => {
     let toastControllerSpy: any;
 
     beforeEach(async(() => {
-        platformSpy = jasmine.createSpyObj('Platform', {
-            ready: Promise.resolve(),
-            backButton: new Subject(),
-            pause: new Subject().asObservable(),
-            resume: new Subject().asObservable(),
-            is: () => {
-                return false;
-            }
-        });
+        // platformSpy = jasmine.createSpyObj('Platform', {
+        //     ready: Promise.resolve(),
+        //     is: () => {
+        //         return false;
+        //     }
+        // });
         statusBarSpy = jasmine.createSpyObj('StatusBar', ['styleLightContent', 'backgroundColorByHexString']);
         splashScreenSpy = jasmine.createSpyObj('SplashScreen', ['hide']);
         appRateSpy = jasmine.createSpyObj('AppRate', ['promptForRating', 'preferences']);
@@ -92,7 +87,7 @@ describe('AppComponent', () => {
                 ZawgyiDetectorModule
             ],
             providers: [
-                { provide: Platform, useValue: platformSpy },
+                Platform,
                 { provide: StatusBar, useValue: statusBarSpy },
                 { provide: SplashScreen, useValue: splashScreenSpy },
                 { provide: AppRate, useValue: appRateSpy },
