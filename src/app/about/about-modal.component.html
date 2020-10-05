@@ -7,7 +7,7 @@
         </ion-label>
     </ion-item>
     <ion-card-content>
-        <div class="about-content myanmar-text my-uni" lang="my">
+        <div class="about-content my-uni" lang="my">
             <div class="about-section what-is-new">
                 <h3 class="subtitle">ယခုဗားရှင်းအသစ်တွင်</h3>
                 <p>အချို့သော bug များကိုပြုပြင်ထားခြင်းနှင့် အခြားတိုးတက်မှုများ ပါဝင်ပါတယ်။</p>
@@ -16,18 +16,18 @@
                 <h3 class="subtitle">ထူးခြားချက်များ</h3>
                 <ul class="features-list">
                     <li>
-                        ဇော်ဂျီ နှင့် မြန်မာ ယူနီကုဒ် တို့ကို အပြန်အလှန် အမှားအယွင်းမရှိ တိကျမှန်ကန်စွာ
+                        ဇော်ဂျီ နှင့် မြန်မာ ယူနီကုတ် တို့ကို အပြန်အလှန် အမှားအယွင်းမရှိ တိကျမှန်ကန်စွာ
                         ပြောင်းပေးနိုင်အောင် သေချာစွာစမ်းသပ်ဖန်တီးပေးထားပါတယ်။ ပါဌ်ဆင့် စကားလုံးများ၊ ကင်းစီးများ
-                        ပါရှိရင်လည်း ဇော်ဂျီ မှ ယူနီကုဒ်၊ ယူနီကုဒ် မှ ဇော်ဂျီ မှန်မှန်ကန်ကန်ပြောင်းလဲပေးနိုင်ပါတယ်။
+                        ပါရှိရင်လည်း ဇော်ဂျီ မှ ယူနီကုတ်၊ ယူနီကုတ် မှ ဇော်ဂျီ မှန်မှန်ကန်ကန်ပြောင်းလဲပေးနိုင်ပါတယ်။
                     </li>
                     <li>
-                        စာရိုက်လိုက်တာနှင့် ဇော်ဂျီလား၊ ယူနီကုဒ်လား ဆိုတာကို သိရှိနားလည်ပြီး အလိုအလျောက်
+                        စာရိုက်လိုက်တာနှင့် ဇော်ဂျီလား၊ ယူနီကုတ်လား ဆိုတာကို သိရှိနားလည်ပြီး အလိုအလျောက်
                         ပြောင်းလဲပေးနိုင်ပါတယ်။
                     </li>
                     <li>
                         SMS Messaging, Viber စတဲ့ app များကနေ ဖတ်မရတဲ့ စာသားတွေကို Share menu ကနေ တဆင့် Zawgyi
                         Unicode
-                        Converter ကို ပေးပို့ခြင်းဖြင့် လွယ်ကူမြန်ဆန်စွာ ဇော်ဂျီ ယူနီကုဒ် ပြောင်းပေးနိုင်အောင်
+                        Converter ကို ပေးပို့ခြင်းဖြင့် လွယ်ကူမြန်ဆန်စွာ ဇော်ဂျီ ယူနီကုတ် ပြောင်းပေးနိုင်အောင်
                         ပြုလုပ်ပေးထားပါတယ်။
                     </li>
                     <li>
@@ -68,8 +68,8 @@
                 <ion-list lines="none">
                     <ion-item *ngFor="let navLinkItem of navLinks" [href]="[navLinkItem.url]">
                         <ion-icon slot="start" [name]="navLinkItem.iconName"></ion-icon>
-                        <ion-label class="myanmar-text my-uni">
-                            {{navLinkItem.label}}
+                        <ion-label>
+                            <span class="my-uni">{{navLinkItem.label}}</span>
                         </ion-label>
                     </ion-item>
                 </ion-list>
