@@ -26,8 +26,8 @@ steps:
   displayName: 'Use Node 12.x'
 
 - script: |
-    npm install -g ionic cordova
-  displayName: 'Install ionic & cordova tools'
+    npm install -g @ionic/cli cordova
+  displayName: 'Install ionic cli & cordova tools'
 
 - script: |
     export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
@@ -42,8 +42,12 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    npm run lint --if-present
+    npm run lint
   displayName: 'Run lint'
+
+- script: |
+    npm run test
+  displayName: 'Run test'
 
 - script: |
     ionic cordova build android
