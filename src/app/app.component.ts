@@ -776,7 +776,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
         if (val === 'uni' || val === 'zg') {
             this._detectedEnc = val;
-            const selectedText = val === 'zg' ? 'ဇော်ဂျိ' : 'ယူနီကုတ်';
+            const selectedText = val === 'zg' ? 'ဇော်ဂျီ' : 'ယူနီကုတ်';
             this.resetFontEncSelectedText(selectedText);
             if (val === 'zg') {
                 this._sourceLabelText = SourceZgLabelText;
