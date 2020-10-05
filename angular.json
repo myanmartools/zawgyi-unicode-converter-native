@@ -67,7 +67,7 @@
             ],
             "styles": [
               {
-                "input": "src/theme/variables.scss"
+                "input": "src/styles/variables.scss"
               },
               {
                 "input": "src/styles.scss"
@@ -155,7 +155,7 @@
             ],
             "styles": [
               {
-                "input": "src/theme/variables.scss"
+                "input": "src/styles/variables.scss"
               },
               {
                 "input": "src/styles.scss"
