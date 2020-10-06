@@ -11,7 +11,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
+import { AlertController, MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
@@ -33,6 +33,7 @@ import { AppComponent } from './app.component';
 describe('AppComponent', () => {
     // let platformSpy: any;
 
+    let alertControllerSpy: any;
     let appRateSpy: any;
     let clipboardSpy: any;
     let firebaseXSpy: any;
@@ -54,6 +55,7 @@ describe('AppComponent', () => {
         //     }
         // });
 
+        alertControllerSpy = jasmine.createSpyObj('AlertController', ['create']);
         appRateSpy = jasmine.createSpyObj('AppRate', ['promptForRating', 'preferences']);
         clipboardSpy = jasmine.createSpyObj('Clipboard', ['copy']);
         firebaseXSpy = jasmine.createSpyObj('FirebaseX', ['fetch', 'activateFetched', 'getValue']);
@@ -88,6 +90,7 @@ describe('AppComponent', () => {
             ],
             providers: [
                 Platform,
+                { provide: AlertController, useValue: alertControllerSpy },
                 { provide: AppRate, useValue: appRateSpy },
                 { provide: Clipboard, useValue: clipboardSpy },
                 { provide: FirebaseX, useValue: firebaseXSpy },
