@@ -19,7 +19,6 @@ import { IonicModule } from '@ionic/angular';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
-// import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
@@ -41,12 +40,13 @@ import { ZgUniTranslitRuleLoaderModule } from '../modules/zg-uni-translit-rule-l
 import { AppComponent } from './app.component';
 
 import { AboutModalComponent } from './about/about-modal.component';
+import { AppLogsModalComponent } from './app-logs';
 
 /**
  * App module for both node and web platforms.
  */
 @NgModule({
-    declarations: [AppComponent, AboutModalComponent],
+    declarations: [AppComponent, AboutModalComponent, AppLogsModalComponent],
     imports: [
         BrowserModule,
         CommonModule,
@@ -89,6 +89,6 @@ import { AboutModalComponent } from './about/about-modal.component';
         WebIntent
     ],
     bootstrap: [AppComponent],
-    entryComponents: [AboutModalComponent]
+    entryComponents: [AboutModalComponent, AppLogsModalComponent]
 })
 export class AppModule {}
