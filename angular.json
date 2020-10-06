@@ -35,7 +35,12 @@
                 "output": "./svg"
               },
               {
-                "glob": "**/help-circle.svg",
+                "glob": "**/copy-outline.svg",
+                "input": "node_modules/ionicons/dist/ionicons/svg",
+                "output": "./svg"
+              },
+              {
+                "glob": "**/close-outline.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               },
@@ -132,31 +137,8 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "assets": [
-              {
-                "glob": "favicon.ico",
-                "input": "src/",
-                "output": "/"
-              },
-              {
-                "glob": "**/*",
-                "input": "src/assets",
-                "output": "/assets"
-              },
-              {
-                "glob": "**/*.svg",
-                "input": "node_modules/ionicons/dist/ionicons/svg",
-                "output": "./svg"
-              }
-            ],
-            "styles": [
-              {
-                "input": "src/styles/variables.scss"
-              },
-              {
-                "input": "src/styles.scss"
-              }
-            ],
+            "assets": [],
+            "styles": [],
             "scripts": []       
           },
           "configurations": {
