@@ -11,10 +11,11 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 
-import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
+import { AlertController, MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
-// import { FirebaseDynamicLinks } from '@ionic-native/firebase-dynamic-links/ngx';
+import { Clipboard } from '@ionic-native/clipboard/ngx';
+import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
@@ -22,22 +23,20 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { WebIntent } from '@ionic-native/web-intent/ngx';
 
-import { FirebaseX } from '@ionic-native/firebase-x/ngx';
-
-import { LogService } from '@dagonmetric/ng-log';
+import { LogService, Logger } from '@dagonmetric/ng-log';
 import { TranslitResult, TranslitService } from '@dagonmetric/ng-translit';
-
 import { DetectedEnc, ZawgyiDetector } from '@myanmartools/ng-zawgyi-detector';
 
 import { environment } from '../environments/environment';
 
-import { NavLinkItem, Sponsor, appSettings } from './shared';
+import { FirebaseCloudMessage, NavLinkItem, Sponsor, appSettings } from './shared';
 
 import { AboutModalComponent } from './about/about-modal.component';
+import { AppLog, AppLogsModalComponent } from './app-logs';
 
 export type SourceEnc = 'auto' | DetectedEnc;
 
-const SelectInputFontText = 'ထည့်သွင်းဖောင့်ရွေးချယ်ရန် (အော်တိုသိရှိ)';
+const SelectInputFontText = 'ထည့်သွင်းဖောင့်ရွေးရန် (အော်တို)';
 
 const SourceZgOrUniLabelText = 'ဇော်ဂျီ(သို့)ယူနီကုတ်စာသားကိုဤနေရာတွင်ထည့်ပါ';
 const SourceZgLabelText = 'ဇော်ဂျီစာသားကိုဤနေရာတွင်ထည့်ပါ';
@@ -56,6 +55,10 @@ const TargetUniLabelText = 'ပြောင်းပြီးယူနီကု�
     styleUrls: ['app.component.scss']
 })
 export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
+    customPopoverOptions = {
+        cssClass: 'my-uni'
+    };
+
     private readonly _translitSubject = new Subject<string>();
     private readonly _destroyed = new Subject<void>();
 
@@ -81,7 +84,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private _sourceLabelText = SourceZgOrUniLabelText;
     private _targetLabelText = TargetZgOrUniLabelText;
 
-    // Sync configs
+    private readonly _logger: Logger;
+
+    private _appLogs: AppLog[] = [];
     private _appThemeColor: string;
 
     get appName(): string {
@@ -193,7 +198,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     set isDarkMode(value: boolean) {
         this.setDarkMode(value);
 
-        this._logService.trackEvent({
+        this._logger.trackEvent({
             name: value ? 'change_dark_mode' : 'change_light_mode',
             properties: {
                 mode: value ? 'dark' : 'light',
@@ -212,23 +217,25 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     constructor(
-        private readonly _translitService: TranslitService,
-        private readonly _zawgyiDetector: ZawgyiDetector,
-        private readonly _logService: LogService,
-        private readonly _platform: Platform,
-        private readonly _splashScreen: SplashScreen,
-        private readonly _statusBar: StatusBar,
-        private readonly _headerColor: HeaderColor,
+        private readonly _alertController: AlertController,
         private readonly _menuController: MenuController,
         private readonly _modalController: ModalController,
         private readonly _toastController: ToastController,
-        private readonly _socialSharing: SocialSharing,
         private readonly _appRate: AppRate,
-        private readonly _webIntent: WebIntent,
+        private readonly _clipboard: Clipboard,
+        private readonly _firebaseX: FirebaseX,
+        private readonly _headerColor: HeaderColor,
         private readonly _nativeStorage: NativeStorage,
-        // private readonly _firebaseDynamicLinks: FirebaseDynamicLinks,
-        private readonly _firebaseX: FirebaseX
+        private readonly _platform: Platform,
+        private readonly _socialSharing: SocialSharing,
+        private readonly _splashScreen: SplashScreen,
+        private readonly _statusBar: StatusBar,
+        private readonly _webIntent: WebIntent,
+        private readonly _translitService: TranslitService,
+        private readonly _zawgyiDetector: ZawgyiDetector,
+        logService: LogService
     ) {
+        this._logger = logService.createLogger('app');
         this._appThemeColor = appSettings.appThemeColor;
         this.initializeApp();
     }
@@ -290,12 +297,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             .subscribe((result: TranslitResult) => {
                 this._outText = result.outputText || '';
 
-                if (!environment.production && this._sourceText === '_CrashlyticsTest_') {
-                    this._logService.fatal('', {});
-                }
-
                 if (this._sourceText.length && this._curRuleName && result.replaced) {
-                    this._logService.trackEvent({
+                    this._logger.trackEvent({
                         name: `convert_${this._curRuleName}`,
                         properties: {
                             method: this._curRuleName,
@@ -326,7 +329,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._destroyed.next();
         this._destroyed.complete();
 
-        this._logService.flush();
+        this._logger.flush();
     }
 
     clearInput(): void {
@@ -350,13 +353,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             });
 
             const toast = await this._toastController.create({
-                message: 'Thank you for sharing the app 😊.',
-                duration: 2000
+                message: 'ဤအက်ပ်ကိုမျှဝေတဲ့အတွက် ကျေးဇူးတင်ပါတယ်။',
+                duration: 5000,
+                cssClass: 'my-uni'
             });
 
             void toast.present();
 
-            this._logService.trackEvent({
+            this._logger.trackEvent({
                 name: 'share',
                 properties: {
                     method: 'Social Sharing Native',
@@ -365,9 +369,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
             });
         } catch (err) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs when sharing via Web API.${errMsg}`);
+            const errPrefixMsg = 'An error occurs when sharing via Web API.';
+            this._logger.error(`${errPrefixMsg} ${err}`);
+            this._appLogs.push({
+                message: errPrefixMsg,
+                data: err
+            });
         }
     }
 
@@ -375,7 +382,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         try {
             this._appRate.promptForRating(true);
 
-            this._logService.trackEvent({
+            this._logger.trackEvent({
                 name: 'rate',
                 properties: {
                     method: 'App Rate Native',
@@ -384,15 +391,18 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
             });
         } catch (err) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs while calling _appRate.promptForRating() method.${errMsg}`);
+            const errPrefixMsg = 'An error occurs while calling _appRate.promptForRating() method.';
+            this._logger.error(`${errPrefixMsg} ${err}`);
+            this._appLogs.push({
+                message: errPrefixMsg,
+                data: err
+            });
         }
     }
 
     async toggleSideNav(): Promise<void> {
         const isOpened = await this._menuController.toggle();
-        this._logService.trackEvent({
+        this._logger.trackEvent({
             name: isOpened ? 'open_drawer_menu' : 'close_drawer_menu',
             properties: {
                 action: isOpened ? 'open' : 'close',
@@ -402,13 +412,33 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
     }
 
+    logoClicked(): void {
+        if (this.sourceText && this.sourceText.toLowerCase() === '$crashlyticstest') {
+            this._logger.fatal('', {});
+        } else if (this.sourceText && this.sourceText.toLowerCase() === '$showlogs') {
+            void this.showAppLogModal();
+        } else if (this.sourceText && this.sourceText.toLowerCase() === '$clearlogs') {
+            this._appLogs = [];
+        } else if (this.sourceText && this.sourceText.toLowerCase() === '$toggledarkmode') {
+            this.isDarkMode = !this.isDarkMode;
+        } else if (this.sourceText && this.sourceText.toLowerCase() === '$togglemenu') {
+            void this.toggleSideNav();
+        } else if (this.sourceText && this.sourceText.toLowerCase() === '$showsponsors') {
+            this._sponsorSectionVisible = true;
+        } else if (this.sourceText && this.sourceText.toLowerCase() === '$hidesponsors') {
+            this._sponsorSectionVisible = false;
+        } else {
+            void this.showAboutModal();
+        }
+    }
+
     async showAboutModal(): Promise<void> {
         const modal = await this._modalController.create({
             component: AboutModalComponent
         });
 
         void modal.onDidDismiss().then(() => {
-            this._logService.trackEvent({
+            this._logger.trackEvent({
                 name: 'screen_view',
                 properties: {
                     screen_name: 'Home',
@@ -418,7 +448,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
         await modal.present();
 
-        this._logService.trackEvent({
+        this._logger.trackEvent({
             name: 'screen_view',
             properties: {
                 screen_name: 'About',
@@ -427,12 +457,56 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
     }
 
+    async showAppLogModal(): Promise<void> {
+        const modal = await this._modalController.create({
+            component: AppLogsModalComponent,
+            componentProps: {
+                appLogs: this._appLogs
+            }
+        });
+
+        void modal.onDidDismiss().then(() => {
+            this._logger.trackEvent({
+                name: 'screen_view',
+                properties: {
+                    screen_name: 'Home',
+                    app_platform: 'android'
+                }
+            });
+        });
+        await modal.present();
+
+        this._logger.trackEvent({
+            name: 'screen_view',
+            properties: {
+                screen_name: 'App Logs',
+                app_platform: 'android'
+            }
+        });
+    }
+
+    async copyOutTextToClipboard(): Promise<void> {
+        if (!this._outText) {
+            return;
+        }
+
+        await this._clipboard.clear();
+        await this._clipboard.copy(this._outText);
+
+        const toast = await this._toastController.create({
+            message: 'ပြောင်းပြီးစာသားများကို ကူးယူပြီးပါပြီ။',
+            duration: 2000,
+            cssClass: 'my-uni'
+        });
+
+        void toast.present();
+    }
+
     private initializeApp(): void {
         void this._platform.ready().then(async () => {
             if (this._platform.is('android') || this._platform.is('ios')) {
-                await this.initRemoteConfigs();
+                await this.initFirebaseRemoteConfig();
                 await this.detectDarkTheme();
-
                 this._statusBar.styleLightContent();
 
                 if (this._platform.is('android')) {
@@ -454,16 +528,48 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                     this.onPlatformResumed();
                 });
 
+                this.initFirebaseCloudMessaging();
                 this.handlePlatformReady();
             }
         });
     }
 
-    private async initRemoteConfigs(): Promise<void> {
-        if (!this._platform.is('android') && !this._platform.is('ios')) {
-            return;
-        }
+    private initFirebaseCloudMessaging(): void {
+        this._firebaseX
+            .getToken()
+            .then((token) => {
+                this._appLogs.push({
+                    message: 'Got a firebase token.',
+                    data: token
+                });
+            })
+            .catch((err) => {
+                const errPrefixMsg = 'An error occurs while getting firebase token.';
+                this._logger.error(`${errPrefixMsg} ${err}`);
+                this._appLogs.push({
+                    message: errPrefixMsg,
+                    data: err
+                });
+            });
 
+        this._firebaseX.onMessageReceived().subscribe((data: FirebaseCloudMessage) => {
+            this._appLogs.push({
+                message: 'Firebase message received.',
+                data
+            });
+
+            void this.handleFirebaseMessageReceived(data);
+        });
+
+        this._firebaseX.onTokenRefresh().subscribe((token) => {
+            this._appLogs.push({
+                message: 'Got a new firebase refresh token.',
+                data: token
+            });
+        });
+    }
+
+    private async initFirebaseRemoteConfig(): Promise<void> {
         try {
             if (environment.production) {
                 await this._firebaseX.fetch();
@@ -478,9 +584,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 this._appThemeColor = remoteThemeColor;
             }
         } catch (err) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs while fetching firebase remote config.${errMsg}`);
+            const errPrefixMsg = 'An error occurs while fetching firebase remote config.';
+            this._logger.error(`${errPrefixMsg} ${err}`);
+            this._appLogs.push({
+                message: errPrefixMsg,
+                data: err
+            });
         }
     }
 
@@ -560,7 +669,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
             }
 
-            this._logService.trackEvent({
+            this._logger.trackEvent({
                 name: 'screen_view',
                 properties: {
                     screen_name: 'Home',
@@ -591,7 +700,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private handlePlatformReady(): void {
         void this.handleWelcomeScreen();
         void this.handleWebIntent();
-        // this.handleDynamicLinks();
         void this.handlePromptForRating();
     }
 
@@ -609,7 +717,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         if (isMenuOpened) {
             void this._menuController.close();
 
-            this._logService.trackEvent({
+            this._logger.trackEvent({
                 name: 'close_drawer_menu',
                 properties: {
                     action: 'close',
@@ -622,14 +730,15 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
 
         if (new Date().getTime() - this._lastTimeBackPress < this._timePeriodToExit) {
-            this._logService.flush();
+            this._logger.flush();
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
             (navigator as any).app.exitApp();
         } else {
             const toast = await this._toastController.create({
-                message: 'Press back again to exit the app.',
-                duration: 2000
+                message: 'အက်ပ်မှထွက်ရန် back button ထပ်နှိပ်ပါ။',
+                duration: 2000,
+                cssClass: 'my-uni'
             });
 
             void toast.present();
@@ -681,26 +790,17 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             rateButtonLabel: 'Rate it now',
             yesButtonLabel: 'Yes',
             noButtonLabel: 'No'
-            // appRatePromptTitle: 'Do you \u2764\uFE0F using this app?',
-            // feedbackPromptTitle: 'Would you mind giving us some feedback?',
         };
         this._appRate.preferences.callbacks = {
-            // handleNegativeFeedback: () => {
-            //     window.open('mailto:app-support@dagonmetric.com', '_system');
-            // },
-
-            // onRateDialogShow: (cb: any) => {
-            //     // cause immediate click on 'Rate Now' button
-            //     cb(1);
-            // },
             onButtonClicked: async (buttonIndex?: number) => {
                 if (buttonIndex === 3) {
                     ++rateButtonTouchCount;
                     void this.setCacheItem('rateButtonTouchCount', `${rateButtonTouchCount}`);
 
                     const toast = await this._toastController.create({
-                        message: 'Thank you for your review.',
-                        duration: 2000
+                        message: 'သင်၏ပြန်လည်သုံးသပ်မှုအတွက် ကျေးဇူးတင်ပါတယ်။',
+                        duration: 5000,
+                        cssClass: 'my-uni'
                     });
 
                     void toast.present();
@@ -718,9 +818,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         try {
             this._appRate.promptForRating(false);
         } catch (err) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs while calling _appRate.promptForRating() method.${errMsg}`);
+            const errPrefixMsg = 'An error occurs while calling _appRate.promptForRating() method.';
+            this._logger.error(`${errPrefixMsg} ${err}`);
+            this._appLogs.push({
+                message: errPrefixMsg,
+                data: err
+            });
         }
     }
 
@@ -732,7 +835,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     //         (err) => {
     //             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     //             const errMsg = err && err.message ? ` ${err.message}` : '';
-    //             this._logService.error(`An error occurs on receiving dynamic link.${errMsg}`);
+    //             this._logger.error(`An error occurs on receiving dynamic link.${errMsg}`);
     //         }
     //     );
     // }
@@ -744,7 +847,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             if (intent.extras) {
                 const textExtras = (intent.extras as { [key: string]: string })['android.intent.extra.TEXT'];
                 if (textExtras) {
-                    this._logService.trackEvent({
+                    this._logger.trackEvent({
                         name: 'web_intent_received',
                         properties: {
                             action: intent.action,
@@ -760,10 +863,28 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
             }
         } catch (err) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs while calling _webIntent.getIntent() method.${errMsg}`);
+            const errPrefixMsg = 'An error occurs while calling _webIntent.getIntent() method.';
+            this._logger.error(`${errPrefixMsg} ${err}`);
+            this._appLogs.push({
+                message: errPrefixMsg,
+                data: err
+            });
         }
+    }
+
+    private async handleFirebaseMessageReceived(data: FirebaseCloudMessage): Promise<Promise<void>> {
+        if (data.show_notification !== 'false' || !data.title || !data.body) {
+            return;
+        }
+
+        const alert = await this._alertController.create({
+            header: data.title,
+            message: data.body,
+            cssClass: 'my-uni',
+            buttons: ['ပိတ်ပါ']
+        });
+
+        await alert.present();
     }
 
     private onSourceEncChanged(val?: SourceEnc): void {
@@ -793,7 +914,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._targetEnc = 'zg';
         }
 
-        this._logService.trackEvent({
+        this._logger.trackEvent({
             name: `change_input_font_${this.sourceEnc}`,
             properties: {
                 font_enc: this.sourceEnc,
@@ -809,7 +930,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         if (text) {
             this._fontEncSelectedText = text;
         } else if (this._sourceText && this.sourceText.trim().length) {
-            this._fontEncSelectedText = 'ထည့်သွင်းဖောင့်ကိုရွေးချယ်ပါ';
+            this._fontEncSelectedText = 'ထည့်သွင်းဖောင့်ကိုရွေးပါ';
         } else {
             this._fontEncSelectedText = SelectInputFontText;
         }
@@ -824,7 +945,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             try {
                 localStorage.setItem(key, value);
             } catch (err) {
-                this._logService.error('An error occurs while calling localStorage.setItem() method.');
+                const errPrefixMsg = 'An error occurs while calling localStorage.setItem() method.';
+                this._logger.error(`${errPrefixMsg} ${err}`);
+                this._appLogs.push({
+                    message: errPrefixMsg,
+                    data: err
+                });
             }
         }
 
@@ -835,7 +961,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         try {
             await this._nativeStorage.setItem(key, value);
         } catch (err) {
-            this._logService.error('An error occurs while calling _nativeStorage.setItem() method.');
+            const errPrefixMsg = 'An error occurs while calling _nativeStorage.setItem() method.';
+            this._logger.error(`${errPrefixMsg} ${err}`);
+            this._appLogs.push({
+                message: errPrefixMsg,
+                data: err
+            });
         }
     }
 
@@ -847,7 +978,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                     return cachedValue;
                 }
             } catch (err) {
-                this._logService.error('An error occurs while calling localStorage.getItem() method.');
+                const errPrefixMsg = 'An error occurs while calling localStorage.getItem() method.';
+                this._logger.error(`${errPrefixMsg} ${err}`);
+                this._appLogs.push({
+                    message: errPrefixMsg,
+                    data: err
+                });
             }
         }
 
@@ -862,7 +998,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 return cachedValue as string;
             }
         } catch (err) {
-            this._logService.error('An error occurs while calling _nativeStorage.getItem() method.');
+            const errPrefixMsg = 'An error occurs while calling _nativeStorage.getItem() method.';
+            this._logger.error(`${errPrefixMsg} ${err}`);
+            this._appLogs.push({
+                message: errPrefixMsg,
+                data: err
+            });
         }
 
         return null;

@@ -27,7 +27,7 @@
                         <ion-item button (click)="showAboutModal()">
                             <ion-icon slot="start" name="information-circle"></ion-icon>
                             <ion-label>
-                                <span class="my-uni">ဤ App အကြောင်း</span>
+                                <span class="my-uni">ဤအက်ပ်အကြောင်း</span>
                             </ion-label>
                         </ion-item>
                     </ion-menu-toggle>
@@ -57,12 +57,11 @@
             </ion-toolbar>
         </ion-footer>
     </ion-menu>
-
     <div class="ion-page" id="main-content">
         <ion-content>
             <ion-toolbar color="primary">
                 <ion-buttons slot="secondary">
-                    <ion-button (click)="showAboutModal()">
+                    <ion-button (click)="logoClicked()">
                         <ion-icon slot="icon-only" name="logo-zawgyi-unicode-converter"></ion-icon>
                     </ion-button>
                 </ion-buttons>
@@ -76,16 +75,21 @@
                 </ion-buttons>
             </ion-toolbar>
             <ion-toolbar>
-                <ion-buttons slot="start" *ngIf="sourceText;">
-                    <ion-button slot="end" size="small" fill="clear" (click)="clearInput()"><span
-                            class="my-uni">စာများဖျက်ပါ</span></ion-button>
+                <ion-buttons slot="start" *ngIf="sourceText">
+                    <ion-button size="small" fill="clear" (click)="clearInput()">
+                        <ion-icon name="close-outline"></ion-icon>&nbsp;<span class="my-uni">ဖျက်ပါ</span>
+                    </ion-button>
                 </ion-buttons>
                 <ion-buttons slot="primary">
-                    <ion-select [(ngModel)]="sourceEnc" [selectedText]="fontEncSelectedText" interface="popover"
-                        placeholder="Select Input Font">
-                        <ion-select-option value="auto"><span class="my-uni">အော်တိုသိရှိ</span></ion-select-option>
-                        <ion-select-option value="zg"><span class="my-uni">ဇော်ဂျီ</span></ion-select-option>
-                        <ion-select-option value="uni"><span class="my-uni">ယူနီကုတ်</span></ion-select-option>
+                    <ion-button *ngIf="outText" class="ion-hide-sm-down" size="small" fill="clear"
+                        (click)="copyOutTextToClipboard()">
+                        <ion-icon name="copy-outline"></ion-icon>&nbsp;<span class="my-uni">ကူးယူပါ</span>
+                    </ion-button>
+                    <ion-select class="my-uni" [(ngModel)]="sourceEnc" [selectedText]="fontEncSelectedText"
+                        interface="popover" [interfaceOptions]="customPopoverOptions">
+                        <ion-select-option value="auto">အော်တိုသိရှိ</ion-select-option>
+                        <ion-select-option value="zg">ဇော်ဂျီ</ion-select-option>
+                        <ion-select-option value="uni">ယူနီကုတ်</ion-select-option>
                     </ion-select>
                 </ion-buttons>
             </ion-toolbar>
@@ -101,6 +105,13 @@
                         </mat-form-field>
                     </ion-col>
                     <ion-col size="12" size-sm [class.ion-hide-sm-down]="!outText">
+                        <ion-toolbar class="ion-hide-sm-up">
+                            <ion-buttons slot="start" *ngIf="sourceText;">
+                                <ion-button size="small" fill="clear" (click)="copyOutTextToClipboard()">
+                                    <ion-icon name="copy-outline"></ion-icon>&nbsp;<span class="my-uni">ကူးယူပါ</span>
+                                </ion-button>
+                            </ion-buttons>
+                        </ion-toolbar>
                         <mat-form-field class="full-width-form-field my-uni">
                             <mat-label class="my-uni"><span class="my-uni">{{targeetEncLabel}}</span></mat-label>
                             <textarea matInput class="my-uni" spellcheck="false" rows="4" [ngModel]="outText"
@@ -112,12 +123,11 @@
                 <ion-row>
                     <ion-col class="footer-buttons">
                         <ion-button shape="round" fill="clear" color="medium" (click)="promptForRating()">
-                            <ion-icon name="star"></ion-icon> <span class="my-uni">သုံးသပ်ချက်ပေးရန်</span>
+                            <ion-icon name="star"></ion-icon>&nbsp;&nbsp;<span class="my-uni">သုံးသပ်ချက်ပေးရန်</span>
                         </ion-button>
                         <ion-button shape="round" fill="clear" color="medium" (click)="showShareSheet()">
-                            <ion-icon name="share-social"></ion-icon> <span class="my-uni">မျှဝေရန်</span>
+                            <ion-icon name="share-social"></ion-icon>&nbsp;&nbsp;<span class="my-uni">မျှဝေရန်</span>
                         </ion-button>
-
                     </ion-col>
                 </ion-row>
                 <ion-row class="sponsor-cards" *ngIf="sponsorSectionVisible">
@@ -127,24 +137,18 @@
                             <ion-item lines="none">
                                 <img class="sponsor-logo" [src]="sponsor.logoUrl" slot="start" />
                                 <div>
-                                    <ion-card-subtitle *ngIf="sponsor.subTitle">{{sponsor.subTitle}}</ion-card-subtitle>
                                     <ion-card-title>{{sponsor.title}}</ion-card-title>
+                                    <ion-card-subtitle class="my-uni" color="primary">ကြော်ငြာ</ion-card-subtitle>
                                 </div>
                             </ion-item>
                             <ion-card-content>
-                                <p lass="my-uni" [innerHTML]="sponsor.description"></p>
+                                <p class="my-uni" [innerHTML]="sponsor.description"></p>
                                 <p class="sponsor-website" [class]="'ion-' + sponsor.themeColor">
                                     {{sponsor.detailUrlLabelForMobile}}
                                 </p>
                             </ion-card-content>
                         </ion-card>
                     </ion-col>
-                    <ion-col>
-                        <ion-button shape="round" fill="clear" disabled>
-                            <ion-icon name="add-circle-outline"></ion-icon> Become A Sponsor
-                        </ion-button>
-                    </ion-col>
-                    <ion-col *ngIf="sponsors.length < 2"></ion-col>
                 </ion-row>
             </ion-grid>
         </ion-content>
