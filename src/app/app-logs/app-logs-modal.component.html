@@ -1,0 +1,23 @@
+<ion-content>
+    <ion-list>
+        <ion-item *ngFor="let appLog of appLogs">
+            <ion-label>
+                <p>{{appLog.message}}</p>
+                <p *ngIf="appLog.data">{{appLog.data | json}}</p>
+                <ion-button *ngIf="appLog.data" fill="clear" size="small" shape="round" (click)="copyData(appLog.data)">
+                    <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+                </ion-button>    
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>
+<ion-footer>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button (click)="dismissModal()"><span class="my-uni">ပိတ်ပါ</span>
+                <ion-icon slot="end" name="close-outline">
+                </ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>
