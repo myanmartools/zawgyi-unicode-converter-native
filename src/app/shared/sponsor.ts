@@ -1,6 +1,5 @@
 export interface Sponsor {
     title: string;
-    subTitle?: string;
     logoUrl: string;
     imageUrl?: string;
     themeColor?: string;
