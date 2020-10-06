@@ -8,12 +8,13 @@ import { TestBed, async } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
-
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
+import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
+
 import { AppRate } from '@ionic-native/app-rate/ngx';
+import { Clipboard } from '@ionic-native/clipboard/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
@@ -24,28 +25,26 @@ import { WebIntent } from '@ionic-native/web-intent/ngx';
 
 import { LogModule } from '@dagonmetric/ng-log';
 import { TranslitModule } from '@dagonmetric/ng-translit';
-
 import { ZawgyiDetectorModule } from '@myanmartools/ng-zawgyi-detector';
 
 import { ZgUniTranslitRuleLoaderModule } from '../modules/zg-uni-translit-rule-loader';
-
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
     // let platformSpy: any;
-    let statusBarSpy: any;
-    let splashScreenSpy: any;
 
     let appRateSpy: any;
+    let clipboardSpy: any;
     let firebaseXSpy: any;
     let headerColorSpy: any;
-    let nativeStorageSpy: any;
-    let socialSharingSpy: any;
-    let webIntentSpy: any;
-
     let menuControllerSpy: any;
     let modalControllerSpy: any;
+    let nativeStorageSpy: any;
+    let socialSharingSpy: any;
+    let splashScreenSpy: any;
+    let statusBarSpy: any;
     let toastControllerSpy: any;
+    let webIntentSpy: any;
 
     beforeEach(async(() => {
         // platformSpy = jasmine.createSpyObj('Platform', {
@@ -54,21 +53,23 @@ describe('AppComponent', () => {
         //         return false;
         //     }
         // });
-        statusBarSpy = jasmine.createSpyObj('StatusBar', ['styleLightContent', 'backgroundColorByHexString']);
-        splashScreenSpy = jasmine.createSpyObj('SplashScreen', ['hide']);
+
         appRateSpy = jasmine.createSpyObj('AppRate', ['promptForRating', 'preferences']);
+        clipboardSpy = jasmine.createSpyObj('Clipboard', ['copy']);
         firebaseXSpy = jasmine.createSpyObj('FirebaseX', ['fetch', 'activateFetched', 'getValue']);
         headerColorSpy = jasmine.createSpyObj('HeaderColor', ['tint']);
+        menuControllerSpy = jasmine.createSpyObj('MenuController', ['toggle', 'isOpen', 'close']);
+        modalControllerSpy = jasmine.createSpyObj('ModalController', ['create', 'getTop', 'dismiss']);
         nativeStorageSpy = jasmine.createSpyObj('NativeStorage', ['setItem', 'getItem']);
         socialSharingSpy = jasmine.createSpyObj('SocialSharing', ['shareWithOptions']);
+        splashScreenSpy = jasmine.createSpyObj('SplashScreen', ['hide']);
+        statusBarSpy = jasmine.createSpyObj('StatusBar', ['styleLightContent', 'backgroundColorByHexString']);
+        toastControllerSpy = jasmine.createSpyObj('ToastController', ['create']);
         webIntentSpy = jasmine.createSpyObj('WebIntent', [
             'unregisterBroadcastReceiver',
             'registerBroadcastReceiver',
             'getIntent'
         ]);
-        menuControllerSpy = jasmine.createSpyObj('MenuController', ['toggle', 'isOpen', 'close']);
-        modalControllerSpy = jasmine.createSpyObj('ModalController', ['create', 'getTop', 'dismiss']);
-        toastControllerSpy = jasmine.createSpyObj('ToastController', ['create']);
 
         void TestBed.configureTestingModule({
             declarations: [AppComponent],
@@ -80,7 +81,6 @@ describe('AppComponent', () => {
 
                 MatFormFieldModule,
                 MatInputModule,
-
                 LogModule,
                 TranslitModule,
                 ZgUniTranslitRuleLoaderModule,
@@ -88,17 +88,18 @@ describe('AppComponent', () => {
             ],
             providers: [
                 Platform,
-                { provide: StatusBar, useValue: statusBarSpy },
-                { provide: SplashScreen, useValue: splashScreenSpy },
                 { provide: AppRate, useValue: appRateSpy },
+                { provide: Clipboard, useValue: clipboardSpy },
                 { provide: FirebaseX, useValue: firebaseXSpy },
                 { provide: HeaderColor, useValue: headerColorSpy },
-                { provide: NativeStorage, useValue: nativeStorageSpy },
-                { provide: SocialSharing, useValue: socialSharingSpy },
-                { provide: WebIntent, useValue: webIntentSpy },
                 { provide: MenuController, useValue: menuControllerSpy },
                 { provide: ModalController, useValue: modalControllerSpy },
-                { provide: ToastController, useValue: toastControllerSpy }
+                { provide: NativeStorage, useValue: nativeStorageSpy },
+                { provide: SocialSharing, useValue: socialSharingSpy },
+                { provide: SplashScreen, useValue: splashScreenSpy },
+                { provide: StatusBar, useValue: statusBarSpy },
+                { provide: ToastController, useValue: toastControllerSpy },
+                { provide: WebIntent, useValue: webIntentSpy }
             ]
         }).compileComponents();
     }));
