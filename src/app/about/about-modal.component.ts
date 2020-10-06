@@ -25,12 +25,6 @@ import { NavLinkItem, appSettings } from '../shared';
     styleUrls: ['about-modal.component.scss']
 })
 export class AboutModalComponent {
-    slidesOptions = {
-        initialSlide: 0,
-        slidesPerView: 1,
-        autoplay: true
-    };
-
     get appName(): string {
         return appSettings.appName;
     }
@@ -86,9 +80,7 @@ export class AboutModalComponent {
                 }
             });
         } catch (err) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const errMsg = err && err.message ? ` ${err.message}` : '';
-            this._logService.error(`An error occurs when sharing via Web API.${errMsg}`);
+            this._logService.error(`An error occurs when sharing via Web API. ${err}`);
         }
     }
 }
