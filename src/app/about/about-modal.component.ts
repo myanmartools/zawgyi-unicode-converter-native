@@ -71,8 +71,9 @@ export class AboutModalComponent {
             });
 
             const toast = await this._toastController.create({
-                message: 'Thank you for sharing the app 😊.',
-                duration: 2000
+                message: 'ဤအက်ပ်ကိုမျှဝေတဲ့အတွက် ကျေးဇူးတင်ပါတယ်။',
+                duration: 5000,
+                cssClass: 'my-uni'
             });
 
             void toast.present();
