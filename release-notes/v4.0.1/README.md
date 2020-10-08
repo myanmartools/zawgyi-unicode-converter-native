@@ -1,6 +1,6 @@
 ## Changes
 
-* Improved textare auto sizing
+* Improved textarea auto sizing
 * Updated package dependencies
 
 ### Android App on Google Play
