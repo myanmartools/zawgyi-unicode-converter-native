@@ -6,7 +6,7 @@
  * found under the LICENSE file in the root directory of this source tree.
  */
 
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
@@ -28,6 +28,8 @@ import { TranslitResult, TranslitService } from '@dagonmetric/ng-translit';
 import { DetectedEnc, ZawgyiDetector } from '@myanmartools/ng-zawgyi-detector';
 
 import { environment } from '../environments/environment';
+
+import { CdkTextareaSyncSize } from '../modules/cdk-extensions';
 
 import { FirebaseCloudMessage, NavLinkItem, Sponsor, appSettings } from './shared';
 
@@ -55,6 +57,12 @@ const TargetUniLabelText = 'ပြောင်းပြီးယူနီကု�
     styleUrls: ['app.component.scss']
 })
 export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
+    @ViewChild('sourceTextareaSyncSize', { static: false })
+    sourceTextareaSyncSize?: CdkTextareaSyncSize;
+
+    @ViewChild('outTextareaSyncSize', { static: false })
+    outTextareaSyncSize?: CdkTextareaSyncSize;
+
     customPopoverOptions = {
         cssClass: 'my-uni'
     };
@@ -316,6 +324,13 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
+        if (this.sourceTextareaSyncSize) {
+            this.sourceTextareaSyncSize.secondCdkTextareaSyncSize = this.outTextareaSyncSize;
+        }
+        if (this.outTextareaSyncSize) {
+            this.outTextareaSyncSize.secondCdkTextareaSyncSize = this.sourceTextareaSyncSize;
+        }
+
         this._backButtonSubscription = this._platform.backButton.subscribe(() => {
             void this.handleBackButton();
         });

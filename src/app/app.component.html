@@ -98,9 +98,11 @@
                     <ion-col size="12" size-sm>
                         <mat-form-field class="full-width-form-field my-uni">
                             <mat-label class="my-uni"><span class="my-uni">{{sourceEncLabel}}</span></mat-label>
-                            <textarea matInput class="my-uni" spellcheck="false" rows="4" [(ngModel)]="sourceText"
+                            <textarea matInput class="my-uni" spellcheck="false" rows="4" [(ngModel)]="sourceText"                                
                                 [class.my-uni]="!detectedEnc || detectedEnc == 'uni'"
-                                [class.my-zg]="detectedEnc == 'zg'" cdkTextareaAutosize
+                                [class.my-zg]="detectedEnc == 'zg'" 
+                                cdkTextareaSyncSize
+                                #sourceTextareaSyncSize="cdkTextareaSyncSize"
                                 cdkAutosizeMinRows="4"></textarea>
                         </mat-form-field>
                     </ion-col>
@@ -114,9 +116,12 @@
                         </ion-toolbar>
                         <mat-form-field class="full-width-form-field my-uni">
                             <mat-label class="my-uni"><span class="my-uni">{{targeetEncLabel}}</span></mat-label>
-                            <textarea matInput class="my-uni" spellcheck="false" rows="4" [ngModel]="outText"
+                            <textarea matInput class="my-uni" spellcheck="false" rows="4" [ngModel]="outText"                                
                                 [class.my-uni]="targetEnc == 'uni'" [class.my-zg]="!targetEnc || targetEnc == 'zg'"
-                                cdkTextareaAutosize cdkAutosizeMinRows="4" [readonly]="!outText"></textarea>
+                                cdkTextareaSyncSize
+                                #outTextareaSyncSize="cdkTextareaSyncSize"
+                                cdkAutosizeMinRows="4" 
+                                [readonly]="!outText"></textarea>
                         </mat-form-field>
                     </ion-col>
                 </ion-row>
