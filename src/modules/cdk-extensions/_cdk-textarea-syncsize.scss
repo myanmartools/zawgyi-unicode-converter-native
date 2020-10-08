@@ -1,0 +1,53 @@
+/**
+ * @license
+ * Copyright DagonMetric. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found under the LICENSE file in the root directory of this source tree.
+ */
+
+@mixin cdk-textarea-syncsize {
+
+    textarea.cdk-textarea-syncsize,
+    textarea.cdk-textarea-autosize {
+        resize: none;
+    }
+
+    textarea.cdk-textarea-autosize-measuring {
+        @include _cdk-textarea-autosize-measuring-base;
+        height: auto !important;
+        overflow: hidden !important;
+    }
+
+    textarea.cdk-textarea-autosize-measuring-firefox {
+        @include _cdk-textarea-autosize-measuring-base;
+        height: 0 !important;
+    }
+
+    textarea.cdk-textarea-syncsize-lineheight-measuring {
+        border: none !important;
+        padding: 0 !important;
+        min-height: auto !important;
+        max-height: auto !important;
+        height: auto !important;
+    }
+
+
+    textarea.mat-input-element {
+        // Only allow resizing along the Y axis.
+        resize: vertical;
+        overflow: auto;
+        
+        &.cdk-textarea-syncsize, &.cdk-textarea-autosize {
+            resize: none;
+        }
+    }
+}
+
+@mixin _cdk-textarea-autosize-measuring-base {
+    // Having 2px top and bottom padding seems to fix a bug where Chrome gets an incorrect
+    // measurement. We just have to account for it later and subtract it off the final result.
+    padding: 2px 0 !important;
+    box-sizing: content-box !important;
+  }
+  
