@@ -34,6 +34,8 @@ import { TranslitModule } from '@dagonmetric/ng-translit';
 import { ZawgyiDetectorModule } from '@myanmartools/ng-zawgyi-detector';
 
 import { environment } from '../environments/environment';
+
+import { CdkTextareaSyncSizeModule } from '../modules/cdk-extensions';
 import { IonicFirebaseAnalyticsLoggerModule } from '../modules/ng-log-ionic-firebase-analytics';
 import { ZgUniTranslitRuleLoaderModule } from '../modules/zg-uni-translit-rule-loader';
 
@@ -56,6 +58,7 @@ import { AppLogsModalComponent } from './app-logs';
 
         MatFormFieldModule,
         MatInputModule,
+        CdkTextareaSyncSizeModule,
 
         IonicModule.forRoot(),
 
