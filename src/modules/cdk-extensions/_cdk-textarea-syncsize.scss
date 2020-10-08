@@ -7,7 +7,6 @@
  */
 
 @mixin cdk-textarea-syncsize {
-
     textarea.cdk-textarea-syncsize,
     textarea.cdk-textarea-autosize {
         resize: none;
