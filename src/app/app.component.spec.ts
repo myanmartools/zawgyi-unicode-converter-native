@@ -27,6 +27,7 @@ import { LogModule } from '@dagonmetric/ng-log';
 import { TranslitModule } from '@dagonmetric/ng-translit';
 import { ZawgyiDetectorModule } from '@myanmartools/ng-zawgyi-detector';
 
+import { CdkTextareaSyncSizeModule } from '../modules/cdk-extensions';
 import { ZgUniTranslitRuleLoaderModule } from '../modules/zg-uni-translit-rule-loader';
 import { AppComponent } from './app.component';
 
@@ -81,6 +82,7 @@ describe('AppComponent', () => {
                 FormsModule,
                 NoopAnimationsModule,
 
+                CdkTextareaSyncSizeModule,
                 MatFormFieldModule,
                 MatInputModule,
                 LogModule,
