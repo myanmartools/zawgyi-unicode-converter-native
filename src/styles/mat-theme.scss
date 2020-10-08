@@ -2,6 +2,8 @@
 
 @import 'variables';
 
+@import "../modules/cdk-extensions/cdk-textarea-syncsize";
+
 $typography-config: mat-typography-config($body-1: mat-typography-level($font-size-base, $line-height-base, $font-weight-base));
 
 @include mat-core($typography-config);
@@ -53,6 +55,7 @@ $dark-theme: mat-dark-theme($primary, $accent);
 $light-theme: mat-light-theme($primary, $accent);
 
 @include angular-material-theme($light-theme);
+@include cdk-textarea-syncsize();
 
 body.dark, .md body.dark {
     @include angular-material-theme($dark-theme);    
