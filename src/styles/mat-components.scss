@@ -12,11 +12,15 @@
 textarea.mat-input-element {
     &.my-zg {
         font-family: Zawgyi-One, sans-serif;
+        font-size: 1.1em;
         line-height: 1.6;
+        font-weight: 400;
     }
 
     &.my-uni {
         font-family: "Noto Sans Myanmar UI", "Myanmar Text", Pyidaungsu, Padauk, Myanmar3, sans-serif;
+        font-size: 1.1em;
         line-height: 1.6;
+        font-weight: 400;
     }
 }
