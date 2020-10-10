@@ -11,7 +11,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 
-import { AlertController, MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
+import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
 
 import { AppRate } from '@ionic-native/app-rate/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
@@ -33,8 +33,9 @@ import { CdkTextareaSyncSize } from '../modules/cdk-extensions';
 
 import { FirebaseCloudMessage, NavLinkItem, Sponsor, appSettings } from './shared';
 
-import { AboutModalComponent } from './about/about-modal.component';
+import { AboutModalComponent } from './about';
 import { AppLog, AppLogsModalComponent } from './app-logs';
+import { NotificationModalComponent } from './notification';
 
 export type SourceEnc = 'auto' | DetectedEnc;
 
@@ -225,7 +226,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     constructor(
-        private readonly _alertController: AlertController,
         private readonly _menuController: MenuController,
         private readonly _modalController: ModalController,
         private readonly _toastController: ToastController,
@@ -349,6 +349,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     clearInput(): void {
         this.sourceText = '';
+        this._logger.trackEvent({
+            name: 'clear_input',
+            properties: {
+                method: 'clear',
+                app_version: appSettings.appVersion,
+                app_platform: 'android'
+            }
+        });
     }
 
     async showShareSheet(): Promise<void> {
@@ -378,7 +386,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._logger.trackEvent({
                 name: 'share',
                 properties: {
-                    method: 'Social Sharing Native',
+                    method: 'share',
                     app_version: appSettings.appVersion,
                     app_platform: 'android'
                 }
@@ -400,7 +408,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._logger.trackEvent({
                 name: 'rate',
                 properties: {
-                    method: 'App Rate Native',
+                    method: 'rate',
                     app_version: appSettings.appVersion,
                     app_platform: 'android'
                 }
@@ -494,7 +502,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._logger.trackEvent({
             name: 'screen_view',
             properties: {
-                screen_name: 'App Logs',
+                screen_name: 'Logs',
                 app_platform: 'android'
             }
         });
@@ -567,13 +575,13 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 });
             });
 
-        this._firebaseX.onMessageReceived().subscribe((data: FirebaseCloudMessage) => {
+        this._firebaseX.onMessageReceived().subscribe((message: FirebaseCloudMessage) => {
             this._appLogs.push({
                 message: 'Firebase message received.',
-                data
+                data: message
             });
 
-            void this.handleFirebaseMessageReceived(data);
+            void this.handleFirebaseMessageReceived(message);
         });
 
         this._firebaseX.onTokenRefresh().subscribe((token) => {
@@ -887,19 +895,49 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
     }
 
-    private async handleFirebaseMessageReceived(data: FirebaseCloudMessage): Promise<Promise<void>> {
-        if (data.show_notification !== 'false' || !data.title || !data.body) {
+    private async handleFirebaseMessageReceived(message: FirebaseCloudMessage): Promise<Promise<void>> {
+        if (!message.body) {
             return;
         }
 
-        const alert = await this._alertController.create({
-            header: data.title,
-            message: data.body,
-            cssClass: 'my-uni',
-            buttons: ['ပိတ်ပါ']
+        const data: { [key: string]: string } = message.data || {};
+        if (message.link && !data.link) {
+            data.link = message.link;
+        }
+        if (message.linkLabel && !data.linkLabel) {
+            data.linkLabel = message.linkLabel;
+        }
+
+        const themeColor = data.themeColor || message.themeColor || 'blue';
+
+        const modal = await this._modalController.create({
+            component: NotificationModalComponent,
+            componentProps: {
+                title: message.title || '',
+                body: message.body || '',
+                themeColor,
+                data
+            }
         });
 
-        await alert.present();
+        void modal.onDidDismiss().then(() => {
+            this._logger.trackEvent({
+                name: 'screen_view',
+                properties: {
+                    screen_name: 'Home',
+                    app_platform: 'android'
+                }
+            });
+        });
+        await modal.present();
+
+        this._logger.trackEvent({
+            name: 'screen_view',
+            properties: {
+                screen_name: 'Notification',
+                app_platform: 'android'
+            }
+        });
     }
 
     private onSourceEncChanged(val?: SourceEnc): void {
