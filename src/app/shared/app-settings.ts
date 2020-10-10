@@ -2,7 +2,7 @@ import { AppConfig } from './app-config';
 
 export const appSettings: AppConfig = {
     appName: 'Zawgyi Unicode Converter',
-    appVersion: '4.0.2',
+    appVersion: '4.0.3',
     appThemeColor: '#8764B8',
     storeAppUrlInfo: {
         android: 'market://details?id=com.dagonmetric.zawgyiunicodeconverter'
