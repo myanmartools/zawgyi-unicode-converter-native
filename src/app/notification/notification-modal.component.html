@@ -1,0 +1,17 @@
+<ion-content>
+    <h3 *ngIf="title" class="my-uni notification-title">{{title}}</h3>
+    <p class="my-uni notification-body">{{body}}</p>
+    <p *ngIf="data.link" class="notification-data" [class]="'ion-' + themeColor">
+        <a [href]="data.link" class="notification-link">{{data.linkLabel}}</a>
+    </p>
+</ion-content>
+<ion-footer>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button (click)="dismissModal()"><span class="my-uni">ပိတ်ပါ</span>
+                <ion-icon slot="end" name="close-outline">
+                </ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>
