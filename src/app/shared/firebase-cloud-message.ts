@@ -8,8 +8,12 @@ export interface FirebaseCloudMessage {
 
     tap?: 'background';
 
+    // Custom
     data?: { [key: string]: string };
+    titleText?: string;
+    bodyText?: string;
     link?: string;
     linkLabel?: string;
-    themeColor?: string;
+    linkColor?: string;
+    imageUrl?: string;
 }
