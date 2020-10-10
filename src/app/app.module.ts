@@ -41,14 +41,15 @@ import { ZgUniTranslitRuleLoaderModule } from '../modules/zg-uni-translit-rule-l
 
 import { AppComponent } from './app.component';
 
-import { AboutModalComponent } from './about/about-modal.component';
+import { AboutModalComponent } from './about';
 import { AppLogsModalComponent } from './app-logs';
+import { NotificationModalComponent } from './notification';
 
 /**
  * App module for both node and web platforms.
  */
 @NgModule({
-    declarations: [AppComponent, AboutModalComponent, AppLogsModalComponent],
+    declarations: [AppComponent, AboutModalComponent, AppLogsModalComponent, NotificationModalComponent],
     imports: [
         BrowserModule,
         CommonModule,
@@ -92,6 +93,6 @@ import { AppLogsModalComponent } from './app-logs';
         WebIntent
     ],
     bootstrap: [AppComponent],
-    entryComponents: [AboutModalComponent, AppLogsModalComponent]
+    entryComponents: [AboutModalComponent, AppLogsModalComponent, NotificationModalComponent]
 })
 export class AppModule {}
