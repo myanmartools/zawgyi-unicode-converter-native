@@ -1,8 +1,12 @@
 <ion-content>
-    <h3 *ngIf="title" class="my-uni notification-title">{{title}}</h3>
-    <p class="my-uni notification-body">{{body}}</p>
-    <p *ngIf="data.link" class="notification-data" [class]="'ion-' + themeColor">
-        <a [href]="data.link" class="notification-link">{{data.linkLabel}}</a>
+    <ion-text *ngIf="isAd" class="my-uni" color="primary">
+        <p class="my-uni">ကြော်ငြာ</p>
+    </ion-text>
+    <h3 *ngIf="titleText" class="my-uni notification-title">{{titleText}}</h3>
+    <img *ngIf="imageUrl" [src]="imageUrl" />
+    <p class="my-uni notification-body">{{bodyText}}</p>
+    <p *ngIf="link" class="my-uni notification-link">
+        <a [class]="'ion-' + linkColor" [href]="link">{{linkLabel}}</a>
     </p>
 </ion-content>
 <ion-footer>

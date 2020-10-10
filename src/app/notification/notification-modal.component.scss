@@ -1,7 +1,10 @@
-.notification-data {
-    a.notification-link {
-        color: inherit;
-        padding-top: 10px;
-        padding-bottom: 10px;
+h3.notification-title {
+    font-size: 17px;
+}
+
+ion-content {
+    img {
+        width: 100%;
+        height: auto;
     }
 }

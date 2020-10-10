@@ -20,16 +20,25 @@ import { ModalController } from '@ionic/angular';
 })
 export class NotificationModalComponent {
     @Input()
-    title: string;
+    titleText: string;
 
     @Input()
-    body: string;
+    bodyText: string;
 
     @Input()
-    data: { [key: string]: string } = {};
+    link: string;
 
     @Input()
-    themeColor: string;
+    linkLabel: string;
+
+    @Input()
+    linkColor: string;
+
+    @Input()
+    imageUrl: string;
+
+    @Input()
+    isAd: boolean;
 
     constructor(private readonly _modalController: ModalController) {}
 
