@@ -115,13 +115,85 @@ body.dark, .md body.dark, .ios body.dark {
     --ion-item-background: #1A1B1E;
 }
 
+.ion-red  {
+    color: #B71C1C;
+}
+
+.ion-pink  {
+    color: #880E4F;
+}
+
+.ion-purple  {
+    color: #4A148C;
+}
+
+.ion-indigo   {
+    color: #1A237E;
+}
+
+.ion-blue  {
+    color: #0D47A1;
+}
+
+.ion-cyan   {
+    color: #006064;
+}
+
+.ion-green  {
+    color: #1B5E20;
+}
+
+.ion-lime   {
+    color: #827717;
+}
+
 .ion-yellow {
     color: #FF6F00;
 }
 
+.ion-orange  {
+    color: #E65100;
+}
+
 body.dark, .md body.dark, .ios body.dark {
+    .ion-red  {
+        color: #FF80AB;
+    }
+
+    .ion-pink  {
+        color: #880E4F;
+    }
+
+    .ion-purple  {
+        color: #EA80FC;
+    }
+
+    .ion-indigo   {
+        color: #8C9EFF;
+    }
+
+    .ion-blue  {
+        color: #82B1FF;
+    }
+
+    .ion-cyan   {
+        color: #84FFFF;
+    }
+    
+    .ion-green  {
+        color: #B9F6CA;
+    }
+    
+    .ion-lime   {
+        color: #F4FF81;
+    }
+
     .ion-yellow {
         color: #FFFF00;
+    }
+
+    .ion-orange  {
+        color: #FFD180;
     }
 }
 
