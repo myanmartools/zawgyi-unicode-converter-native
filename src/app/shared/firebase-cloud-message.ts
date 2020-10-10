@@ -1,9 +1,15 @@
 export interface FirebaseCloudMessage {
-    messageType: 'notification';
-    from: string;
+    messageType?: 'notification' | 'data';
+
+    // Foreground
     title?: string;
     body?: string;
-    collapse_key?: string;
     show_notification?: string;
+
     tap?: 'background';
+
+    data?: { [key: string]: string };
+    link?: string;
+    linkLabel?: string;
+    themeColor?: string;
 }
