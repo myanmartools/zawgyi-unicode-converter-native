@@ -896,27 +896,28 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async handleFirebaseMessageReceived(message: FirebaseCloudMessage): Promise<Promise<void>> {
-        if (!message.body) {
+        const data: { [key: string]: string } = message.data || {};
+
+        const titleText = message.title || message.titleText;
+        const bodyText = message.body || message.bodyText;
+        const link = message.link || data.link;
+        const linkLabel = message.linkLabel || data.linkLabel;
+        const linkColor = message.linkColor || data.linkColor || 'blue';
+        const imageUrl = message.imageUrl || data.imageUrl;
+
+        if (!bodyText) {
             return;
         }
-
-        const data: { [key: string]: string } = message.data || {};
-        if (message.link && !data.link) {
-            data.link = message.link;
-        }
-        if (message.linkLabel && !data.linkLabel) {
-            data.linkLabel = message.linkLabel;
-        }
-
-        const themeColor = data.themeColor || message.themeColor || 'blue';
 
         const modal = await this._modalController.create({
             component: NotificationModalComponent,
             componentProps: {
-                title: message.title || '',
-                body: message.body || '',
-                themeColor,
-                data
+                titleText,
+                bodyText,
+                link,
+                linkLabel,
+                linkColor,
+                imageUrl
             }
         });
 
