@@ -904,6 +904,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         const linkLabel = message.linkLabel || data.linkLabel;
         const linkColor = message.linkColor || data.linkColor || 'blue';
         const imageUrl = message.imageUrl || data.imageUrl;
+        const isAd = message.isAd || data.isAd;
 
         if (!bodyText) {
             return;
@@ -917,7 +918,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 link,
                 linkLabel,
                 linkColor,
-                imageUrl
+                imageUrl,
+                isAd
             }
         });
 
