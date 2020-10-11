@@ -16,4 +16,5 @@ export interface FirebaseCloudMessage {
     linkLabel?: string;
     linkColor?: string;
     imageUrl?: string;
+    isAd?: string;
 }
