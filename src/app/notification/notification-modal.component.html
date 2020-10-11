@@ -12,8 +12,12 @@
 <ion-footer>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-button (click)="dismissModal()"><span class="my-uni">ပိတ်ပါ</span>
-                <ion-icon slot="end" name="close-outline">
+            <ion-button *ngIf="link" color="primary" (click)="showShareSheet()">
+                <span class="my-uni">မျှဝေပါ</span><ion-icon name="share-social"></ion-icon>
+            </ion-button>
+
+            <ion-button (click)="dismissModal()">
+                <span class="my-uni">ပိတ်ပါ</span><ion-icon slot="end" name="close-outline">
                 </ion-icon>
             </ion-button>
         </ion-buttons>
