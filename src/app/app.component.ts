@@ -54,6 +54,8 @@ const RatePromptedCountKey = 'ratePromptedCount';
 
 const AdsVisibleKey = 'adsVisible';
 
+const SponsoredMessagesChannelId = 'sponsored_messages';
+
 /**
  * Core app component.
  */
@@ -543,6 +545,33 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private initializeApp(): void {
         void this._platform.ready().then(async () => {
             if (this._platform.is('android') || this._platform.is('ios')) {
+                this._firebaseX
+                    .createChannel({
+                        id: SponsoredMessagesChannelId,
+                        name: 'Sponsored Messages',
+                        description: 'Ad and sponsored messages',
+                        vibration: true,
+                        light: true,
+                        lightColor: parseInt('FF0000FF', 16).toString(),
+                        importance: 4,
+                        badge: true,
+                        visibility: 1
+                    })
+                    .then((response) => {
+                        this._appLogs.push({
+                            message: 'Custom channel created',
+                            data: response
+                        });
+                    })
+                    .catch((err) => {
+                        const errPrefixMsg = 'An error occurs while creating a new message channel.';
+                        this._logger.error(`${errPrefixMsg} ${err}`);
+                        this._appLogs.push({
+                            message: errPrefixMsg,
+                            data: err
+                        });
+                    });
+
                 await this.initFirebaseRemoteConfig();
                 await this.detectDarkTheme();
                 this._statusBar.styleLightContent();
@@ -968,7 +997,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         const linkLabel = message.linkLabel || data.linkLabel;
         const linkColor = message.linkColor || data.linkColor || 'blue';
         const imageUrl = message.imageUrl || data.imageUrl;
-        const isAd = message.isAd || data.isAd;
+        const channel_id =
+            message.channel_id ||
+            message.notification_android_channel_id ||
+            data.channel_id ||
+            data.notification_android_channel_id;
+        const isAd = message.isAd || data.isAd || channel_id === SponsoredMessagesChannelId;
 
         if (!bodyText) {
             return;
