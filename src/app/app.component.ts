@@ -924,8 +924,12 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private async handleFirebaseMessageReceived(message: FirebaseCloudMessage): Promise<Promise<void>> {
         const data: { [key: string]: string } = message.data || {};
 
-        const titleText = message.title || message.titleText;
-        const bodyText = message.body || message.bodyText;
+        const titleText = message.titleText || data.titleText || message.title;
+        const bodyText = message.bodyText || data.bodyText || message.body;
+
+        const bodyText2 = message.bodyText2 || data.bodyText2;
+        const bodyText3 = message.bodyText3 || data.bodyText3;
+
         const link = message.link || data.link;
         const linkLabel = message.linkLabel || data.linkLabel;
         const linkColor = message.linkColor || data.linkColor || 'blue';
@@ -941,6 +945,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             componentProps: {
                 titleText,
                 bodyText,
+                bodyText2,
+                bodyText3,
                 link,
                 linkLabel,
                 linkColor,
