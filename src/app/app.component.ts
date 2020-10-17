@@ -401,18 +401,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
     }
 
-    promptForRating(): void {
+    promptForRating(immediately = true): void {
         try {
-            this._appRate.promptForRating(true);
-
-            this._logger.trackEvent({
-                name: 'rate',
-                properties: {
-                    method: 'rate',
-                    app_version: appSettings.appVersion,
-                    app_platform: 'android'
-                }
-            });
+            this._appRate.promptForRating(immediately);
         } catch (err) {
             const errPrefixMsg = 'An error occurs while calling _appRate.promptForRating() method.';
             this._logger.error(`${errPrefixMsg} ${err}`);
@@ -723,7 +714,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private handlePlatformReady(): void {
         void this.handleWelcomeScreen();
         void this.handleWebIntent();
-        void this.handlePromptForRating();
+        void this.handleAppRate();
     }
 
     private async handleBackButton(): Promise<void> {
@@ -770,7 +761,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
     }
 
-    private async handlePromptForRating(): Promise<void> {
+    private async handleAppRate(): Promise<void> {
         const storeAppUrlInfo = appSettings.storeAppUrlInfo;
 
         let ratePromptedCount = 0;
@@ -796,29 +787,44 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             }
         }
 
-        this._appRate.preferences.storeAppURL = {
-            ...storeAppUrlInfo
-        };
-        this._appRate.preferences.displayAppName = this.appName;
-        this._appRate.preferences.usesUntilPrompt =
-            rateButtonTouchCount > 0 ? rateButtonTouchCount * 10 : ratePromptedCount > 0 ? ratePromptedCount * 5 : 3;
-        this._appRate.preferences.simpleMode = true;
-        this._appRate.preferences.useCustomRateDialog = true;
-        this._appRate.preferences.useLanguage = 'en';
-        this._appRate.preferences.customLocale = {
-            title: 'Do you \u2764\uFE0F using this app?',
-            message: 'We hope yoou like using Zawgyi Unicode Converter.\nWe love to hear your feedback.',
-            cancelButtonLabel: 'No, thanks',
-            laterButtonLabel: 'Later',
-            rateButtonLabel: 'Rate it now',
-            yesButtonLabel: 'Yes',
-            noButtonLabel: 'No'
-        };
-        this._appRate.preferences.callbacks = {
-            onButtonClicked: async (buttonIndex?: number) => {
-                if (buttonIndex === 3) {
+        this._appRate.preferences = {
+            displayAppName: this.appName,
+            storeAppURL: {
+                ...storeAppUrlInfo
+            },
+            usesUntilPrompt:
+                rateButtonTouchCount > 0
+                    ? rateButtonTouchCount * 10
+                    : ratePromptedCount > 0
+                    ? ratePromptedCount * 5
+                    : 3,
+            simpleMode: true,
+            useCustomRateDialog: true,
+            useLanguage: 'en',
+            customLocale: {
+                title: 'Do you \u2764\uFE0F using this app?',
+                message: 'We hope yoou like using Zawgyi Unicode Converter.\nWe love to hear your feedback.',
+                cancelButtonLabel: 'No, thanks',
+                laterButtonLabel: 'Later',
+                rateButtonLabel: 'Rate it now',
+                yesButtonLabel: 'Yes',
+                noButtonLabel: 'No'
+            },
+            openUrl: async (url) => {
+                if (!((window as unknown) as { SafariViewController: boolean }).SafariViewController) {
+                    window.open(url, '_blank', 'location=yes');
+
                     ++rateButtonTouchCount;
                     void this.setCacheItem('rateButtonTouchCount', `${rateButtonTouchCount}`);
+
+                    this._logger.trackEvent({
+                        name: 'open_rate_url',
+                        properties: {
+                            url,
+                            app_version: appSettings.appVersion,
+                            app_platform: 'android'
+                        }
+                    });
 
                     const toast = await this._toastController.create({
                         message: 'သင်၏ပြန်လည်သုံးသပ်မှုအတွက် ကျေးဇူးတင်ပါတယ်။',
@@ -828,8 +834,15 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
                     void toast.present();
                 } else {
-                    ++ratePromptedCount;
-                    void this.setCacheItem('ratePromptedCount', `${ratePromptedCount}`);
+                    // TODO: To implement
+                }
+            },
+            callbacks: {
+                onButtonClicked: (buttonIndex?: number) => {
+                    if (buttonIndex !== 3) {
+                        ++ratePromptedCount;
+                        void this.setCacheItem('ratePromptedCount', `${ratePromptedCount}`);
+                    }
                 }
             }
         };
@@ -838,16 +851,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             return;
         }
 
-        try {
-            this._appRate.promptForRating(false);
-        } catch (err) {
-            const errPrefixMsg = 'An error occurs while calling _appRate.promptForRating() method.';
-            this._logger.error(`${errPrefixMsg} ${err}`);
-            this._appLogs.push({
-                message: errPrefixMsg,
-                data: err
-            });
-        }
+        this.promptForRating(false);
     }
 
     // private handleDynamicLinks(): void {
