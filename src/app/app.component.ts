@@ -52,6 +52,8 @@ const TargetUniLabelText = 'ပြောင်းပြီးယူနီကု�
 const RateOpenedCountKey = 'rateOpenedCount';
 const RatePromptedCountKey = 'ratePromptedCount';
 
+const AdsVisibleKey = 'adsVisible';
+
 /**
  * Core app component.
  */
@@ -89,7 +91,9 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     private _lastTimeBackPress = 0;
     private _isDarkMode?: boolean | null = null;
 
-    private _sponsorSectionVisible = false;
+    private _adsVisibleCached?: boolean | null = null;
+    private _shouldAdsVisible?: boolean | null = null;
+
     private _sponsors: Sponsor[] = [];
 
     private _fontEncSelectedText = SelectInputFontText;
@@ -219,8 +223,31 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
     }
 
-    get sponsorSectionVisible(): boolean {
-        return this._sponsorSectionVisible && !this.sourceText.length;
+    get shouldAdsVisible(): boolean {
+        if (this.sourceText.length || this._adsVisibleCached === false) {
+            return false;
+        }
+
+        return this._shouldAdsVisible == null ? true : this._shouldAdsVisible;
+    }
+
+    get adsDisallowed(): boolean {
+        return this._adsVisibleCached == null ? false : !this._adsVisibleCached;
+    }
+    set adsDisallowed(value: boolean) {
+        this._shouldAdsVisible = !value;
+        this._adsVisibleCached = !value;
+        void this.setCacheItem(AdsVisibleKey, `${this._adsVisibleCached}`.toLocaleLowerCase()).then(() => {
+            // Do nothing
+        });
+
+        this._logger.trackEvent({
+            name: value ? 'hide_ads' : 'show_ads',
+            properties: {
+                app_version: appSettings.appVersion,
+                app_platform: 'android'
+            }
+        });
     }
 
     get sponsors(): Sponsor[] {
@@ -360,7 +387,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     async showShareSheet(): Promise<void> {
-        this._sponsorSectionVisible = false;
+        this._shouldAdsVisible = false;
 
         appSettings.socialSharing = appSettings.socialSharing || {};
         const socialSharingSubject = appSettings.socialSharing.subject;
@@ -426,10 +453,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this.isDarkMode = !this.isDarkMode;
         } else if (this.sourceText && this.sourceText.toLowerCase() === '$togglemenu') {
             void this.toggleSideNav();
-        } else if (this.sourceText && this.sourceText.toLowerCase() === '$showsponsors') {
-            this._sponsorSectionVisible = true;
-        } else if (this.sourceText && this.sourceText.toLowerCase() === '$hidesponsors') {
-            this._sponsorSectionVisible = false;
+        } else if (this.sourceText && this.sourceText.toLowerCase() === '$showads') {
+            this.adsDisallowed = false;
+        } else if (this.sourceText && this.sourceText.toLowerCase() === '$hideads') {
+            this.adsDisallowed = true;
         } else {
             void this.showAboutModal();
         }
@@ -526,6 +553,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
 
                 this._splashScreen.hide();
+
+                const adsVisibleCachedStr = await this.getCacheItem(AdsVisibleKey);
+                if (adsVisibleCachedStr) {
+                    this._adsVisibleCached = adsVisibleCachedStr === 'true' ? true : false;
+                    if (!this._adsVisibleCached) {
+                        this._shouldAdsVisible = false;
+                    }
+                }
 
                 if (this._platform.is('android')) {
                     this.registerBroadcastReceiverAndroid();
@@ -656,25 +691,22 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         document.body.classList.toggle('dark', isDark);
     }
 
-    private async handleWelcomeScreen(): Promise<void> {
+    private async handleWelcomeScreenAndAdVisible(): Promise<void> {
         const cachedAppVersion = await this.getCacheItem('appVersion');
 
         if (cachedAppVersion !== this.appVersion) {
-            this._sponsorSectionVisible = false;
+            this._shouldAdsVisible = false;
             void this.showAboutModal();
             await this.setCacheItem('appVersion', this.appVersion);
         } else {
+            // Ads
             if (this._platform.is('android') || this._platform.is('ios')) {
                 try {
-                    // Sponsors
                     const sStr = (await this._firebaseX.getValue('sponsors')) as string;
                     const sponsorList = JSON.parse(sStr) as Sponsor[];
                     this._sponsors = sponsorList.filter(
                         (s) => !s.inactive && (s.expiresIn == null || s.expiresIn >= Date.now())
                     );
-
-                    const svStr = (await this._firebaseX.getValue('sponsorSectionVisible')) as string;
-                    this._sponsorSectionVisible = svStr === 'true' ? true : false;
                 } catch (err) {
                     // Do nothing
                 }
@@ -709,7 +741,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private handlePlatformReady(): void {
-        void this.handleWelcomeScreen();
+        void this.handleWelcomeScreenAndAdVisible();
         void this.handleWebIntent();
         void this.handleAppRate();
     }
@@ -850,6 +882,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async openAppRateUrl(url: string): Promise<void> {
+        this._shouldAdsVisible = false;
+
         if (!((window as unknown) as { SafariViewController: boolean }).SafariViewController) {
             window.open(url, '_blank', 'location=yes');
         } else {

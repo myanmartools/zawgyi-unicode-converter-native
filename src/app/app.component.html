@@ -44,6 +44,10 @@
                         <ion-label><span class="my-uni">အမှောင်စနစ်</span></ion-label>
                         <ion-toggle [(ngModel)]="isDarkMode"></ion-toggle>
                     </ion-item>
+                    <ion-item>
+                        <ion-label><span class="my-uni">ကြော်ငြာများပိတ်ထားရန်</span></ion-label>
+                        <ion-toggle [(ngModel)]="adsDisallowed"></ion-toggle>
+                    </ion-item>
                 </ion-list>
             </ion-item-group>
         </ion-content>
@@ -135,7 +139,7 @@
                         </ion-button>
                     </ion-col>
                 </ion-row>
-                <ion-row class="sponsor-cards" *ngIf="sponsorSectionVisible">
+                <ion-row class="sponsor-cards" *ngIf="shouldAdsVisible">
                     <ion-col *ngFor="let sponsor of sponsors">
                         <ion-card class="sponsor-card" [href]="sponsor.detailUrlForMobile">
                             <img *ngIf="sponsor.imageUrl" [src]="sponsor.imageUrl" />
