@@ -12,6 +12,8 @@ export interface FirebaseCloudMessage {
     data?: { [key: string]: string };
     titleText?: string;
     bodyText?: string;
+    bodyText2?: string;
+    bodyText3?: string;
     link?: string;
     linkLabel?: string;
     linkColor?: string;
