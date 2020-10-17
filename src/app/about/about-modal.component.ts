@@ -12,7 +12,7 @@ import { ModalController, ToastController } from '@ionic/angular';
 
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 
-import { LogService } from '@dagonmetric/ng-log';
+import { LogService, Logger } from '@dagonmetric/ng-log';
 
 import { NavLinkItem, appSettings } from '../shared';
 
@@ -37,12 +37,16 @@ export class AboutModalComponent {
         return appSettings.navLinks;
     }
 
+    private readonly _logger: Logger;
+
     constructor(
         private readonly _modalController: ModalController,
         private readonly _toastController: ToastController,
         private readonly _socialSharing: SocialSharing,
-        private readonly _logService: LogService
-    ) {}
+        logService: LogService
+    ) {
+        this._logger = logService.createLogger('app-about');
+    }
 
     dismissModal(): void {
         void this._modalController.dismiss({
@@ -72,15 +76,15 @@ export class AboutModalComponent {
 
             void toast.present();
 
-            this._logService.trackEvent({
-                name: 'share',
+            this._logger.trackEvent({
+                name: 'app_share',
                 properties: {
-                    method: 'share',
-                    app_version: appSettings.appVersion
+                    app_version: appSettings.appVersion,
+                    app_platform: 'android'
                 }
             });
         } catch (err) {
-            this._logService.error(`An error occurs when sharing via Web API. ${err}`);
+            this._logger.error(`An error occurs when sharing via Web API. ${err}`);
         }
     }
 }

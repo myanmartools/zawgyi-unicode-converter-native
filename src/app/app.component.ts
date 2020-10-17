@@ -213,7 +213,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._logger.trackEvent({
             name: value ? 'change_dark_mode' : 'change_light_mode',
             properties: {
-                mode: value ? 'dark' : 'light',
                 app_version: appSettings.appVersion,
                 app_platform: 'android'
             }
@@ -312,7 +311,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                     this._logger.trackEvent({
                         name: `convert_${this._curRuleName}`,
                         properties: {
-                            method: this._curRuleName,
                             input_length: this._sourceText.length,
                             duration_msec: result.duration,
                             source: this._convertSource,
@@ -355,7 +353,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._logger.trackEvent({
             name: 'clear_input',
             properties: {
-                method: 'clear',
                 app_version: appSettings.appVersion,
                 app_platform: 'android'
             }
@@ -387,9 +384,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             void toast.present();
 
             this._logger.trackEvent({
-                name: 'share',
+                name: 'app_share',
                 properties: {
-                    method: 'share',
                     app_version: appSettings.appVersion,
                     app_platform: 'android'
                 }
@@ -413,7 +409,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         this._logger.trackEvent({
             name: isOpened ? 'open_drawer_menu' : 'close_drawer_menu',
             properties: {
-                action: isOpened ? 'open' : 'close',
                 app_version: appSettings.appVersion,
                 app_platform: 'android'
             }
@@ -500,6 +495,14 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
         await this._clipboard.clear();
         await this._clipboard.copy(this._outText);
+
+        this._logger.trackEvent({
+            name: 'copy_output',
+            properties: {
+                app_version: appSettings.appVersion,
+                app_platform: 'android'
+            }
+        });
 
         const toast = await this._toastController.create({
             message: 'ပြောင်းပြီးစာသားများကို ကူးယူပြီးပါပြီ။',
@@ -728,7 +731,6 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
             this._logger.trackEvent({
                 name: 'close_drawer_menu',
                 properties: {
-                    action: 'close',
                     app_version: appSettings.appVersion,
                     app_platform: 'android'
                 }
@@ -857,7 +859,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         await this.increaseRateOpenedCount();
 
         this._logger.trackEvent({
-            name: 'open_rate_url',
+            name: 'open_app_rate',
             properties: {
                 url,
                 app_version: appSettings.appVersion,
