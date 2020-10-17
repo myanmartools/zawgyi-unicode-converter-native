@@ -1,5 +1,7 @@
 export interface FirebaseCloudMessage {
     messageType?: 'notification' | 'data';
+    channel_id?: string;
+    notification_android_channel_id?: string;
 
     // Foreground
     title?: string;
