@@ -22,10 +22,6 @@
         "^@angular\/.*"
       ],
       "groupName": "angular"
-    },
-    {
-      "packageNames": ["cordova-plugin-apprate"],
-      "automerge": false
-    }
+    }  
   ]
 }
