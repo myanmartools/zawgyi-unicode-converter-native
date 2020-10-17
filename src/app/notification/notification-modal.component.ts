@@ -32,6 +32,12 @@ export class NotificationModalComponent {
     bodyText: string;
 
     @Input()
+    bodyText2: string;
+
+    @Input()
+    bodyText3: string;
+
+    @Input()
     link: string;
 
     @Input()
@@ -93,7 +99,6 @@ export class NotificationModalComponent {
                 properties: {
                     link: this.link,
                     subject: socialSharingSubject,
-                    message: socialSharingMessage,
                     app_version: appSettings.appVersion,
                     app_platform: 'android'
                 }

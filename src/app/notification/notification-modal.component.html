@@ -5,6 +5,8 @@
     <h3 *ngIf="titleText" class="my-uni notification-title">{{titleText}}</h3>
     <img *ngIf="imageUrl" [src]="imageUrl" />
     <p class="my-uni notification-body">{{bodyText}}</p>
+    <p *ngIf="bodyText2" class="my-uni notification-body">{{bodyText2}}</p>
+    <p *ngIf="bodyText3" class="my-uni notification-body">{{bodyText3}}</p>
     <p *ngIf="link" class="my-uni notification-link">
         <a [class]="'ion-' + linkColor" [href]="link">{{linkLabel}}</a>
     </p>
