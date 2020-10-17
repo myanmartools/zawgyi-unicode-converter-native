@@ -111,7 +111,7 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-headercolor": {},
       "cordova-plugin-apprate": {
-        "PLAY_CORE_VERSION": "1.+"
+        "PLAY_CORE_VERSION": "1.8.2"
       },
       "cordova-plugin-x-socialsharing": {},
       "com-darryncampbell-cordova-plugin-intent": {},
