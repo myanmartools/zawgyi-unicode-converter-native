@@ -49,6 +49,9 @@ const TargetZgOrUniLabelText = 'ပြောင်းပြီးစာသား
 const TargetZgLabelText = 'ပြောင်းပြီးဇော်ဂျီစာသားကိုဤနေရာတွင်တွေ့ရမည်';
 const TargetUniLabelText = 'ပြောင်းပြီးယူနီကုတ်စာသားကိုဤနေရာတွင်တွေ့ရမည်';
 
+const RateOpenedCountKey = 'rateOpenedCount';
+const RatePromptedCountKey = 'ratePromptedCount';
+
 /**
  * Core app component.
  */
@@ -401,17 +404,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
     }
 
-    promptForRating(immediately = true): void {
-        try {
-            this._appRate.promptForRating(immediately);
-        } catch (err) {
-            const errPrefixMsg = 'An error occurs while calling _appRate.promptForRating() method.';
-            this._logger.error(`${errPrefixMsg} ${err}`);
-            this._appLogs.push({
-                message: errPrefixMsg,
-                data: err
-            });
-        }
+    async openAppReview(): Promise<void> {
+        await this.openAppRateUrl(appSettings.storeAppUrlInfo.android);
     }
 
     async toggleSideNav(): Promise<void> {
@@ -762,42 +756,23 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async handleAppRate(): Promise<void> {
-        const storeAppUrlInfo = appSettings.storeAppUrlInfo;
-
-        let ratePromptedCount = 0;
-        let rateButtonTouchCount = 0;
-
-        const rateButtonTouchCountStr = await this.getCacheItem('rateButtonTouchCount');
-        if (rateButtonTouchCountStr && rateButtonTouchCountStr.length) {
-            try {
-                rateButtonTouchCount = parseInt(rateButtonTouchCountStr, 10);
-            } catch (err) {
-                // Do nothing
-            }
-        }
-
-        if (rateButtonTouchCount === 0) {
-            const ratePromptedCountStr = await this.getCacheItem('ratePromptedCount');
-            if (ratePromptedCountStr && ratePromptedCountStr.length) {
-                try {
-                    ratePromptedCount = parseInt(ratePromptedCountStr, 10);
-                } catch (err) {
-                    // Do nothing
-                }
+        let usesUntilPrompt = 3;
+        const rateOpenedCount = await this.getRateOpenedCount();
+        if (rateOpenedCount > 0) {
+            usesUntilPrompt = rateOpenedCount * 30;
+        } else {
+            const ratePromptedCount = await this.getRatePromptCount();
+            if (ratePromptedCount > 0) {
+                usesUntilPrompt = ratePromptedCount * 5;
             }
         }
 
         this._appRate.preferences = {
             displayAppName: this.appName,
             storeAppURL: {
-                ...storeAppUrlInfo
+                ...appSettings.storeAppUrlInfo
             },
-            usesUntilPrompt:
-                rateButtonTouchCount > 0
-                    ? rateButtonTouchCount * 10
-                    : ratePromptedCount > 0
-                    ? ratePromptedCount * 5
-                    : 3,
+            usesUntilPrompt,
             simpleMode: true,
             useCustomRateDialog: true,
             useLanguage: 'en',
@@ -811,47 +786,92 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 noButtonLabel: 'No'
             },
             openUrl: async (url) => {
-                if (!((window as unknown) as { SafariViewController: boolean }).SafariViewController) {
-                    window.open(url, '_blank', 'location=yes');
-
-                    ++rateButtonTouchCount;
-                    void this.setCacheItem('rateButtonTouchCount', `${rateButtonTouchCount}`);
-
-                    this._logger.trackEvent({
-                        name: 'open_rate_url',
-                        properties: {
-                            url,
-                            app_version: appSettings.appVersion,
-                            app_platform: 'android'
-                        }
-                    });
-
-                    const toast = await this._toastController.create({
-                        message: 'သင်၏ပြန်လည်သုံးသပ်မှုအတွက် ကျေးဇူးတင်ပါတယ်။',
-                        duration: 5000,
-                        cssClass: 'my-uni'
-                    });
-
-                    void toast.present();
-                } else {
-                    // TODO: To implement
-                }
+                await this.openAppRateUrl(url);
             },
             callbacks: {
-                onButtonClicked: (buttonIndex?: number) => {
-                    if (buttonIndex !== 3) {
-                        ++ratePromptedCount;
-                        void this.setCacheItem('ratePromptedCount', `${ratePromptedCount}`);
-                    }
+                onButtonClicked: async () => {
+                    await this.increaseRatePromptCount();
                 }
             }
         };
 
-        if (rateButtonTouchCount > 1 || ratePromptedCount > 3) {
-            return;
+        try {
+            this._appRate.promptForRating(false);
+        } catch (err) {
+            const errPrefixMsg = 'An error occurs while calling _appRate.promptForRating() method.';
+            this._logger.error(`${errPrefixMsg} ${err}`);
+            this._appLogs.push({
+                message: errPrefixMsg,
+                data: err
+            });
+        }
+    }
+
+    private async getRateOpenedCount(): Promise<number> {
+        const str = await this.getCacheItem(RateOpenedCountKey);
+        if (str && str.length) {
+            try {
+                return parseInt(str, 10);
+            } catch (err) {
+                // Do nothing
+            }
         }
 
-        this.promptForRating(false);
+        return 0;
+    }
+
+    private async increaseRateOpenedCount(): Promise<void> {
+        let count = await this.getRateOpenedCount();
+        ++count;
+
+        await this.setCacheItem(RateOpenedCountKey, `${count}`);
+    }
+
+    private async getRatePromptCount(): Promise<number> {
+        const str = await this.getCacheItem(RatePromptedCountKey);
+        if (str && str.length) {
+            try {
+                return parseInt(str, 10);
+            } catch (err) {
+                // Do nothing
+            }
+        }
+
+        return 0;
+    }
+
+    private async increaseRatePromptCount(): Promise<void> {
+        let count = await this.getRatePromptCount();
+        ++count;
+
+        await this.setCacheItem(RatePromptedCountKey, `${count}`);
+    }
+
+    private async openAppRateUrl(url: string): Promise<void> {
+        if (!((window as unknown) as { SafariViewController: boolean }).SafariViewController) {
+            window.open(url, '_blank', 'location=yes');
+        } else {
+            // TODO: To implement
+        }
+
+        await this.increaseRateOpenedCount();
+
+        this._logger.trackEvent({
+            name: 'open_rate_url',
+            properties: {
+                url,
+                app_version: appSettings.appVersion,
+                app_platform: 'android'
+            }
+        });
+
+        const toast = await this._toastController.create({
+            message: 'သင်၏ပြန်လည်သုံးသပ်မှုအတွက် ကျေးဇူးတင်ပါတယ်။',
+            duration: 5000,
+            cssClass: 'my-uni'
+        });
+
+        void toast.present();
     }
 
     // private handleDynamicLinks(): void {
