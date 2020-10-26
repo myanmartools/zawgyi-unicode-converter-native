@@ -4,7 +4,7 @@
 [![Azure Pipelines Status](https://dev.azure.com/myanmartools/zawgyi-unicode-converter-native/_apis/build/status/myanmartools.zawgyi-unicode-converter-native?branchName=master)](https://dev.azure.com/myanmartools/zawgyi-unicode-converter-native/_build/latest?definitionId=15&branchName=master)
 [![Gitter](https://badges.gitter.im/myanmartools/community.svg)](https://gitter.im/myanmartools/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Zawgyi Unicode Converter Ionic Native App (Android / iOS) is a free and open source Zawgyi-One and standard Myanmar Unicode converter for Android and iOS written in Angular, Typescript, SCSS and powered with Ionic Native, Ionic UI Components and more.
+Zawgyi Unicode Converter Ionic Native App (Android) is a free and open source Zawgyi-One and standard Myanmar Unicode converter for Android and iOS written in Angular, Typescript, SCSS and powered with Ionic Native, Ionic UI Components and more.
 
 ## Mobile Applications
 
@@ -12,9 +12,6 @@ Zawgyi Unicode Converter Ionic Native App (Android / iOS) is a free and open sou
 
 [![Zawgyi Unicode Converter App on Google Play](https://zawgyi-unicode-converter.myanmartools.org/assets/images/uploads/google-play-badge-140w.png)](https://play.google.com/store/apps/details?id=com.dagonmetric.zawgyiunicodeconverter&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1)
 
-### iOS
-
-[WIP]
 
 ## Live Progressive Web Application
 
