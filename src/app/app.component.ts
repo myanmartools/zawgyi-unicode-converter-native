@@ -51,8 +51,8 @@ const TargetUniLabelText = 'ပြောင်းပြီးယူနီကု�
 
 const RateOpenedCountKey = 'rateOpenedCount';
 const RatePromptedCountKey = 'ratePromptedCount';
-
 const AdsVisibleKey = 'adsVisible';
+const AutoGrowTextAreaKey = 'autoGrowTextArea';
 
 const SponsoredMessagesChannelId = 'sponsored_messages';
 
@@ -95,6 +95,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
     private _adsVisibleCached?: boolean | null = null;
     private _shouldAdsVisible?: boolean | null = null;
+    private _autoGrowTextArea = true;
 
     private _sponsors: Sponsor[] = [];
 
@@ -231,6 +232,24 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         }
 
         return this._shouldAdsVisible == null ? true : this._shouldAdsVisible;
+    }
+
+    get autoGrowTextArea(): boolean {
+        return this._autoGrowTextArea;
+    }
+    set autoGrowTextArea(value: boolean) {
+        this._autoGrowTextArea = value;
+        void this.setCacheItem(AutoGrowTextAreaKey, `${value}`.toLocaleLowerCase()).then(() => {
+            // Do nothing
+        });
+
+        this._logger.trackEvent({
+            name: value ? 'autogrowtextarea_on' : 'autogrowtextarea_off',
+            properties: {
+                app_version: appSettings.appVersion,
+                app_platform: 'android'
+            }
+        });
     }
 
     get adsDisallowed(): boolean {
@@ -582,6 +601,11 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
                 }
 
                 this._splashScreen.hide();
+
+                const autoGrowTextAreaCachedStr = await this.getCacheItem(AutoGrowTextAreaKey);
+                if (autoGrowTextAreaCachedStr) {
+                    this._autoGrowTextArea = autoGrowTextAreaCachedStr === 'true' ? true : false;
+                }
 
                 const adsVisibleCachedStr = await this.getCacheItem(AdsVisibleKey);
                 if (adsVisibleCachedStr) {

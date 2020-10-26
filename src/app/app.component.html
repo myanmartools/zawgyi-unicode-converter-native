@@ -45,6 +45,10 @@
                         <ion-toggle [(ngModel)]="isDarkMode"></ion-toggle>
                     </ion-item>
                     <ion-item>
+                        <ion-label><span class="my-uni">စာရိုက်ဧရိယာအော်တိုချဲ့</span></ion-label>
+                        <ion-toggle [(ngModel)]="autoGrowTextArea"></ion-toggle>
+                    </ion-item>
+                    <ion-item>
                         <ion-label><span class="my-uni">ကြော်ငြာများပိတ်ထားရန်</span></ion-label>
                         <ion-toggle [(ngModel)]="adsDisallowed"></ion-toggle>
                     </ion-item>
@@ -105,7 +109,7 @@
                             <textarea matInput class="my-uni" spellcheck="false" rows="4" [(ngModel)]="sourceText"                                
                                 [class.my-uni]="!detectedEnc || detectedEnc == 'uni'"
                                 [class.my-zg]="detectedEnc == 'zg'" 
-                                cdkTextareaSyncSize
+                                [cdkTextareaSyncSize]="autoGrowTextArea"
                                 #sourceTextareaSyncSize="cdkTextareaSyncSize"
                                 cdkAutosizeMinRows="4"></textarea>
                         </mat-form-field>
@@ -122,7 +126,7 @@
                             <mat-label class="my-uni"><span class="my-uni">{{targeetEncLabel}}</span></mat-label>
                             <textarea matInput class="my-uni" spellcheck="false" rows="4" [ngModel]="outText"                                
                                 [class.my-uni]="targetEnc == 'uni'" [class.my-zg]="!targetEnc || targetEnc == 'zg'"
-                                cdkTextareaSyncSize
+                                [cdkTextareaSyncSize]="autoGrowTextArea"
                                 #outTextareaSyncSize="cdkTextareaSyncSize"
                                 cdkAutosizeMinRows="4" 
                                 [readonly]="!outText"></textarea>
