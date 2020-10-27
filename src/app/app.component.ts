@@ -11,9 +11,8 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 
-import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
+import { AlertController, MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
 
-import { AppRate } from '@ionic-native/app-rate/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
@@ -49,8 +48,9 @@ const TargetZgOrUniLabelText = 'ပြောင်းပြီးစာသား
 const TargetZgLabelText = 'ပြောင်းပြီးဇော်ဂျီစာသားကိုဤနေရာတွင်တွေ့ရမည်';
 const TargetUniLabelText = 'ပြောင်းပြီးယူနီကုတ်စာသားကိုဤနေရာတွင်တွေ့ရမည်';
 
+const AppUsedCountKey = 'appUsedCount';
 const RateOpenedCountKey = 'rateOpenedCount';
-const RatePromptedCountKey = 'ratePromptedCount';
+const RateLastPromptedDateKey = 'rateLastPromptedDate';
 const AdsVisibleKey = 'adsVisible';
 const AutoGrowTextAreaKey = 'autoGrowTextArea';
 
@@ -276,10 +276,10 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     constructor(
+        private readonly _alertController: AlertController,
         private readonly _menuController: MenuController,
         private readonly _modalController: ModalController,
         private readonly _toastController: ToastController,
-        private readonly _appRate: AppRate,
         private readonly _clipboard: Clipboard,
         private readonly _firebaseX: FirebaseX,
         private readonly _headerColor: HeaderColor,
@@ -425,7 +425,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
 
             const toast = await this._toastController.create({
                 message: 'ဤအက်ပ်ကိုမျှဝေတဲ့အတွက် ကျေးဇူးတင်ပါတယ်။',
-                duration: 5000,
+                duration: 4000,
                 cssClass: 'my-uni'
             });
 
@@ -449,7 +449,7 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     async openAppReview(): Promise<void> {
-        await this.openAppRateUrl(appSettings.storeAppUrlInfo.android);
+        await this.openGooglePlayReview(appSettings.storeAppUrlInfo.android);
     }
 
     async toggleSideNav(): Promise<void> {
@@ -843,55 +843,66 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     private async handleAppRate(): Promise<void> {
-        let usesUntilPrompt = 3;
+        await this.increaseAppUsedCount();
+
+        const appUsedCount = await this.getAppUsedCount();
+        if (appUsedCount < 3) {
+            return;
+        }
+
         const rateOpenedCount = await this.getRateOpenedCount();
         if (rateOpenedCount > 0) {
-            usesUntilPrompt = rateOpenedCount * 30;
-        } else {
-            const ratePromptedCount = await this.getRatePromptCount();
-            if (ratePromptedCount > 0) {
-                usesUntilPrompt = ratePromptedCount * 5;
-            }
+            return;
         }
 
-        this._appRate.preferences = {
-            displayAppName: this.appName,
-            storeAppURL: {
-                ...appSettings.storeAppUrlInfo
-            },
-            usesUntilPrompt,
-            simpleMode: true,
-            useCustomRateDialog: true,
-            useLanguage: 'en',
-            customLocale: {
-                title: 'Do you \u2764\uFE0F using this app?',
-                message: 'We hope yoou like using Zawgyi Unicode Converter.\nWe love to hear your feedback.',
-                cancelButtonLabel: 'No, thanks',
-                laterButtonLabel: 'Later',
-                rateButtonLabel: 'Rate it now',
-                yesButtonLabel: 'Yes',
-                noButtonLabel: 'No'
-            },
-            openUrl: async (url) => {
-                await this.openAppRateUrl(url);
-            },
-            callbacks: {
-                onButtonClicked: async () => {
-                    await this.increaseRatePromptCount();
+        const lastPromptedDate = await this.getRateLastPromptedDate();
+        // 15 Days
+        if (lastPromptedDate > 0 && lastPromptedDate + 1296000000 > Date.now()) {
+            return;
+        }
+
+        await this.setCacheItem(RateLastPromptedDateKey, `${Date.now()}`);
+        this._shouldAdsVisible = false;
+
+        const alert = await this._alertController.create({
+            header: 'သုံးသပ်ချက်ပေးလိုပါသလား',
+            message:
+                'ဤအက်ပ်ကို ကြိုက်နှစ်သက်လိမ့်မယ်လို့ မျှော်လင့်ပါတယ်။ Google Play တွင် သင်၏ အကြံပေးချက်များ၊ သုံးသပ်ချက်များကို ချန်ထားခဲ့နိုင်ပါတယ်။',
+            cssClass: 'my-uni',
+            buttons: [
+                {
+                    text: 'နောက်မှ',
+                    role: 'cancel',
+                    cssClass: 'my-uni',
+                    handler: () => {
+                        this._logger.trackEvent({
+                            name: 'press_rate_later',
+                            properties: {
+                                app_version: appSettings.appVersion,
+                                app_platform: 'android'
+                            }
+                        });
+                    }
+                },
+                {
+                    text: 'သုံးသပ်ချက်ပေးမည်',
+                    cssClass: 'my-uni',
+                    handler: () => {
+                        this._logger.trackEvent({
+                            name: 'press_rate_now',
+                            properties: {
+                                app_version: appSettings.appVersion,
+                                app_platform: 'android'
+                            }
+                        });
+
+                        void this.openGooglePlayReview(appSettings.storeAppUrlInfo.android);
+                    }
                 }
-            }
-        };
+            ]
+        });
 
-        try {
-            this._appRate.promptForRating(false);
-        } catch (err) {
-            const errPrefixMsg = 'An error occurs while calling _appRate.promptForRating() method.';
-            this._logger.error(`${errPrefixMsg} ${err}`);
-            this._appLogs.push({
-                message: errPrefixMsg,
-                data: err
-            });
-        }
+        await alert.present();
     }
 
     private async getRateOpenedCount(): Promise<number> {
@@ -914,8 +925,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         await this.setCacheItem(RateOpenedCountKey, `${count}`);
     }
 
-    private async getRatePromptCount(): Promise<number> {
-        const str = await this.getCacheItem(RatePromptedCountKey);
+    private async getRateLastPromptedDate(): Promise<number> {
+        const str = await this.getCacheItem(RateLastPromptedDateKey);
         if (str && str.length) {
             try {
                 return parseInt(str, 10);
@@ -927,26 +938,34 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         return 0;
     }
 
-    private async increaseRatePromptCount(): Promise<void> {
-        let count = await this.getRatePromptCount();
-        ++count;
+    private async getAppUsedCount(): Promise<number> {
+        const str = await this.getCacheItem(AppUsedCountKey);
+        if (str && str.length) {
+            try {
+                return parseInt(str, 10);
+            } catch (err) {
+                // Do nothing
+            }
+        }
 
-        await this.setCacheItem(RatePromptedCountKey, `${count}`);
+        return 0;
     }
 
-    private async openAppRateUrl(url: string): Promise<void> {
-        this._shouldAdsVisible = false;
+    private async increaseAppUsedCount(): Promise<void> {
+        let count = await this.getAppUsedCount();
+        ++count;
 
-        if (!((window as unknown) as { SafariViewController: boolean }).SafariViewController) {
-            window.open(url, '_blank', 'location=yes');
-        } else {
-            // TODO: To implement
-        }
+        await this.setCacheItem(AppUsedCountKey, `${count}`);
+    }
+
+    private async openGooglePlayReview(url: string): Promise<void> {
+        this._shouldAdsVisible = false;
+        window.open(url, '_blank', 'location=yes');
 
         await this.increaseRateOpenedCount();
 
         this._logger.trackEvent({
-            name: 'open_app_rate',
+            name: 'open_play_review',
             properties: {
                 url,
                 app_version: appSettings.appVersion,
@@ -955,8 +974,8 @@ export class AppComponent implements AfterViewInit, OnInit, OnDestroy {
         });
 
         const toast = await this._toastController.create({
-            message: 'သင်၏ပြန်လည်သုံးသပ်မှုအတွက် ကျေးဇူးတင်ပါတယ်။',
-            duration: 5000,
+            message: 'သင်၏အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါတယ်။',
+            duration: 4000,
             cssClass: 'my-uni'
         });
 
