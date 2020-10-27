@@ -11,9 +11,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
+import { AlertController, MenuController, ModalController, Platform, ToastController } from '@ionic/angular';
 
-import { AppRate } from '@ionic-native/app-rate/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
@@ -34,8 +33,7 @@ import { AppComponent } from './app.component';
 describe('AppComponent', () => {
     // let platformSpy: any;
 
-    // let alertControllerSpy: any;
-    let appRateSpy: any;
+    let alertControllerSpy: any;
     let clipboardSpy: any;
     let firebaseXSpy: any;
     let headerColorSpy: any;
@@ -56,11 +54,11 @@ describe('AppComponent', () => {
         //     }
         // });
 
-        // alertControllerSpy = jasmine.createSpyObj('AlertController', ['create']);
-        appRateSpy = jasmine.createSpyObj('AppRate', ['promptForRating', 'preferences']);
         clipboardSpy = jasmine.createSpyObj('Clipboard', ['copy']);
         firebaseXSpy = jasmine.createSpyObj('FirebaseX', ['fetch', 'activateFetched', 'getValue']);
         headerColorSpy = jasmine.createSpyObj('HeaderColor', ['tint']);
+
+        alertControllerSpy = jasmine.createSpyObj('AlertController', ['create']);
         menuControllerSpy = jasmine.createSpyObj('MenuController', ['toggle', 'isOpen', 'close']);
         modalControllerSpy = jasmine.createSpyObj('ModalController', ['create', 'getTop', 'dismiss']);
         nativeStorageSpy = jasmine.createSpyObj('NativeStorage', ['setItem', 'getItem']);
@@ -92,11 +90,10 @@ describe('AppComponent', () => {
             ],
             providers: [
                 Platform,
-                // { provide: AlertController, useValue: alertControllerSpy },
-                { provide: AppRate, useValue: appRateSpy },
                 { provide: Clipboard, useValue: clipboardSpy },
                 { provide: FirebaseX, useValue: firebaseXSpy },
                 { provide: HeaderColor, useValue: headerColorSpy },
+                { provide: AlertController, useValue: alertControllerSpy },
                 { provide: MenuController, useValue: menuControllerSpy },
                 { provide: ModalController, useValue: modalControllerSpy },
                 { provide: NativeStorage, useValue: nativeStorageSpy },
