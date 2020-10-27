@@ -17,7 +17,6 @@ import { MatInputModule } from '@angular/material/input';
 
 import { IonicModule } from '@ionic/angular';
 
-import { AppRate } from '@ionic-native/app-rate/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
 import { FirebaseX } from '@ionic-native/firebase-x/ngx';
 import { HeaderColor } from '@ionic-native/header-color/ngx';
@@ -81,7 +80,6 @@ import { NotificationModalComponent } from './notification';
         IonicFirebaseAnalyticsLoggerModule
     ],
     providers: [
-        AppRate,
         Clipboard,
         FirebaseX,
         // FirebaseDynamicLinks,
