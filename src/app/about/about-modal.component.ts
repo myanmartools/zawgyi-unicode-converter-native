@@ -70,7 +70,7 @@ export class AboutModalComponent {
 
             const toast = await this._toastController.create({
                 message: 'ဤအက်ပ်ကိုမျှဝေတဲ့အတွက် ကျေးဇူးတင်ပါတယ်။',
-                duration: 5000,
+                duration: 4000,
                 cssClass: 'my-uni'
             });
 
