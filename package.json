@@ -43,7 +43,7 @@
     "@ionic-native/web-intent": "^5.30.0",
     "@ionic/angular": "^5.5.2",
     "@myanmartools/ng-zawgyi-detector": "^1.2.6",
-    "@myanmartools/zawgyi-unicode-translit-rules": "^1.1.5",
+    "@myanmartools/zawgyi-unicode-translit-rules": "^1.1.6",
     "cordova-android": "^9.0.0",
     "core-js": "^3.8.2",
     "rxjs": "^6.6.3",
