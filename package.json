@@ -79,7 +79,7 @@
     "cordova-support-google-services": "^1.4.1",
     "es6-promise-plugin": "^4.2.2",
     "eslint": "^7.18.0",
-    "eslint-config-prettier": "^7.1.0",
+    "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-jsdoc": "^31.0.6",
     "eslint-plugin-prettier": "^3.3.1",
     "jasmine-core": "^3.6.0",
