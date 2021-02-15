@@ -80,7 +80,7 @@
     "es6-promise-plugin": "^4.2.2",
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^7.2.0",
-    "eslint-plugin-jsdoc": "^31.6.1",
+    "eslint-plugin-jsdoc": "^32.0.0",
     "eslint-plugin-prettier": "^3.3.1",
     "jasmine-core": "^3.6.0",
     "jasmine-spec-reporter": "^6.0.0",
