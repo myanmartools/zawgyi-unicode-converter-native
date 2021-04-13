@@ -44,7 +44,7 @@
     "@ionic/angular": "^5.6.4",
     "@myanmartools/ng-zawgyi-detector": "^1.2.6",
     "@myanmartools/zawgyi-unicode-translit-rules": "^1.1.6",
-    "cordova-android": "^9.0.0",
+    "cordova-android": "^9.1.0",
     "core-js": "^3.10.1",
     "rxjs": "^6.6.7",
     "tslib": "^2.2.0",
