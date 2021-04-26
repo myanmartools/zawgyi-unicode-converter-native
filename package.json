@@ -59,7 +59,7 @@
     "@ionic/angular-toolkit": "^2.3.3",
     "@types/jasmine": "^3.6.10",
     "@types/jasminewd2": "^2.0.8",
-    "@types/node": "^14.14.41",
+    "@types/node": "^14.14.42",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "com-darryncampbell-cordova-plugin-intent": "^2.0.0",
