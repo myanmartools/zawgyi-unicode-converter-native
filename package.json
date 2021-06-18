@@ -78,7 +78,7 @@
     "cordova-support-android-plugin": "^1.0.2",
     "cordova-support-google-services": "^1.4.1",
     "es6-promise-plugin": "^4.2.2",
-    "eslint": "^7.28.0",
+    "eslint": "^7.29.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-jsdoc": "^35.3.0",
     "eslint-plugin-prettier": "^3.4.0",
